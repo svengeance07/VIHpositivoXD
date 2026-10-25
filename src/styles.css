@@ -1,0 +1,40 @@
+/* Global styles: Caustica Design first, then app overrides and theme knobs. */
+@import 'caustica-design/css';
+
+/* Theme: set data-theme="light" | "dark" on <html>. Retune glass with
+   --ca-blur-glass / --ca-glass-fill / --ca-glass-edge and recolor with
+   --ca-hue / --ca-chroma (see the caustica-design README). */
+
+/* Marca y acento compartidos por la landing y el login. */
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  color: var(--text);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.marca__logo {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+.marca__texto {
+  font-size: 1.05rem;
+}
+
+.acento {
+  background: linear-gradient(100deg, var(--color-accent), var(--color-accent-2));
+  background-clip: text;
+  color: transparent;
+}

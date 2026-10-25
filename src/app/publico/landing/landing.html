@@ -1,0 +1,82 @@
+<div class="landing">
+  <header class="topbar">
+    <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
+      <span class="marca__logo" aria-hidden="true">V</span>
+      <span class="marca__texto">Sistema V</span>
+    </a>
+
+    <ca-button variant="ghost" icon="log-in" (click)="abrirLogin()">Iniciar sesión</ca-button>
+  </header>
+
+  <main class="heroe">
+    <div class="heroe__texto">
+      <p class="ca-section-eyebrow">
+        <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+        Sistema nacional de salud
+      </p>
+
+      <h1>La salud de tu comunidad, <span class="acento">ordenada y a la vista.</span></h1>
+
+      <p class="lead">
+        Sistema V reúne centros de salud, vacunación y certificados en un solo lugar. Consulta tu
+        información o entra con tu cuenta institucional.
+      </p>
+
+      <div class="acciones">
+        <ca-button variant="primary" icon="log-in" (click)="abrirLogin()">
+          Iniciar sesión
+        </ca-button>
+        <a class="btn btn-ghost" routerLink="/consulta">Consultar por cédula</a>
+      </div>
+
+      <p class="nota">
+        Acceso para autoridades, subregiones y personal de salud. La consulta ciudadana no requiere
+        cuenta.
+      </p>
+    </div>
+
+    <aside class="panel niveles" aria-label="Niveles de gestión">
+      <p class="badge info">Sistema V</p>
+      <h2>Un expediente, tres niveles de gestión</h2>
+
+      <ul class="niveles__lista">
+        <li>
+          <span class="niveles__num" aria-hidden="true">1</span>
+          <span class="niveles__texto">
+            <strong>Autoridades</strong>
+            <span>Vigilancia y administración general del sistema.</span>
+          </span>
+        </li>
+        <li>
+          <span class="niveles__num" aria-hidden="true">2</span>
+          <span class="niveles__texto">
+            <strong>Personal de salud</strong>
+            <span>Jefes y trabajadores de cada centro.</span>
+          </span>
+        </li>
+        <li>
+          <span class="niveles__num" aria-hidden="true">3</span>
+          <span class="niveles__texto">
+            <strong>Subregión de salud</strong>
+            <span>Coordinación estadal y control de centros.</span>
+          </span>
+        </li>
+      </ul>
+    </aside>
+  </main>
+
+  <section class="rasgos" aria-label="Capacidades del sistema">
+    @for (rasgo of rasgos; track rasgo.titulo) {
+      <article class="panel rasgo">
+        <ca-icon class="rasgo__icono" [attr.name]="rasgo.icono" aria-hidden="true"></ca-icon>
+        <h3>{{ rasgo.titulo }}</h3>
+        <p>{{ rasgo.detalle }}</p>
+      </article>
+    }
+  </section>
+
+  <footer class="pie">
+    <span>Sistema V · Gestión de salud pública</span>
+    <span>Prototipo de vistas · datos de prueba</span>
+  </footer>
+</div>

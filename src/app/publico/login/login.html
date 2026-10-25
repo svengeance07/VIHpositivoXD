@@ -1,0 +1,207 @@
+<div class="acceso">
+  <aside class="acceso__lateral">
+    <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
+      <span class="marca__logo" aria-hidden="true">V</span>
+      <span class="marca__texto">Sistema V</span>
+    </a>
+
+    <div class="acceso__copy">
+      <p class="ca-section-eyebrow">
+        <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+        Acceso institucional
+      </p>
+      <h1>Gestión de salud, <span class="acento">sin fricción.</span></h1>
+      <p class="lead">
+        Entra con tu cuenta institucional. Si perteneces a un centro de salud o a una subregión,
+        después elegirás tu perfil de trabajo.
+      </p>
+    </div>
+
+    <ol class="pasos" aria-label="Pasos de acceso">
+      <li [class.is-active]="paso() >= 1" [attr.aria-current]="paso() === 1 ? 'step' : null">
+        <span aria-hidden="true">1</span> Tipo de cuenta
+      </li>
+      <li [class.is-active]="paso() >= 2" [attr.aria-current]="paso() === 2 ? 'step' : null">
+        <span aria-hidden="true">2</span> Credenciales de acceso
+      </li>
+      <li [class.is-active]="paso() >= 3" [attr.aria-current]="paso() === 3 ? 'step' : null">
+        <span aria-hidden="true">3</span> Perfil de trabajo
+      </li>
+    </ol>
+  </aside>
+
+  <main class="panel acceso__panel">
+    <a class="volver-inicio" routerLink="/">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      Volver al inicio
+    </a>
+
+    @if (paso() === 1) {
+      <section class="paso">
+        <p class="badge info">Paso 1 de 3</p>
+        <h2>¿Cómo vas a ingresar?</h2>
+        <p class="sub">Elige el tipo de cuenta. Después validaremos tus credenciales.</p>
+
+        <div class="roles">
+          @for (rol of rolesInternos(); track rol.id) {
+            <button type="button" class="rol" (click)="elegirRol(rol.id)">
+              <span class="rol__num" aria-hidden="true">{{ rol.id }}</span>
+              <span class="rol__texto">
+                <strong>{{ rol.nombre }}</strong>
+                <span>{{ descripcionRol(rol.id) }}</span>
+              </span>
+              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+            </button>
+          }
+        </div>
+
+        <p class="pie-panel">
+          ¿Eres ciudadano?
+          <a routerLink="/consulta">Consulta tu información por cédula</a>.
+        </p>
+      </section>
+    } @else if (paso() === 2) {
+      <section class="paso">
+        <button type="button" class="enlace-volver" (click)="volver()">
+          <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+          Cambiar tipo de cuenta
+        </button>
+
+        <p class="badge info">{{ rolActual()?.nombre }}</p>
+        <h2>{{ tituloCredenciales() }}</h2>
+        <p class="sub">
+          @if (rolElegido() === 1) {
+            Ingresa con tu correo institucional y tu contraseña.
+          } @else {
+            Primero valida la cuenta de la entidad. El perfil se pide en el siguiente paso.
+          }
+        </p>
+
+        <form class="form" (submit)="continuar($event, correo.value, clave.value)">
+          <label class="field">
+            <span class="field-label">Correo electrónico</span>
+            <input
+              #correo
+              type="email"
+              name="correo"
+              autocomplete="email"
+              placeholder="nombre@institucion.gob.ve"
+              (input)="error.set('')"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Contraseña</span>
+            <input
+              #clave
+              type="password"
+              name="clave"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              (input)="error.set('')"
+            />
+          </label>
+
+          @if (error()) {
+            <p class="field-error" role="alert">{{ error() }}</p>
+          }
+
+          <ca-button
+            variant="primary"
+            icon="log-in"
+            (click)="continuar($event, correo.value, clave.value)"
+          >
+            Continuar
+          </ca-button>
+        </form>
+      </section>
+    } @else {
+      <section class="paso">
+        <button type="button" class="enlace-volver" (click)="volver()">
+          <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+          Credenciales de la entidad
+        </button>
+
+        <p class="badge info">{{ cuenta()?.nombre }}</p>
+        <h2>Selecciona tu perfil</h2>
+        <p class="sub">Elige con qué perfil vas a trabajar y valida sus credenciales.</p>
+
+        <div class="perfiles">
+          @for (perfil of perfiles(); track perfil.id) {
+            <button
+              type="button"
+              class="perfil"
+              [class.is-selected]="perfilElegido()?.id === perfil.id"
+              [attr.aria-pressed]="perfilElegido()?.id === perfil.id"
+              (click)="elegirPerfil(perfil)"
+            >
+              <span class="perfil__tipo">{{ etiquetaTipo(perfil.tipo) }}</span>
+              <strong>{{ perfil.nombre }}</strong>
+            </button>
+          }
+        </div>
+
+        <form class="form" (submit)="entrarPerfil($event, correoPerfil.value, clavePerfil.value)">
+          <label class="field">
+            <span class="field-label">Correo del perfil</span>
+            <input
+              #correoPerfil
+              type="email"
+              name="correoPerfil"
+              autocomplete="email"
+              placeholder="nombre@institucion.gob.ve"
+              (input)="error.set('')"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Contraseña del perfil</span>
+            <input
+              #clavePerfil
+              type="password"
+              name="clavePerfil"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              (input)="error.set('')"
+            />
+          </label>
+
+          @if (error()) {
+            <p class="field-error" role="alert">{{ error() }}</p>
+          }
+
+          <ca-button
+            variant="primary"
+            icon="log-in"
+            (click)="entrarPerfil($event, correoPerfil.value, clavePerfil.value)"
+          >
+            Entrar al sistema
+          </ca-button>
+        </form>
+      </section>
+    }
+
+    @if (modoDemo) {
+      <details class="demo">
+        <summary>Credenciales de prueba</summary>
+        <div class="demo__lista">
+          @for (cuenta of cuentasDemo; track cuenta.id) {
+            <div class="demo__cuenta">
+              <p class="demo__titulo">
+                {{ cuenta.nombre }} <span>· rol {{ cuenta.rol }}</span>
+              </p>
+              <p class="demo__cred">{{ cuenta.correo }} · {{ cuenta.clave }}</p>
+              @if (cuenta.perfiles.length) {
+                <ul>
+                  @for (perfil of cuenta.perfiles; track perfil.id) {
+                    <li>{{ perfil.nombre }} — {{ perfil.correo }} · {{ perfil.clave }}</li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </div>
+      </details>
+    }
+  </main>
+</div>

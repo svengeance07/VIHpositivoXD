@@ -1,0 +1,38 @@
+<section class="pagina">
+  <div class="panel tarjeta">
+    <p class="ca-section-eyebrow">
+      <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+      En construcción
+    </p>
+
+    <h1>{{ titulo() }}</h1>
+    <p class="descripcion">{{ subtitulo() }}</p>
+
+    @if (sesionActiva(); as sesion) {
+      <dl class="sesion">
+        <div>
+          <dt>Rol</dt>
+          <dd>{{ rolNombre() }}</dd>
+        </div>
+        <div>
+          <dt>Sesión</dt>
+          <dd>{{ sesion.nombre }}</dd>
+        </div>
+        @if (sesion.entidad) {
+          <div>
+            <dt>Entidad</dt>
+            <dd>{{ sesion.entidad }}</dd>
+          </div>
+        }
+      </dl>
+
+      <div class="acciones">
+        <ca-button variant="ghost" icon="log-out" (click)="salir()">Cerrar sesión</ca-button>
+      </div>
+    } @else {
+      <div class="acciones">
+        <a class="btn btn-ghost" routerLink="/">Volver al inicio</a>
+      </div>
+    }
+  </div>
+</section>
