@@ -1,0 +1,195 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Centro de control nacional"
+    [titulo]="'Bienvenido, ' + nombre()"
+    descripcion="Resumen operativo del sistema: entregas de vacunas, actividad semanal y estado de la red de salud."
+  >
+    <a class="btn btn-primary" routerLink="/master/busqueda">Buscar ciudadanos</a>
+  </app-master-encabezado>
+
+  <section class="metricas" aria-label="Resumen del sistema">
+    <article class="panel metrica">
+      <span class="metrica__icono" aria-hidden="true"><ca-icon name="clipboard"></ca-icon></span>
+      <span class="metrica__etiqueta">Ciudadanos registrados</span>
+      <strong>{{ datos.resumen().ciudadanos }}</strong>
+      <small>Expedientes disponibles en el prototipo</small>
+    </article>
+    <article class="panel metrica">
+      <span class="metrica__icono" aria-hidden="true"
+        ><ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon
+      ></span>
+      <span class="metrica__etiqueta">Centros de salud</span>
+      <strong>{{ datos.resumen().centros }}</strong>
+      <small>Hospitales, ambulatorios y CDI</small>
+    </article>
+    <article class="panel metrica">
+      <span class="metrica__icono" aria-hidden="true"><ca-icon name="feedback"></ca-icon></span>
+      <span class="metrica__etiqueta">Personal activo</span>
+      <strong>{{ datos.resumen().personal }}</strong>
+      <small>Jefes y trabajadores de la red</small>
+    </article>
+    <article class="panel metrica metrica--alerta">
+      <span class="metrica__icono" aria-hidden="true"><ca-icon name="warning"></ca-icon></span>
+      <span class="metrica__etiqueta">Lotes en camino</span>
+      <strong>{{ datos.resumen().lotesEnCamino }}</strong>
+      <small>{{ datos.resumen().lotesReportados }} reportados por revisar</small>
+    </article>
+  </section>
+
+  <section
+    class="panel lote-card"
+    (mouseenter)="hoverLotes.set(true)"
+    (mouseleave)="hoverLotes.set(false)"
+  >
+    <header class="bloque__cabecera">
+      <div>
+        <p class="ca-section-eyebrow">
+          <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+          Trazabilidad
+        </p>
+        <h2>Últimos lotes de vacunas entregados</h2>
+        <p>Pasa el cursor sobre la tarjeta o fija el panel para ver el detalle.</p>
+      </div>
+      <div class="master-acciones">
+        <a class="btn btn-ghost" routerLink="/master/vacunas/buscar">Buscar lotes</a>
+        <button
+          type="button"
+          class="lote-card__toggle"
+          [class.is-activo]="lotesVisibles()"
+          [attr.aria-expanded]="lotesVisibles()"
+          (click)="alternarLotes()"
+        >
+          <ca-icon
+            [name]="lotesVisibles() ? 'chevron-down' : 'chevron-right'"
+            aria-hidden="true"
+          ></ca-icon>
+          {{ lotesVisibles() ? 'Ocultar detalle' : 'Ver detalle' }}
+        </button>
+      </div>
+    </header>
+
+    <div class="lotes-preview">
+      @for (lote of datos.lotesRecientes(); track lote.id) {
+        <div class="lote-linea">
+          <span class="lote-linea__codigo">{{ lote.codigo }}</span>
+          <span class="lote-linea__vacuna">{{ datos.nombreVacuna(lote.vacunaId) }}</span>
+          <span class="lote-linea__destino">{{ datos.nombreCentro(lote.destinoCentroId) }}</span>
+          <span
+            class="master-badge"
+            [class.master-badge--warn]="lote.estado === 'en_camino'"
+            [class.master-badge--info]="lote.estado === 'reportado'"
+            [class.master-badge--ok]="lote.estado === 'aceptado'"
+          >
+            {{ etiquetaLote(lote.estado) }}
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (lotesVisibles()) {
+      <div class="lotes-detalle ca-animate-enter">
+        <div class="master-tabla-scroll">
+          <table class="master-tabla">
+            <thead>
+              <tr>
+                <th>Lote</th>
+                <th>Vacuna</th>
+                <th>Destino</th>
+                <th>Envío</th>
+                <th>Dosis</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (lote of datos.lotesRecientes(); track lote.id) {
+                <tr>
+                  <td>
+                    <strong>{{ lote.codigo }}</strong>
+                  </td>
+                  <td>{{ datos.nombreVacuna(lote.vacunaId) }}</td>
+                  <td>{{ datos.nombreCentro(lote.destinoCentroId) }}</td>
+                  <td>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ lote.dosis }}</td>
+                  <td>
+                    <span
+                      class="master-badge"
+                      [class.master-badge--warn]="lote.estado === 'en_camino'"
+                      [class.master-badge--info]="lote.estado === 'reportado'"
+                      [class.master-badge--ok]="lote.estado === 'aceptado'"
+                    >
+                      {{ etiquetaLote(lote.estado) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="master-grid master-grid--2">
+    <article class="panel">
+      <header class="bloque__cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Actividad semanal
+          </p>
+          <h2>Top 10 estados con más vacunaciones</h2>
+          <p>{{ datos.resumen().vacunacionesSemana | number }} dosis registradas esta semana.</p>
+        </div>
+      </header>
+
+      <div class="ranking">
+        @for (fila of topEstados(); track fila.estadoId; let indice = $index) {
+          <div class="ranking__fila">
+            <span class="ranking__puesto">{{ indice + 1 }}</span>
+            <span class="ranking__nombre">{{ fila.nombre }}</span>
+            <span class="ranking__barra" aria-hidden="true">
+              <span [style.width.%]="fila.porcentaje"></span>
+            </span>
+            <strong>{{ fila.total | number }}</strong>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel mapa">
+      <header class="bloque__cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Cobertura territorial
+          </p>
+          <h2>Mapa de Venezuela</h2>
+          <p>Exploración por estado, municipio y parroquia.</p>
+        </div>
+        <span class="master-badge master-badge--suave">Fase posterior</span>
+      </header>
+
+      <div class="mapa__lienzo" aria-label="Marcador de posición del mapa de Venezuela">
+        <span class="mapa__mancha mapa__mancha--1"></span>
+        <span class="mapa__mancha mapa__mancha--2"></span>
+        <span class="mapa__mancha mapa__mancha--3"></span>
+        <span class="mapa__punto mapa__punto--1"></span>
+        <span class="mapa__punto mapa__punto--2"></span>
+        <span class="mapa__punto mapa__punto--3"></span>
+        <span class="mapa__punto mapa__punto--4"></span>
+        <span class="mapa__centro">Venezuela</span>
+      </div>
+
+      <div class="mapa__niveles" aria-hidden="true">
+        <span>Estado</span>
+        <ca-icon name="chevron-right"></ca-icon>
+        <span>Municipio</span>
+        <ca-icon name="chevron-right"></ca-icon>
+        <span>Parroquia</span>
+      </div>
+      <p class="mapa__nota">
+        El mapa interactivo y sus datos georreferenciados se incorporarán en una fase posterior.
+      </p>
+    </article>
+  </section>
+</div>

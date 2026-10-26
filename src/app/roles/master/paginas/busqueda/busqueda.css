@@ -1,0 +1,101 @@
+:host {
+  display: block;
+}
+
+.busqueda__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.busqueda__cabecera h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  letter-spacing: -0.015em;
+}
+
+.busqueda__cabecera p {
+  margin: 0.22rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.filtro-panel__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.filtro-panel__cabecera .master-filtro-panel__titulo {
+  margin: 0;
+}
+
+.filtro-panel__cabecera .btn {
+  flex-shrink: 0;
+}
+
+.busqueda__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}
+
+.busqueda__ayuda {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.busqueda__ayuda ca-icon {
+  flex-shrink: 0;
+}
+
+.busqueda__ayuda--ok {
+  color: var(--ok);
+}
+
+.busqueda__nombre {
+  display: grid;
+  gap: 0.08rem;
+  max-width: 18rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.busqueda__nombre:hover strong {
+  color: var(--color-accent-2);
+}
+
+.busqueda__nombre .master-tabla__secundario {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.busqueda__seccion {
+  margin: 1.35rem 0 0.65rem;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+
+ca-modal {
+  --modal-z: 100;
+}

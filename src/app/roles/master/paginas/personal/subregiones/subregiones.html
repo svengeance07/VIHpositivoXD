@@ -1,0 +1,197 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Administración de personal"
+    titulo="Subregiones de salud"
+    descripcion="Cada estado tiene una subregión responsable de coordinar sus centros y su personal."
+  >
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="estadosDisponibles().length === 0"
+      [attr.title]="
+        estadosDisponibles().length === 0 ? 'Todos los estados ya tienen una subregión' : null
+      "
+      (click)="abrirAlta()"
+    >
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      Agregar subregión
+    </button>
+  </app-master-encabezado>
+
+  <section class="master-grid master-grid--tarjetas" aria-label="Resumen de subregiones">
+    <article class="panel subregion-metrica">
+      <span>Subregiones</span>
+      <strong>{{ datos.subregiones().length }}</strong>
+    </article>
+    <article class="panel subregion-metrica">
+      <span>Centros coordinados</span>
+      <strong>{{ totalCentros() }}</strong>
+    </article>
+    <article class="panel subregion-metrica">
+      <span>Personal en subregiones</span>
+      <strong>{{ totalEmpleados() }}</strong>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="subregiones__barra">
+      <label class="field subregiones__buscador">
+        <span class="field-label">Buscar subregión</span>
+        <input
+          type="search"
+          placeholder="Nombre, código, estado o jefe"
+          [value]="busqueda()"
+          (input)="busqueda.set(valor($event))"
+        />
+      </label>
+      <span class="master-badge master-badge--suave">{{ resultados().length }} resultados</span>
+    </div>
+
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+        <strong>No hay subregiones que coincidan</strong>
+        <p>Cambia el término de búsqueda o agrega una nueva subregión.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Subregión</th>
+              <th>Estado</th>
+              <th>Jefe de subregión</th>
+              <th>Centros</th>
+              <th>Personal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.centro.id) {
+              <tr>
+                <td>
+                  <a
+                    class="master-tabla__principal master-enlace-fila"
+                    [routerLink]="['/master/personal/subregiones', fila.centro.id]"
+                  >
+                    <strong>{{ fila.centro.nombre }}</strong>
+                    <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
+                  </a>
+                </td>
+                <td>{{ fila.estado?.nombre ?? '—' }}</td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ jefe(fila) }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ fila.centros }}</td>
+                <td>{{ fila.empleados }}</td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-compact"
+                    [routerLink]="['/master/personal/subregiones', fila.centro.id]"
+                  >
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <ca-modal
+    [attr.open]="altaAbierta() ? '' : null"
+    backdrop-label="Cerrar formulario de subregión"
+    (openchange)="cerrarAlta()"
+  >
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="master-modal__cabecera">
+        <div>
+          <h2>Agregar subregión</h2>
+          <p>Crea la cuenta de la subregión y su jefe responsable.</p>
+        </div>
+        <ca-modal-close label="Cerrar formulario"></ca-modal-close>
+      </header>
+
+      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre de la subregión</span>
+            <input
+              type="text"
+              placeholder="Subregión de Salud..."
+              [value]="alta().nombre"
+              (input)="actualizar('nombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Estado</span>
+            <select
+              [value]="alta().estadoId"
+              (change)="actualizar('estadoId', valor($event))"
+              required
+            >
+              <option value="">Selecciona un estado</option>
+              @for (estado of estadosDisponibles(); track estado.id) {
+                <option [value]="estado.id">{{ estado.nombre }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <h3 class="subregiones__seccion">Jefe de la subregión</h3>
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre y apellido</span>
+            <input
+              type="text"
+              placeholder="Dra. Nombre Apellido"
+              [value]="alta().jefeNombre"
+              (input)="actualizar('jefeNombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Cédula</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              placeholder="12345678"
+              [value]="alta().jefeCedula"
+              (input)="actualizar('jefeCedula', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Correo institucional</span>
+            <input
+              type="email"
+              placeholder="nombre@vih.gob.ve"
+              [value]="alta().jefeCorreo"
+              (input)="actualizar('jefeCorreo', valor($event))"
+              required
+            />
+          </label>
+        </div>
+
+        @if (errorAlta()) {
+          <p class="field-error" role="alert">{{ errorAlta() }}</p>
+        }
+
+        <div class="master-acciones master-acciones--fin">
+          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
+            Crear subregión
+          </button>
+        </div>
+      </form>
+    </section>
+  </ca-modal>
+</div>

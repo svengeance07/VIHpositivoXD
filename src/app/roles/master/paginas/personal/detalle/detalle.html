@@ -1,0 +1,490 @@
+<div class="master-pagina master-detalle">
+  <a class="btn btn-ghost master-detalle__volver" [routerLink]="volverRuta()">
+    <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+    Volver
+  </a>
+
+  @if (tipo() === 'subregion') {
+    @if (subregion(); as fila) {
+      <header class="master-detalle__cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Subregión de salud
+          </p>
+          <h1>{{ fila.centro.nombre }}</h1>
+          <p>{{ fila.centro.codigo }} · {{ fila.estado?.nombre }}</p>
+        </div>
+        <div class="master-acciones">
+          <span class="master-badge master-badge--info">Sede de subregión</span>
+          <a class="btn btn-ghost" [routerLink]="['/master/personal/centros']">Buscar centros</a>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="master-detalle__datos">
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Estado</span>
+            <span class="master-dato__valor">{{ fila.estado?.nombre ?? '—' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Jefe de subregión</span>
+            <span class="master-dato__valor">{{ fila.jefe?.nombre ?? 'Sin asignar' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Centros coordinados</span>
+            <span class="master-dato__valor">{{ fila.centros }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Personal de la sede</span>
+            <span class="master-dato__valor">{{ fila.empleados }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Teléfono</span>
+            <span class="master-dato__valor">{{ fila.centro.telefono }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Dirección</span>
+            <span class="master-dato__valor">{{ fila.centro.direccion }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="detalle__cabecera-tabla">
+          <div>
+            <h2>Centros de la subregión</h2>
+            <p>Establecimientos que reportan a esta coordinación.</p>
+          </div>
+          <span class="master-badge master-badge--suave"
+            >{{ centrosSubregion().length }} centros</span
+          >
+        </header>
+        <div class="master-tabla-scroll">
+          <table class="master-tabla">
+            <thead>
+              <tr>
+                <th>Centro</th>
+                <th>Municipio / parroquia</th>
+                <th>Jefe de centro</th>
+                <th>Personal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (centro of centrosSubregion(); track centro.centro.id) {
+                <tr>
+                  <td>
+                    <a
+                      class="master-tabla__principal master-enlace-fila"
+                      [routerLink]="['/master/personal/centros', centro.centro.id]"
+                    >
+                      <strong>{{ centro.centro.nombre }}</strong>
+                      <span class="master-tabla__secundario">{{ centro.centro.codigo }}</span>
+                    </a>
+                  </td>
+                  <td>{{ centro.municipio?.nombre }} · {{ centro.parroquia?.nombre }}</td>
+                  <td>{{ centro.jefe?.nombre ?? 'Sin asignar' }}</td>
+                  <td>{{ centro.empleados }}</td>
+                  <td>
+                    <a
+                      class="btn btn-ghost btn-compact"
+                      [routerLink]="['/master/personal/centros', centro.centro.id]"
+                      >Ver</a
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="detalle__cabecera-tabla">
+          <div>
+            <h2>Personal de la sede</h2>
+            <p>Equipo que trabaja directamente en la subregión.</p>
+          </div>
+          <span class="master-badge master-badge--suave"
+            >{{ personalSubregion().length }} personas</span
+          >
+        </header>
+        <div class="master-tabla-scroll">
+          <table class="master-tabla">
+            <thead>
+              <tr>
+                <th>Persona</th>
+                <th>Cédula</th>
+                <th>Profesión</th>
+                <th>Rol</th>
+                <th>Contacto</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (persona of personalSubregion(); track persona.id) {
+                <tr>
+                  <td>
+                    <a
+                      class="master-tabla__principal master-enlace-fila"
+                      [routerLink]="['/master/personal/empleados', persona.id]"
+                    >
+                      <strong>{{ persona.nombre }}</strong>
+                      <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
+                    </a>
+                  </td>
+                  <td>V-{{ persona.cedula }}</td>
+                  <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
+                  <td>
+                    <span
+                      class="master-badge"
+                      [class.master-badge--info]="persona.id === fila.centro.encargadoId"
+                      [class.master-badge--suave]="persona.id !== fila.centro.encargadoId"
+                    >
+                      {{ persona.id === fila.centro.encargadoId ? 'Jefe' : 'Trabajador' }}
+                    </span>
+                  </td>
+                  <td>{{ persona.correo }}</td>
+                  <td>
+                    <a
+                      class="btn btn-ghost btn-compact"
+                      [routerLink]="['/master/personal/empleados', persona.id]"
+                      >Ver</a
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    } @else {
+      <div class="master-vacio panel">
+        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+        <strong>Subregión no encontrada</strong>
+        <p>El registro pudo haber cambiado. Vuelve a la lista para intentarlo de nuevo.</p>
+      </div>
+    }
+  }
+
+  @if (tipo() === 'centro') {
+    @if (centro(); as fila) {
+      <header class="master-detalle__cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Centro de salud
+          </p>
+          <h1>{{ fila.centro.nombre }}</h1>
+          <p>{{ fila.centro.codigo }} · {{ fila.estado?.nombre }} · {{ fila.municipio?.nombre }}</p>
+        </div>
+        <div class="master-acciones">
+          <span class="master-badge master-badge--info">Centro asistencial</span>
+          <a class="btn btn-ghost" routerLink="/master/vacunas/buscar">Ver lotes</a>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="master-detalle__datos">
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Jefe de centro</span>
+            <span class="master-dato__valor">{{ fila.jefe?.nombre ?? 'Sin asignar' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Cédula del jefe</span>
+            <span class="master-dato__valor">{{
+              fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : '—'
+            }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Personal activo</span>
+            <span class="master-dato__valor">{{ fila.empleados }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Parroquia</span>
+            <span class="master-dato__valor">{{ fila.parroquia?.nombre ?? '—' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Teléfono</span>
+            <span class="master-dato__valor">{{ fila.centro.telefono }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Dirección</span>
+            <span class="master-dato__valor">{{ fila.centro.direccion }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="detalle__cabecera-tabla">
+          <div>
+            <h2>Personal del centro</h2>
+            <p>Jefe y trabajadores asignados al establecimiento.</p>
+          </div>
+          <span class="master-badge master-badge--suave"
+            >{{ personalCentro().length }} personas</span
+          >
+        </header>
+        <div class="master-tabla-scroll">
+          <table class="master-tabla">
+            <thead>
+              <tr>
+                <th>Persona</th>
+                <th>Cédula</th>
+                <th>Profesión</th>
+                <th>Rol</th>
+                <th>Contacto</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (persona of personalCentro(); track persona.id) {
+                <tr>
+                  <td>
+                    <a
+                      class="master-tabla__principal master-enlace-fila"
+                      [routerLink]="['/master/personal/empleados', persona.id]"
+                    >
+                      <strong>{{ persona.nombre }}</strong>
+                      <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
+                    </a>
+                  </td>
+                  <td>V-{{ persona.cedula }}</td>
+                  <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
+                  <td>
+                    <span
+                      class="master-badge"
+                      [class.master-badge--info]="persona.id === fila.centro.encargadoId"
+                      [class.master-badge--suave]="persona.id !== fila.centro.encargadoId"
+                    >
+                      {{ persona.id === fila.centro.encargadoId ? 'Jefe' : 'Trabajador' }}
+                    </span>
+                  </td>
+                  <td>{{ persona.correo }}</td>
+                  <td>
+                    <a
+                      class="btn btn-ghost btn-compact"
+                      [routerLink]="['/master/personal/empleados', persona.id]"
+                      >Ver</a
+                    >
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="detalle__cabecera-tabla">
+          <div>
+            <h2>Lotes recibidos o en camino</h2>
+            <p>Trazabilidad reciente del centro.</p>
+          </div>
+          <span class="master-badge master-badge--suave">{{ lotesCentro().length }} lotes</span>
+        </header>
+        @if (lotesCentro().length === 0) {
+          <p class="detalle__nota">El centro todavía no tiene lotes asociados.</p>
+        } @else {
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Lote</th>
+                  <th>Vacuna</th>
+                  <th>Envío</th>
+                  <th>Recepción</th>
+                  <th>Dosis</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (lote of lotesCentro(); track lote.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ lote.codigo }}</strong>
+                    </td>
+                    <td>{{ datos.nombreVacuna(lote.vacunaId) }}</td>
+                    <td>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.dosis }}</td>
+                    <td>
+                      <span
+                        class="master-badge"
+                        [class.master-badge--warn]="lote.estado === 'en_camino'"
+                        [class.master-badge--info]="lote.estado === 'reportado'"
+                        [class.master-badge--ok]="lote.estado === 'aceptado'"
+                      >
+                        {{ etiquetaLote(lote.estado) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    } @else {
+      <div class="master-vacio panel">
+        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+        <strong>Centro no encontrado</strong>
+        <p>El registro pudo haber cambiado. Vuelve a la lista para intentarlo de nuevo.</p>
+      </div>
+    }
+  }
+
+  @if (tipo() === 'empleado') {
+    @if (empleado(); as fila) {
+      <header class="master-detalle__cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Ficha de personal
+          </p>
+          <h1>{{ fila.personal.nombre }}</h1>
+          <p>V-{{ fila.personal.cedula }} · {{ fila.profesion }}</p>
+        </div>
+        <div class="master-acciones">
+          <span
+            class="master-badge"
+            [class.master-badge--info]="fila.esJefe"
+            [class.master-badge--suave]="!fila.esJefe"
+          >
+            {{ fila.esJefe ? 'Jefe de centro' : 'Trabajador' }}
+          </span>
+          <a
+            class="btn btn-ghost"
+            [routerLink]="['/master/personal/centros', fila.personal.centroId]"
+          >
+            Ver centro
+          </a>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="master-detalle__datos">
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Centro</span>
+            <span class="master-dato__valor">{{ fila.centro?.nombre ?? 'Sin centro' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Profesión</span>
+            <span class="master-dato__valor">{{ fila.profesion }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Correo</span>
+            <span class="master-dato__valor">{{ fila.personal.correo }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Teléfono</span>
+            <span class="master-dato__valor">{{ fila.personal.telefono }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">ID profesional</span>
+            <span class="master-dato__valor">{{ fila.personal.idProfesional }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Ingreso</span>
+            <span class="master-dato__valor">{{ fila.personal.ingreso | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Estado</span>
+            <span class="master-dato__valor">{{
+              fila.personal.activo ? 'Activo' : 'Inactivo'
+            }}</span>
+          </div>
+          <div class="master-dato">
+            <span class="master-dato__etiqueta">Ubicación del centro</span>
+            <span class="master-dato__valor">
+              {{ fila.estado?.nombre ?? '—' }} · {{ fila.municipio?.nombre ?? '—' }} ·
+              {{ fila.parroquia?.nombre ?? '—' }}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      @if (fila.esJefe) {
+        <section class="panel">
+          <header class="detalle__cabecera-tabla">
+            <div>
+              <h2>Equipo a cargo</h2>
+              <p>Personas asignadas al centro que dirige.</p>
+            </div>
+            <span class="master-badge master-badge--suave">{{ companeros().length }} personas</span>
+          </header>
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Persona</th>
+                  <th>Cédula</th>
+                  <th>Profesión</th>
+                  <th>Contacto</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (persona of companeros(); track persona.id) {
+                  <tr>
+                    <td>
+                      <a
+                        class="master-tabla__principal master-enlace-fila"
+                        [routerLink]="['/master/personal/empleados', persona.id]"
+                      >
+                        <strong>{{ persona.nombre }}</strong>
+                        <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
+                      </a>
+                    </td>
+                    <td>V-{{ persona.cedula }}</td>
+                    <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
+                    <td>{{ persona.correo }}</td>
+                    <td>
+                      <a
+                        class="btn btn-ghost btn-compact"
+                        [routerLink]="['/master/personal/empleados', persona.id]"
+                        >Ver</a
+                      >
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      } @else {
+        @if (jefeEmpleado(); as jefe) {
+          <section class="panel">
+            <header class="detalle__cabecera-tabla">
+              <div>
+                <h2>Jefe inmediato</h2>
+                <p>Responsable del centro donde trabaja.</p>
+              </div>
+            </header>
+            <div class="master-cuenta">
+              <span class="master-cuenta__avatar" aria-hidden="true">{{
+                jefe.nombre.slice(0, 2)
+              }}</span>
+              <span class="master-cuenta__texto">
+                <strong>{{ jefe.nombre }}</strong>
+                <span>{{ jefe.correo }}</span>
+              </span>
+              <a
+                class="btn btn-ghost btn-compact"
+                [routerLink]="['/master/personal/empleados', jefe.id]"
+                >Ver ficha</a
+              >
+            </div>
+          </section>
+        }
+      }
+    } @else {
+      <div class="master-vacio panel">
+        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+        <strong>Empleado no encontrado</strong>
+        <p>El registro pudo haber cambiado. Vuelve a la lista para intentarlo de nuevo.</p>
+      </div>
+    }
+  }
+</div>

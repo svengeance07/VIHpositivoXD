@@ -14,6 +14,8 @@ describe('CatalogosService', () => {
     expect(service.roles().length).toBe(4);
     expect(service.vacunas().length).toBeGreaterThan(0);
     expect(service.profesiones().length).toBeGreaterThan(0);
+    expect(service.profesiones().some((profesion) => profesion.id === 'desempleado')).toBe(true);
+    expect(service.examenes().length).toBe(5);
     expect(service.gradosInstruccion().length).toBeGreaterThan(0);
     expect(service.gruposEtnicos().length).toBeGreaterThan(0);
     expect(service.tiposEstablecimiento().length).toBeGreaterThan(0);
@@ -25,6 +27,7 @@ describe('CatalogosService', () => {
       service.roles().map((item) => item.id),
       service.vacunas().map((item) => item.id),
       service.profesiones().map((item) => item.id),
+      service.examenes().map((item) => item.id),
       service.gradosInstruccion().map((item) => item.id),
       service.gruposEtnicos().map((item) => item.id),
       service.tiposEstablecimiento().map((item) => item.id),

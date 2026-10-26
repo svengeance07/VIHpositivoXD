@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.personal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border: 0.5px solid var(--glass-border);
+  border-radius: calc(var(--ca-radius-md) + 0.15rem);
+  background: color-mix(in oklab, var(--glass-surface) 55%, transparent);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.personal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--ca-radius-md);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 570;
+  white-space: nowrap;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.personal-tab:hover,
+.personal-tab:focus-visible {
+  color: var(--text);
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
+}
+
+.personal-tab.is-active {
+  color: var(--color-accent-2);
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+}
+
+@media (max-width: 560px) {
+  .personal-tabs {
+    width: 100%;
+  }
+
+  .personal-tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding-inline: 0.55rem;
+    font-size: 0.8rem;
+  }
+}

@@ -58,6 +58,7 @@ export class SesionService {
       rol: cuenta.rol,
       nombre: perfil?.nombre ?? cuenta.nombre,
       entidad: perfil ? cuenta.nombre : null,
+      nombreUsuario: perfil ? null : (cuenta.nombreUsuario ?? null),
       perfil: perfil ? { id: perfil.id, nombre: perfil.nombre, tipo: perfil.tipo } : null,
     };
 

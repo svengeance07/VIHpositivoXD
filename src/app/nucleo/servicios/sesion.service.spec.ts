@@ -25,6 +25,7 @@ describe('SesionService', () => {
 
     expect(sesion.rol).toBe(1);
     expect(sesion.nombre).toBe('Ana Rodríguez');
+    expect(sesion.nombreUsuario).toBe('master');
     expect(sesion.entidad).toBeNull();
     expect(service.autenticado()).toBe(true);
   });

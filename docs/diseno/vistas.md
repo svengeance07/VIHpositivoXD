@@ -3,10 +3,10 @@
 Última actualización: 2026-10-25
 Estado: **borrador** derivado de los bocetos a mano.
 
-> **Aviso:** buena parte de lo que muestra cada pantalla (columnas, campos, filtros, métricas) depende de un
-> esquema de base de datos que **todavía no está definido**. Aquí se describe el _comportamiento_ de las vistas y
-> se marca qué datos consumen; los campos concretos viven en [`modelo-datos-preliminar.md`](./modelo-datos-preliminar.md)
-> y son hipótesis, no un contrato.
+> **Aviso:** el 2026-10-25 se recibió un esquema de base de datos **parcial**
+> ([`db_schema.sql`](../referencias/db_schema.sql)). Aquí se describe el _comportamiento_ de las vistas y
+> qué datos consumen; la correspondencia con las tablas reales, los huecos y las preguntas abiertas están
+> en [`modelo-datos.md`](./modelo-datos.md). El modelo preliminar quedó como documento histórico.
 
 ## 1. Cómo leer este documento
 
@@ -67,7 +67,9 @@ flowchart TD
 - `index` es la **landing page** y convive con dos accesos: login (roles 1–3) y consulta pública (rol 0).
 - El ciudadano **no pasa por `/login`**: entra por cédula y código de verificación al correo.
 - Los roles 2 y 3 pasan por **dos niveles de credenciales**: primero la cuenta de la entidad (centro o subregión) y
-  después el perfil de trabajo (jefe o trabajador). El master entra directo con su cuenta.
+  después el perfil de trabajo (jefe o trabajador). El master entra directo con su cuenta. La cuenta de entidad se
+  resuelve con la tabla propuesta `cuentas_entidad`; los perfiles son filas de `personal`. Ver
+  [`modelo-datos.md`](./modelo-datos.md) §5.1.
 - Los tres roles internos aterrizan en un "centro de control" (dashboard). Es el mismo concepto con datos distintos.
 
 ### 3.1 Navegación interna del master
@@ -110,40 +112,52 @@ Observaciones:
 
 - Los roles se persisten como números del `0` al `3` (decisión 12); el `0` no tiene cuenta ni sesión.
 - El ciudadano se modela como rol 0 para el árbol de usuarios, pero funcionalmente es un flujo público sin sesión.
-- Jefe y trabajador son **tipos de empleado**, no roles nuevos: los dos caen en el mismo prefijo del rol. El jefe
-  administra la cuenta y crea los perfiles internos de sus trabajadores (decisión 13).
+- Jefe y trabajador son **tipos de empleado**, no roles nuevos: los dos caen en el mismo prefijo del rol. En la
+  simulación actual el jefe administra la cuenta y crea los perfiles internos de sus trabajadores (decisión 13); el
+  esquema real no tiene tabla de perfiles y los representa como filas de `personal`. Hay un solo jefe por centro,
+  derivado de `centros_salud.encargado_id`.
 - La subregión (rol 3) también tiene perfiles internos de jefe y trabajador: primero se valida la cuenta de la
-  entidad y después la credencial del perfil (decisión 15).
+  entidad en `cuentas_entidad` (propuesta) y después la credencial del perfil en `personal` (decisión 15). El esquema
+  real la representa como una **sede dentro de `centros_salud`** con un campo `tipo` (a agregar), no como tabla
+  aparte; su personal es `personal.tipo_cuenta = 3` con `centro_id` apuntando a esa sede.
 
 ## 5. Rutas propuestas
 
-| Ruta                           | Vista                                             | Rol     | Boceto                                    | Estado              |
-| ------------------------------ | ------------------------------------------------- | ------- | ----------------------------------------- | ------------------- |
-| `/`                            | Landing                                           | público | `estructura-inicial`                      | implementado        |
-| `/consulta`                    | Buscar ciudadano por cédula                       | público | `estructura-inicial`                      | placeholder         |
-| `/consulta/verificacion`       | Código enviado al correo                          | público | `estructura-inicial`                      | bocetado            |
-| `/consulta/:cedula`            | Ficha del ciudadano (vacunas y exámenes vigentes) | público | `estructura-inicial`, `diagrama-usuarios` | bocetado            |
-| `/login`                       | Login en tres pasos                               | público | `estructura-inicial`                      | implementado        |
-| `/master`                      | Centro de control                                 | 1       | `vista-inicial`                           | bocetado            |
-| `/master/busqueda`             | Búsqueda global con filtros                       | 1       | `vista-busqueda`                          | bocetado            |
-| `/master/vacunas`              | Control de vacunas                                | 1       | `vista-controlVacunas`                    | bocetado            |
-| `/master/vacunas/buscar`       | Buscar lotes por filtros                          | 1       | `vista-controlVacunas`                    | deducido            |
-| `/master/personal`             | Administración de personal (switch)               | 1       | `…-default`                               | bocetado            |
-| `/master/personal/subregiones` | Tabla de subregiones                              | 1       | `…-subregiones`                           | bocetado            |
-| `/master/personal/centros`     | Búsqueda de centros                               | 1       | `…-buscarCentros`                         | bocetado            |
-| `/master/personal/empleados`   | Búsqueda de empleados                             | 1       | `…-buscarEmpleados`                       | bocetado            |
-| `/master/movimientos`          | Registro de movimientos (logs)                    | 1       | `diagrama-autoridades`, sidebar           | pendiente de diseño |
-| `/master/busquedas`            | Auditoría de búsquedas de usuarios                | 1       | `diagrama-autoridades`                    | pendiente de diseño |
-| `/PS`                          | Centro de control                                 | 2       | —                                         | placeholder         |
-| `/SRS`                         | Centro de control                                 | 3       | —                                         | placeholder         |
-| `/SRS/personal`                | Administración de personal (layout propio)        | 3       | —                                         | pendiente de diseño |
+| Ruta                           | Vista                                                | Rol     | Boceto                                    | Estado              |
+| ------------------------------ | ---------------------------------------------------- | ------- | ----------------------------------------- | ------------------- |
+| `/`                            | Landing                                              | público | `estructura-inicial`                      | implementado        |
+| `/consulta`                    | Buscar ciudadano por cédula                          | público | `estructura-inicial`                      | placeholder         |
+| `/consulta/verificacion`       | Código enviado al correo                             | público | `estructura-inicial`                      | bocetado            |
+| `/consulta/:cedula`            | Ficha del ciudadano (vacunas y exámenes registrados) | público | `estructura-inicial`, `diagrama-usuarios` | bocetado            |
+| `/login`                       | Login en tres pasos                                  | público | `estructura-inicial`                      | implementado        |
+| `/master`                      | Centro de control                                    | 1       | `vista-inicial`                           | implementado (mock) |
+| `/master/busqueda`             | Búsqueda global con filtros                          | 1       | `vista-busqueda`                          | implementado (mock) |
+| `/master/vacunas`              | Control de vacunas                                   | 1       | `vista-controlVacunas`                    | implementado (mock) |
+| `/master/vacunas/buscar`       | Buscar lotes por filtros                             | 1       | `vista-controlVacunas`                    | implementado (mock) |
+| `/master/personal`             | Administración de personal (switch)                  | 1       | `…-default`                               | implementado (mock) |
+| `/master/personal/subregiones` | Tabla de subregiones                                 | 1       | `…-subregiones`                           | implementado (mock) |
+| `/master/personal/centros`     | Búsqueda de centros                                  | 1       | `…-buscarCentros`                         | implementado (mock) |
+| `/master/personal/empleados`   | Búsqueda de empleados                                | 1       | `…-buscarEmpleados`                       | implementado (mock) |
+| `/master/movimientos`          | Registro de movimientos (logs)                       | 1       | `diagrama-autoridades`, sidebar           | implementado (mock) |
+| `/master/busquedas`            | Auditoría de búsquedas de usuarios                   | 1       | `diagrama-autoridades`                    | implementado (mock) |
+| `/PS`                          | Centro de control                                    | 2       | —                                         | placeholder         |
+| `/SRS`                         | Centro de control                                    | 3       | —                                         | placeholder         |
+| `/SRS/personal`                | Administración de personal (layout propio)           | 3       | —                                         | pendiente de diseño |
 
-`/master`, `/PS`, `/SRS` y `/consulta` ya existen con una página provisional (ver secciones 6.3 y 9); el estado de la
-tabla describe el diseño de la vista real. Rutas todavía sin boceto (ver
-[sección 8](#8-inventario-de-pantallas)): usuarios activos, centros y stock de la subregión, métricas de jefes,
-formularios de alta y la vista de certificado.
+Las rutas de detalle del master (`/master/personal/subregiones/:id`, `/master/personal/centros/:id` y
+`/master/personal/empleados/:id`) también están implementadas con datos mock, igual que los formularios de alta
+simulados de subregiones, centros y empleados.
+
+`/PS`, `/SRS` y `/consulta` siguen existiendo con una página provisional (ver secciones 6.3 y 9). El master ya no es
+un placeholder: sus pantallas consumen `DatosMasterService` y los mocks de `nucleo/datos/master.ts`. Las rutas
+todavía sin boceto (ver [sección 8](#8-inventario-de-pantallas)): usuarios activos, centros y stock de la subregión,
+métricas de jefes, formularios reales de alta y la vista de certificado.
 
 Los segmentos `PS` y `SRS` van en mayúsculas literales, tanto en `path` como en `routerLink`.
+
+El esquema parcial ya define ciudadanía (`usuarios`), personal (`personal`), centros (`centros_salud`), geografía y
+catálogos clínicos. Lotes, certificados, movimientos, búsquedas e incidencias todavía no tienen tabla; su diseño
+queda en espera. La correspondencia completa está en [`modelo-datos.md`](./modelo-datos.md) §5 y §6.
 
 ## 6. Vistas
 
@@ -162,12 +176,13 @@ Origen: `estructura-inicial.png` y `diagrama-usuarios.png`.
 **Paso 1 — `/consulta`**
 
 - Caja de búsqueda con un único campo: **cédula**.
+- En el esquema real la cédula es `usuarios.cedula` (`BIGINT`). Normalizar la entrada y no asumir puntos ni prefijo.
 - Acción: "buscar". Si la cédula no existe o el correo no está registrado, no se revela cuál de las dos cosas falló.
 - El ciudadano no se autentica: la verificación es el paso 2.
 
 **Paso 2 — `/consulta/verificacion`**
 
-- Se envía un **código de verificación al correo** registrado del ciudadano.
+- Se envía un **código de verificación al correo** registrado del ciudadano (`usuarios.correo`).
 - El código es **obligatorio**: sirve para que el ciudadano demuestre que realmente es el dueño de los datos que
   pide (decisión 2). Sin código no se muestra la ficha.
 - Pantalla para ingresar el código, con reenvío y expiración (deducido; la duración queda por definir).
@@ -175,11 +190,17 @@ Origen: `estructura-inicial.png` y `diagrama-usuarios.png`.
 
 **Paso 3 — `/consulta/:cedula`**
 
-- Paneles con: **datos personales**, **vacunas vigentes** y **exámenes vigentes**.
+- Paneles con: **datos personales**, **vacunas** y **exámenes**.
+- La ficha se arma con `usuarios`, `tipoSangre`, `etnias`, `profesiones`, `usuario_telefonos`,
+  `usuario_residencias` + geografía, `usuario_vacunas` + `vacunas` y `usuario_examenes` + `examenes`.
+- **Vigencia**: el esquema no tiene regla de vigencia para vacunas ni exámenes. Hasta definirla, mostrar la fecha y
+  la dosis, no afirmar "vigente". Sin esa regla tampoco se puede decidir si un certificado es emitible.
 - Solo lectura. Desde aquí el ciudadano también puede **solicitar y recibir certificados de salud** (según el
   diagrama de usuarios) y ver **centros de salud por estado, municipio y parroquia** (rama punteada del boceto).
+  La tabla de certificados todavía no existe; esa parte queda bloqueada.
 - La ficha es la misma información que ve el personal, pero filtrada: el ciudadano no debe ver datos internos
-  (personal que lo atendió, estados de lote, incidencias).
+  (personal que lo atendió, lote/centro de vacunación si se decide que son internos, estados de lote, incidencias)
+  ni el detalle de exámenes sensibles (VIH/VDRL, decisión 11).
 
 Diseño pendiente: no hay boceto de esta pantalla más allá del listado de bloques.
 
@@ -190,18 +211,23 @@ Origen: `estructura-inicial.png`. Implementado en `publico/login/`.
 Flujo en tres pasos:
 
 1. **Tipo de cuenta** (roles 1, 2 y 3). No muestra el rol 0.
-2. **Credenciales de la entidad**: correo y contraseña. En el master esta cuenta es personal; en los roles 2 y 3
-   identifica al centro o a la subregión, no a una persona.
-3. **Perfil de trabajo** (solo roles 2 y 3): se elige jefe o trabajador y se validan las credenciales propias de ese
-   perfil. La sesión no se crea hasta completar este paso.
+2. **Credenciales de la entidad**: correo y contraseña. En el master se usa la tabla `master`; en los roles 2 y 3
+   valida la tabla propuesta `cuentas_entidad`, que identifica al centro o a la subregión.
+3. **Perfil de trabajo** (solo roles 2 y 3): se elige jefe o trabajador entre las filas de `personal` del centro y se
+   validan las credenciales propias de ese perfil. La sesión no se crea hasta completar este paso.
 
 - Jefes y trabajadores existen en los **dos roles con cuenta de entidad**: centros de salud y subregiones
-  (decisión 15).
+  (decisión 15). Hay un solo jefe por centro, marcado por `cuentas_entidad.jefe_id` y `centros_salud.encargado_id`.
 - No valida contra backend: usa las cuentas de prueba de `docs/diseno/credenciales-demo.md` y `SesionService`.
-- El formulario pide **correo y contraseña** (decisión 16). El nombre de usuario del master queda para la base de
-  datos.
+- El formulario pide **correo y contraseña** (decisión 16). El esquema ya incluye `master.nombre_usuario`, pero el
+  login actual sigue usando el correo; el nombre de usuario queda como alternativa para el backend.
 - Al entrar, cada rol navega a su prefijo (`/master`, `/PS`, `/SRS`), donde hoy hay una página provisional.
 - En desarrollo, el propio login muestra un panel con las credenciales de prueba.
+
+> **Esquema real parcial:** `cuentas_entidad` es una **propuesta** y no está en el script. Conserva el login de dos
+> niveles: el primero valida la entidad y el segundo el perfil de `personal`; `tipo_cuenta` (2 o 3) debe coincidir con
+> el tipo elegido y `centros_salud.tipo` (a agregar) distingue un centro normal de una sede de subregión. Ver
+> [`modelo-datos.md`](./modelo-datos.md) §5.1.
 
 ### 6.4 Centro de control del master `/master`
 
@@ -224,6 +250,15 @@ Notas de diseño:
 - El mapa es la pieza más costosa del proyecto (geodatos + SVG interactivo). En esta entrega va **solo un
   placeholder**; el mapa navegable queda para fase posterior (decisión 6).
 - La vista scrollea: las cards 1 y 2 arriba, el mapa abajo. No es un dashboard de una sola pantalla.
+
+Con el esquema parcial recibido:
+
+- La **card 1** está bloqueada: no hay tabla de lotes/stock. `usuario_vacunas.lote` es un texto de dosis aplicadas,
+  no un cargamento con estado y destino.
+- La **card 2** se puede calcular con `usuario_vacunas` uniendo `centro_id` → `centros_salud.estado_id` y filtrando
+  `fecha_aplicacion` por la semana calendario (decisión 14). El estado hace de subregión.
+- La **card 3** tiene la jerarquía `estado → mcpo → parroquia` en tablas; falta cargar los geodatos oficiales.
+- La cabecera "Bienvenido, {nombre}" se resuelve con `master.nombre_usuario`. No se agrega un campo `nombre`.
 
 ### 6.5 Sidebar del master
 
@@ -263,6 +298,11 @@ Origen: `vista-busqueda.png`.
 - La búsqueda es sobre **ciudadanos** (los filtros son clínicos y demográficos), no sobre personal ni centros.
   Los otros dos buscadores viven dentro de administración de personal.
 
+Correspondencia con el esquema parcial: nombres, apellidos, cédula, nacimiento, vacunas, exámenes, etnia, ubicación y
+fecha de registro salen de `usuarios`, `usuario_vacunas`, `usuario_examenes`, `etnias`, `usuario_residencias` y
+`usuarios.creado_en`. **Sexo** se agregará a `usuarios`; falta definir su tipo. Con eso se cubren todos los chips
+dibujados.
+
 ### 6.7 Control de vacunas `/master/vacunas`
 
 Origen: `vista-controlVacunas.png`.
@@ -272,8 +312,11 @@ Origen: `vista-controlVacunas.png`.
 - Franja o sección de **lotes en estado "en camino"**.
 - Dos bloques **desplegables**: **lotes reportados** y **lotes aceptados**.
 - La vista "debe ser larga verticalmente y se debe poder scrollear" (nota explícita).
-- No se dibujan columnas de la tabla de lotes: dependen del esquema (ver modelo preliminar).
-- Faltan los estados intermedios del ciclo de vida del lote (pregunta 10).
+- No se dibujan columnas de la tabla de lotes: dependen de una tabla que **todavía no está en el esquema**.
+- Con el esquema parcial solo existe `usuario_vacunas.lote` (texto) por dosis aplicada. Eso no permite mostrar stock,
+  estado, destino ni fechas de un cargamento: la vista completa queda bloqueada hasta recibir la tabla de lotes.
+- La decisión 10 fija solo tres estados (`en_camino`, `reportado`, `aceptado`); el ciclo de vida del lote se
+  implementará cuando exista esa tabla.
 
 ### 6.8 Administración de personal `/master/personal`
 
@@ -290,6 +333,8 @@ Origen: `…-subregiones-default.png`, `…-subregiones.png`, `…-buscarCentros
 **6.8.1 Subregiones**
 
 - Tabla con tres columnas: `nombre` · `estado asignado` · `administrador (nombre)`.
+- En el esquema real son filas de `centros_salud` con `tipo = 3` (a agregar), unidas a `estado` y a `personal` por
+  `encargado_id`. Una por estado.
 - El estado asignado es un estado de Venezuela (ejemplos del margen: Guárico, Caracas).
 - Tabla scrollable.
 - Al hacer clic en una fila: **detalle de la subregión** con sus datos, la lista de empleados y el jefe.
@@ -299,17 +344,26 @@ Origen: `…-subregiones-default.png`, `…-subregiones.png`, `…-buscarCentros
 **6.8.2 Buscar centros**
 
 - Vista de búsqueda por filtros: **ubicación** (estado, municipio, parroquia), **nombre**, **número o
-  identificación de establecimiento**.
-- Cada resultado debe mostrar los **datos del establecimiento** y el **nombre del jefe con su cédula**.
+  identificación de establecimiento** (`centros_salud.codigo`).
+- En el esquema real son filas de `centros_salud` con `tipo = 2` (a agregar), unidas a geografía.
+- Cada resultado debe mostrar los **datos del establecimiento** y el **nombre del jefe con su cédula**; el jefe es
+  `centros_salud.encargado_id` → `personal`.
 - El resultado invita a abrir la ficha del centro (no dibujada).
+- El tipo de establecimiento (hospital, ambulatorio, CDI…) se expresa en el **nombre** del centro: `tipo` solo
+  distingue centro (2) de sede de subregión (3).
 
 **6.8.3 Buscar empleados**
 
 - Vista de búsqueda por: **nombre**, **cédula**, **tipo de empleado** (jefe o trabajador), **ubicación**
   (estado, municipio, parroquia).
-- Al hacer clic en un empleado: **vista con sus datos completos** (no dibujada).
+- En el esquema real los empleados son filas de `personal`; la ubicación se deriva de `centros_salud` y el tipo se
+  deriva de `encargado_id` (jefe = encargado del centro, trabajador = resto). Hay un solo jefe por centro y no hay
+  columna `tipo_empleado`.
+- Al hacer clic en un empleado: **vista con sus datos completos** (no dibujada). Faltan teléfono, dirección, grado de
+  instrucción, servicio y años de servicio en el script.
 - El "tipo de empleado" confirma que jefe y trabajador son un atributo, no roles del sistema (ver 4). Los dos usan
-  el rol de su entidad (2 o 3); el jefe crea los perfiles internos de sus trabajadores.
+  el rol de su entidad (2 o 3); el jefe administra a los trabajadores de su centro. **No hay tabla de perfiles**:
+  jefes y trabajadores son filas de `personal`.
 
 **Alcance**: esta pantalla es **exclusiva del master** (decisión 5). La subregión tiene su propia vista de
 administración de personal, con otro layout, todavía sin boceto.
@@ -328,6 +382,10 @@ administración de personal, con otro layout, todavía sin boceto.
 - **Vista del certificado de salud**: se menciona en tres diagramas, no se dibuja.
 - **Autorización de certificados** (rol 3): bandeja de solicitudes para autorizar o descartar la emisión. Sin boceto.
 
+Las pantallas de **movimientos, búsquedas, certificados, autorización e incidencias** dependen de tablas que todavía
+no están en el esquema parcial. No conviene cerrar sus columnas ni filtros hasta recibirlas; el detalle de lo que
+falta está en [`modelo-datos.md`](./modelo-datos.md) §7.
+
 ## 7. Patrones de UI recurrentes
 
 Son los que conviene construir una sola vez en `compartido/ui` en lugar de repetir por rol:
@@ -335,7 +393,7 @@ Son los que conviene construir una sola vez en `compartido/ui` en lugar de repet
 | Patrón                                      | Dónde aparece                        | Nota de implementación                                                  |
 | ------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
 | Shell con sidebar colapsable y velo         | Master (y probablemente PS/SRS)      | Hover + clic + foco; el velo es atenuación, no otra superficie con blur |
-| Cabecera "Bienvenido, {nombre}"             | `/master`, centros de control        | Requiere el nombre del usuario de sesión                                |
+| Cabecera "Bienvenido, {nombre}"             | `/master`, centros de control        | Master: usar `master.nombre_usuario`; personal: nombre de `personal`    |
 | Chip de filtro que abre popover             | Búsqueda global, centros, empleados  | Un componente con dos modos: lista desplegable o caja de texto          |
 | Tabla scrollable con contador de resultados | Subregiones, resultados de búsqueda  | Encabezado fijo; paginación solo si el volumen lo exige                 |
 | Card desplegable                            | Lotes reportados/aceptados, top 10   | `<ca-collapse>`                                                         |
@@ -373,6 +431,10 @@ Prioridad sugerida: primero lo que ya tiene boceto y no depende del esquema de B
 | 19  | Admin. personal (subregión)     | 3       | No           | Sí                    | Media     |
 | 20  | Mapa interactivo (fase 2)       | 1       | Sí           | Sí + geodatos         | Baja      |
 
+El esquema parcial ya resuelve la ciudadanía, el personal, los centros, la geografía y los catálogos clínicos. Las
+pantallas que dependen de lotes, certificados, movimientos, búsquedas e incidencias siguen bloqueadas hasta recibir
+esas tablas. El detalle por vista está en [`modelo-datos.md`](./modelo-datos.md) §6.
+
 ## 9. Notas de implementación
 
 - **Rutas**: `app.routes.ts` solo compone. El flujo público (landing, login, consulta) se declara ahí; cada rol
@@ -383,44 +445,59 @@ Prioridad sugerida: primero lo que ya tiene boceto y no depende del esquema de B
   así que ese bloque no se comparte; evaluar un shell común solo cuando se dibujen PS y SRS.
 - **Catálogos**: `nucleo/modelos/catalogo.ts`, `nucleo/datos/catalogos.ts` y `nucleo/servicios/catalogos.service.ts`
   ya tienen las listas temporales (vacunas, profesiones, grados, etnias, tipos de establecimiento, tipos de sangre).
-  Las vistas las piden al servicio; no se importan los arrays.
+  Las vistas las piden al servicio; no se importan los arrays. En el esquema real existen `vacunas`, `profesiones`,
+  `etnias` y `tipoSangre`; los IDs serán enteros y el mapeo futuro se hará en servicios. El catálogo de tipos de
+  establecimiento se usa solo para sugerir el nombre, no se guarda como columna.
+- **Modelo de datos**: el esquema real parcial está en `docs/referencias/db_schema.sql` y su lectura en
+  `docs/diseno/modelo-datos.md`. **No está implementado**: no hay backend, migraciones ni ORM. `usuarios` es
+  ciudadanía; `personal` y `master` son cuentas; la subregión será una sede de `centros_salud` con `tipo` (2 o 3);
+  `cuentas_entidad` es una tabla propuesta para el primer nivel del login.
 - **Datos**: las vistas consumen servicios con `signal`; los arrays mock viven en `nucleo/datos` y nadie los importa
-  directo. Mientras el esquema no exista, los tipos de `nucleo/modelos` se marcan como provisionales.
+  directo. Los tipos de `nucleo/modelos` siguen siendo provisionales hasta que exista la capa de datos.
 - **Sesión simulada**: `nucleo/modelos/cuenta-acceso.ts`, `nucleo/datos/cuentas-acceso.ts` y
-  `nucleo/servicios/sesion.service.ts`. La landing, el login y las páginas provisionales de cada rol ya navegan con
-  ese servicio; reemplazarlo por la API no debe cambiar las plantillas.
+  `nucleo/servicios/sesion.service.ts`. La landing, el login, las vistas del master y las páginas provisionales de
+  `/PS` y `/SRS` ya navegan con ese servicio; el array de cuentas replica el futuro `cuentas_entidad` + `personal`.
+  Reemplazarlo por la API no debe cambiar las plantillas ni los tres pasos del login.
 - **Páginas provisionales**: `compartido/ui/pagina-en-construccion/` muestra el nombre y la entidad de la sesión y
-  permite cerrarla. Es el destino temporal de `/master`, `/PS`, `/SRS` y `/consulta`.
+  permite cerrarla. Es el destino temporal de `/PS`, `/SRS` y `/consulta`; `/master` ya está implementado.
 - **Riesgo principal**: tipar `CentroSalud`, `Lote` o `Ciudadano` demasiado pronto y reescribir medio proyecto cuando
-  llegue la base de datos. Mitigación: los servicios exponen vistas de datos mínimas (lo que la pantalla necesita)
-  y el mapeo desde la entidad real se hace en una sola capa.
+  se implemente la base de datos. Mitigación: los servicios exponen vistas de datos mínimas (lo que la pantalla
+  necesita) y el mapeo desde la entidad real se hace en una sola capa. El esquema todavía es parcial.
 - **Volumen**: tablas de subregiones, centros y empleados pueden crecer; el scroll simple del boceto es suficiente
   para la etapa de vistas, pero la tabla debe aislarse para poder virtualizarla después.
-- **Accesibilidad**: el sidebar por hover y el panel de la card 1 por hover necesitan también clic y teclado.
+- **Accesibilidad**: el sidebar del master ya abre por hover, foco y clic (fijar). El panel de lotes se fija con clic.
+  Falta revisar el recorrido completo con teclado y lectores de pantalla en todas las vistas.
 
 ## 10. Decisiones
 
 Decisiones vigentes del prototipo. Las 14 preguntas de la primera revisión quedaron resueltas y se suman las
-decisiones de implementación 15 y 16.
+decisiones de implementación 15–23 y las precisiones aportadas por el esquema parcial.
 
-| #   | Decisión                                                                                                                                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | La subregión **autoriza o descarta** la emisión del certificado de salud. No hay aprobación examen por examen; el estado pertenece al certificado, no al examen.                |
-| 2   | El código de verificación es **obligatorio**: demuestra que quien consulta es el dueño de los datos.                                                                            |
-| 3   | `Enferm.` son las **cuentas de los enfermeros trabajadores**, subordinados de los perfiles de tipo 2. Esa imagen es un prototipo de las tablas de usuarios.                     |
-| 4   | El master tiene **nombre de usuario**, correo y contraseña. El personal también tiene contraseña.                                                                               |
-| 5   | La administración de personal es **solo del master**. La subregión tiene su propia vista, con otro layout.                                                                      |
-| 6   | El mapa de Venezuela va como **placeholder** por ahora.                                                                                                                         |
-| 7   | "Registro de movimientos" y "logs" son la misma pantalla. "Búsquedas" es una pantalla aparte, para auditar consultas de usuarios.                                               |
-| 8   | Los requisitos del certificado son los campos de `datos-usuarios.png`: los exámenes y vacunas dibujados ahí, sin agregar otros.                                                 |
-| 9   | Los catálogos serán tablas propias cuando exista la base de datos. Por ahora viven en código, con datos reales de referencia.                                                   |
-| 10  | Solo hay **tres estados de lote** (`en_camino`, `reportado`, `aceptado`). Los cambia el master; idealmente, los usuarios de tipo 3.                                             |
-| 11  | El detalle de los datos sensibles lo ve cualquier usuario interno; el público (tipo 0) no.                                                                                      |
-| 12  | Los roles se guardan como **0–3**.                                                                                                                                              |
-| 13  | Jefe y trabajador son un **campo** (`tipo_empleado`), no roles: los dos caen en el mismo prefijo. El jefe administra la cuenta y crea perfiles de trabajadores (rol 2 y rol 3). |
-| 14  | El top 10 se calcula por **semana calendario**.                                                                                                                                 |
-| 15  | Los roles 2 y 3 inician sesión en **dos niveles**: credenciales de la entidad y luego credenciales propias del perfil (jefe o trabajador).                                      |
-| 16  | El login usa **correo y contraseña**, también para el master. La validación es simulada hasta que exista backend.                                                               |
+| #   | Decisión                                                                                                                                                                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | La subregión **autoriza o descarta** la emisión del certificado de salud. No hay aprobación examen por examen; el estado pertenece al certificado, no al examen.                                                                      |
+| 2   | El código de verificación es **obligatorio**: demuestra que quien consulta es el dueño de los datos.                                                                                                                                  |
+| 3   | `Enferm.` son las **cuentas de los enfermeros trabajadores**, subordinados al jefe del centro. En el esquema real son filas de `personal`.                                                                                            |
+| 4   | El master tiene **nombre de usuario**, correo y contraseña. El personal también tiene contraseña.                                                                                                                                     |
+| 5   | La administración de personal es **solo del master**. La subregión tiene su propia vista, con otro layout.                                                                                                                            |
+| 6   | El mapa de Venezuela va como **placeholder** por ahora.                                                                                                                                                                               |
+| 7   | "Registro de movimientos" y "logs" son la misma pantalla. "Búsquedas" es una pantalla aparte, para auditar consultas de usuarios.                                                                                                     |
+| 8   | Los requisitos del certificado son los campos de `datos-usuarios.png`: los exámenes y vacunas dibujados ahí, sin agregar otros.                                                                                                       |
+| 9   | Los catálogos serán tablas propias cuando exista la base de datos. Por ahora viven en código, con datos reales de referencia; el esquema parcial ya incluye `vacunas`, `profesiones`, `etnias` y `tipoSangre`.                        |
+| 10  | Solo hay **tres estados de lote** (`en_camino`, `reportado`, `aceptado`). Los cambia el master; idealmente, los usuarios de tipo 3.                                                                                                   |
+| 11  | El detalle de los datos sensibles lo ve cualquier usuario interno; el público (tipo 0) no.                                                                                                                                            |
+| 12  | Los roles se guardan como **0–3**.                                                                                                                                                                                                    |
+| 13  | Jefe y trabajador son un **atributo**, no roles: los dos caen en el mismo prefijo. Hay **un solo jefe por centro** y se deriva de `centros_salud.encargado_id` (jefe = encargado, trabajador = resto). No hace falta `tipo_empleado`. |
+| 14  | El top 10 se calcula por **semana calendario**.                                                                                                                                                                                       |
+| 15  | Los roles 2 y 3 conservan **dos niveles**: `cuentas_entidad` (propuesta) valida la entidad y `personal` valida el perfil. `tipo_cuenta` (2 o 3) debe coincidir con el tipo elegido y con `centros_salud.tipo`.                        |
+| 16  | El login usa **correo y contraseña**, también para el master. La validación es simulada hasta que exista backend.                                                                                                                     |
+| 17  | La **subregión** es una sede dentro de `centros_salud` con `tipo = 3` (columna a agregar), una por estado. Su personal son filas de `personal` con `tipo_cuenta = 3` y `centro_id` en esa sede. No hay tabla `subregion`.             |
+| 18  | Se agrega **`usuarios.sexo`** al esquema para el filtro de búsqueda y la regla del Papanicolau.                                                                                                                                       |
+| 19  | El esquema recibido es **parcial**: lotes, certificados, movimientos, búsquedas e incidencias se agregarán en una entrega posterior. No implementar esas vistas hasta recibirlos.                                                     |
+| 20  | `centros_salud.tipo` solo vale **2 (centro)** o **3 (sede de subregión)**. Hospital, ambulatorio o CDI se expresan en el **nombre**, no en una columna.                                                                               |
+| 21  | El alta de ciudadano **pide profesión**. Si no tiene, se usa la profesión **"Desempleado"** del catálogo; `usuarios.profesion_id` sigue siendo obligatorio.                                                                           |
+| 22  | El dashboard del master saluda con **`master.nombre_usuario`**; no se agrega `nombre`.                                                                                                                                                |
+| 23  | Se agrega **`usuarios.creado_en`** para el filtro de fecha de registro.                                                                                                                                                               |
 
 ### Sigue abierto
 
@@ -429,3 +506,8 @@ decisiones de implementación 15 y 16.
 - Cómo se guardan las credenciales reales (hash, recuperación, bloqueo por intentos) cuando exista backend.
 - Fuente de los geodatos para el mapa (estados, municipios y parroquias).
 - Catálogo definitivo de pueblos indígenas (la lista actual es de trabajo).
+- `tipo_cuenta` (SQL) frente a `tipo_usuario` (conversación): elegir el nombre definitivo.
+- Tipo de dato de `usuarios.sexo`: `ENUM`, `CHAR(1)` o catálogo.
+- Nombre definitivo de la tabla propuesta `cuentas_entidad`.
+- Tablas pendientes: lotes, certificados, movimientos, búsquedas e incidencias.
+- Residencia actual, resultado estructurado de exámenes y contactos del personal: ver `modelo-datos.md` §8.

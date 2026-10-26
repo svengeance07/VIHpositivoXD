@@ -1,0 +1,270 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Administración de personal"
+    titulo="Buscar centros de salud"
+    descripcion="Consulta hospitales, ambulatorios y CDI por nombre, código o ubicación."
+  >
+    <button type="button" class="btn btn-primary" (click)="abrirAlta()">
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      Agregar centro
+    </button>
+  </app-master-encabezado>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Nombre</span>
+        <input
+          type="search"
+          placeholder="Hospital, ambulatorio o CDI"
+          [value]="filtros().nombre"
+          (input)="actualizar('nombre', valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Código</span>
+        <input
+          type="search"
+          placeholder="CS-DC-014"
+          [value]="filtros().codigo"
+          (input)="actualizar('codigo', valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Estado</span>
+        <select [value]="filtros().estadoId" (change)="actualizar('estadoId', valor($event))">
+          <option value="">Todos</option>
+          @for (estado of datos.estados(); track estado.id) {
+            <option [value]="estado.id">{{ estado.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Municipio</span>
+        <select
+          [value]="filtros().municipioId"
+          [disabled]="!filtros().estadoId"
+          (change)="actualizar('municipioId', valor($event))"
+        >
+          <option value="">Todos</option>
+          @for (municipio of municipios(); track municipio.id) {
+            <option [value]="municipio.id">{{ municipio.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Parroquia</span>
+        <select
+          [value]="filtros().parroquiaId"
+          [disabled]="!filtros().municipioId"
+          (change)="actualizar('parroquiaId', valor($event))"
+        >
+          <option value="">Todas</option>
+          @for (parroquia of parroquias(); track parroquia.id) {
+            <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="centros__pie">
+      <span class="master-badge master-badge--suave">{{ resultados().length }} centros</span>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+        <strong>No hay centros que coincidan</strong>
+        <p>Cambia la ubicación o el nombre del centro.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Centro</th>
+              <th>Ubicación</th>
+              <th>Jefe de centro</th>
+              <th>Personal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.centro.id) {
+              <tr>
+                <td>
+                  <a
+                    class="master-tabla__principal master-enlace-fila"
+                    [routerLink]="['/master/personal/centros', fila.centro.id]"
+                  >
+                    <strong>{{ fila.centro.nombre }}</strong>
+                    <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
+                  </a>
+                </td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ fila.estado?.nombre ?? '—' }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.municipio?.nombre ?? '—' }} · {{ fila.parroquia?.nombre ?? '—' }}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ jefe(fila) }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ fila.empleados }}</td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-compact"
+                    [routerLink]="['/master/personal/centros', fila.centro.id]"
+                  >
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <ca-modal
+    [attr.open]="altaAbierta() ? '' : null"
+    backdrop-label="Cerrar formulario de centro"
+    (openchange)="cerrarAlta()"
+  >
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="master-modal__cabecera">
+        <div>
+          <h2>Agregar centro de salud</h2>
+          <p>Registra el establecimiento y su jefe responsable.</p>
+        </div>
+        <ca-modal-close label="Cerrar formulario"></ca-modal-close>
+      </header>
+
+      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre del centro</span>
+            <input
+              type="text"
+              placeholder="Hospital, ambulatorio o CDI"
+              [value]="alta().nombre"
+              (input)="actualizarAlta('nombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Código</span>
+            <input
+              type="text"
+              placeholder="CS-DC-000"
+              [value]="alta().codigo"
+              (input)="actualizarAlta('codigo', valor($event))"
+              required
+            />
+          </label>
+        </div>
+
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Estado</span>
+            <select
+              [value]="alta().estadoId"
+              (change)="actualizarAlta('estadoId', valor($event))"
+              required
+            >
+              <option value="">Selecciona un estado</option>
+              @for (estado of datos.estados(); track estado.id) {
+                <option [value]="estado.id">{{ estado.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Municipio</span>
+            <select
+              [value]="alta().municipioId"
+              [disabled]="!alta().estadoId"
+              (change)="actualizarAlta('municipioId', valor($event))"
+              required
+            >
+              <option value="">Selecciona un municipio</option>
+              @for (municipio of municipiosAlta(); track municipio.id) {
+                <option [value]="municipio.id">{{ municipio.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Parroquia</span>
+            <select
+              [value]="alta().parroquiaId"
+              [disabled]="!alta().municipioId"
+              (change)="actualizarAlta('parroquiaId', valor($event))"
+              required
+            >
+              <option value="">Selecciona una parroquia</option>
+              @for (parroquia of parroquiasAlta(); track parroquia.id) {
+                <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <h3 class="centros__seccion">Jefe del centro</h3>
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre y apellido</span>
+            <input
+              type="text"
+              placeholder="Dr. Nombre Apellido"
+              [value]="alta().jefeNombre"
+              (input)="actualizarAlta('jefeNombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Cédula</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              placeholder="12345678"
+              [value]="alta().jefeCedula"
+              (input)="actualizarAlta('jefeCedula', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Correo institucional</span>
+            <input
+              type="email"
+              placeholder="nombre@vih.gob.ve"
+              [value]="alta().jefeCorreo"
+              (input)="actualizarAlta('jefeCorreo', valor($event))"
+              required
+            />
+          </label>
+        </div>
+
+        @if (errorAlta()) {
+          <p class="field-error" role="alert">{{ errorAlta() }}</p>
+        }
+
+        <div class="master-acciones master-acciones--fin">
+          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
+            Crear centro
+          </button>
+        </div>
+      </form>
+    </section>
+  </ca-modal>
+</div>

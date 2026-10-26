@@ -1,0 +1,76 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Auditoría del sistema"
+    titulo="Búsquedas registradas"
+    descripcion="Consulta quién buscó, con qué filtros y cuántos resultados obtuvo. Este registro se actualiza cuando usas la búsqueda global."
+  >
+    <span class="master-badge master-badge--suave">{{ resultados().length }} registros</span>
+  </app-master-encabezado>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Buscar</span>
+        <input
+          type="search"
+          placeholder="Usuario, filtros u origen"
+          [value]="busqueda()"
+          (input)="busqueda.set(valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Rol</span>
+        <select [value]="rol()" (change)="rol.set(valor($event))">
+          <option value="">Todos</option>
+          <option value="Master">Master</option>
+          <option value="Subregión">Subregión</option>
+          <option value="Personal de salud">Personal de salud</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="busquedas__pie">
+      <span class="master-badge master-badge--suave">{{ resultados().length }} registros</span>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+        <strong>No hay búsquedas que coincidan</strong>
+        <p>Cambia el término o el rol seleccionado.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Filtros aplicados</th>
+              <th>Resultados</th>
+              <th>Origen</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (registro of resultados(); track registro.id) {
+              <tr>
+                <td>{{ registro.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <strong>{{ registro.usuario }}</strong>
+                </td>
+                <td>{{ registro.rol }}</td>
+                <td>{{ registro.filtros }}</td>
+                <td>{{ registro.resultados }}</td>
+                <td>{{ registro.origen }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
