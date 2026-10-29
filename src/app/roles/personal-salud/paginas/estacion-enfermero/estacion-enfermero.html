@@ -1,0 +1,257 @@
+<div class="ps-pagina">
+  <!-- Cabecera de la Estación de Trabajo del Enfermero -->
+  <app-ps-encabezado
+    [eyebrow]="'Estación de Inmunización · ' + nombreCentro()"
+    [titulo]="'Bienvenido/a, ' + enfermero().nombre"
+    descripcion="Puesto de atención clínica e inmunización activa. Consulta expedientes, asienta dosis en tiempo real y notifica incidencias."
+  >
+  </app-ps-encabezado>
+
+  <!-- Banner de Guardia Activa del Enfermero -->
+  <section class="panel estacion-enfermero-banner" aria-label="Estación de vacunación activa">
+    <div class="estacion-enfermero__identidad">
+      <div class="estacion-enfermero__avatar" aria-hidden="true">
+        {{ inicialesEnfermero() }}
+      </div>
+      <div class="estacion-enfermero__datos">
+        <div class="estacion-enfermero__nombre-fila">
+          <h2>{{ enfermero().nombre }}</h2>
+          <span class="badge-guardia-activa">
+            <span class="badge-guardia-activa__dot"></span>
+            En Guardia Activa
+          </span>
+        </div>
+        <p class="estacion-enfermero__meta">
+          <span>C.I. {{ enfermero().cedula }}</span>
+          <span
+            >· Colegiado: <strong>{{ enfermero().idProfesional }}</strong></span
+          >
+          <span>· {{ nombreCentro() }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="estacion-enfermero__acciones">
+      <a class="btn btn-primary btn-lg" routerLink="/PS/pacientes">
+        <ca-icon name="plus" aria-hidden="true"></ca-icon>
+        <span>Atender y Aplicar Vacuna</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 1: Indicadores Personales de la Jornada -->
+  <section class="ps-metricas" aria-label="Indicadores clave de la jornada personal">
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
+          <ca-icon name="check"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Mis vacunas aplicadas hoy</span>
+      </div>
+      <strong>{{ misAplicacionesHoy().length }}</strong>
+      <small>{{ desgloseDosis().menores }} menores · {{ desgloseDosis().adultos }} adultos</small>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+          <ca-icon name="clipboard"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Pacientes atendidos por mí</span>
+      </div>
+      <strong>{{ metricasEnfermero().misPacientesHoy }}</strong>
+      <small>En la jornada de atención de hoy</small>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+          <ca-icon name="calendar"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Biológicos en Estación</span>
+      </div>
+      <strong>{{ vacunasEnStock().length }}</strong>
+      <small>Esquemas disponibles en refrigeración</small>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+          <ca-icon name="warning"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Mis reportes de incidencias</span>
+      </div>
+      <strong>{{ metricasEnfermero().misReportesTotal }}</strong>
+      <small>Efectos adversos documentados</small>
+    </article>
+  </section>
+
+  <!-- SECCIÓN 2: Barra de Búsqueda Rápida de Paciente por Cédula -->
+  <section class="panel ps-busqueda-rapida" aria-label="Búsqueda rápida de paciente">
+    <div class="ps-busqueda-rapida__info">
+      <h3>
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span>Acceso Inmediato a Paciente</span>
+      </h3>
+      <p>
+        Ingresa el número de cédula del ciudadano o la cédula del representante legal para menores
+        de edad.
+      </p>
+    </div>
+
+    <form class="ps-busqueda-rapida__form" (submit)="buscarPacienteRapido($event)">
+      <div class="input-grupo">
+        <input
+          type="search"
+          name="cedula"
+          class="ui-input"
+          placeholder="Ej: 14.567.890, 16.803.343 o nombre del paciente..."
+          [ngModel]="cedulaRapida()"
+          (ngModelChange)="cedulaRapida.set($event)"
+          aria-label="Cédula de identidad o nombre del paciente"
+        />
+        <button type="submit" class="btn btn-primary" (click)="buscarPacienteRapido($event)">
+          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <span>Consultar Ficha</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- SECCIÓN 3: Hub de Acciones Rápidas del Puesto de Salud -->
+  <section class="ps-acciones-grid" aria-label="Módulos y funciones del enfermero">
+    <a class="panel accion-card" routerLink="/PS/pacientes">
+      <div class="accion-card__icono accion-card__icono--azul">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Consultar y Vacunar</h4>
+        <p>Verifica estatus de vacunas de adultos y niños, y aplica nuevas dosis al historial.</p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card" routerLink="/PS/pacientes/nuevo">
+      <div class="accion-card__icono accion-card__icono--verde">
+        <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Registrar Paciente</h4>
+        <p>
+          Alta de nuevos ciudadanos con datos filiatorios y vinculación de representantes para
+          menores.
+        </p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card" routerLink="/PS/reportes">
+      <div class="accion-card__icono accion-card__icono--rojo">
+        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Reportar Incidencia (ESAVI)</h4>
+        <p>
+          Registra reacciones adversas, síntomas e indicaciones médicas, notificando a la Subregión.
+        </p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card" routerLink="/PS/historial">
+      <div class="accion-card__icono accion-card__icono--morado">
+        <ca-icon name="calendar" aria-hidden="true"></ca-icon>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Historial de Inmunizaciones</h4>
+        <p>Revisa todas las vacunas aplicadas en el centro y tus comprobantes emitidos.</p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <!-- SECCIÓN 4: Panel Operativo en Dos Columnas (Bitácora + Biológicos en Cadena de Frío) -->
+  <div class="ps-dos-columnas-enfermero">
+    <!-- Columna Principal: Bitácora de Vacunas Aplicadas Hoy por este Enfermero -->
+    <section class="panel ps-bloque-tabla" aria-label="Mis vacunas aplicadas hoy">
+      <header class="ps-bloque-cabecera">
+        <div>
+          <span class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Mi Guardia de Hoy
+          </span>
+          <h3>Mis Inmunizaciones Administradas</h3>
+          <p>Pacientes que has vacunado durante tu turno de hoy.</p>
+        </div>
+        <a class="btn btn-sm btn-ghost" routerLink="/PS/historial">Historial Completo →</a>
+      </header>
+
+      <div class="tabla-contenedor">
+        <table class="ui-table">
+          <thead>
+            <tr>
+              <th scope="col">Hora</th>
+              <th scope="col">Paciente</th>
+              <th scope="col">Vacuna / Dosis</th>
+              <th scope="col">N° de Lote</th>
+              <th scope="col" class="texto-derecha">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of misAplicacionesHoy(); track app.id) {
+              <tr>
+                <td>
+                  <time class="badge-hora">{{ app.horaAplicacion }}</time>
+                </td>
+                <td>
+                  <div class="celda-paciente">
+                    <strong>{{ app.pacienteNombre }}</strong>
+                    <div class="celda-paciente__sub">
+                      <span>C.I. {{ app.pacienteCedula }}</span>
+                      @if (app.esMenor) {
+                        <span class="badge-menor">Menor</span>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="celda-vacuna-info">
+                    <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
+                    <small class="badge-dosis">Dosis #{{ app.dosis }}</small>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-lote">{{ app.lote }}</span>
+                </td>
+                <td class="texto-derecha">
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-sm btn-ver-carnet"
+                    (click)="irACarnetPaciente(app.pacienteCedula)"
+                    title="Ver carnet del paciente"
+                  >
+                    <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+                    <span>Carnet</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="tabla-vacia">
+                  <div class="tabla-vacia__contenido">
+                    <ca-icon name="check" aria-hidden="true"></ca-icon>
+                    <p>Aún no has registrado aplicaciones de vacunas en tu guardia de hoy.</p>
+                    <a class="btn btn-primary btn-sm" routerLink="/PS/pacientes">
+                      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+                      <span>Comenzar Primera Inmunización</span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

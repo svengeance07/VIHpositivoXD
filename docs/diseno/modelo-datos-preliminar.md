@@ -1,15 +1,23 @@
-# Modelo de datos preliminar
+# Modelo de datos preliminar (histórico)
 
 Última actualización: 2026-10-25
-Estado: **boceto**. No es un modelo relacional definitivo.
+Estado: **histórico**. Reemplazado por el esquema real parcial.
 
-> **Este documento no define la base de datos.** Recoge lo que los dibujos a mano mencionan, más lo mínimo que
-> las pantallas necesitan para funcionar. El esquema real todavía no existe y **manda sobre este archivo**.
-> Nada en el código debe depender de estos nombres: son una hipótesis de trabajo para poder maquetar.
+> **No usar este documento para implementar.** El 2026-10-25 se recibió el esquema real parcial en
+> [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql); su lectura vigente está en
+> [`modelo-datos.md`](./modelo-datos.md). Este archivo se conserva para entender las hipótesis previas.
+>
+> Correcciones principales que introdujo el esquema real:
+>
+> - `usuarios` es la tabla de **ciudadanos**, no la de cuentas internas.
+> - Las cuentas internas están en `personal` (roles 2 y 3) y `master` (rol 1).
+> - No existe una tabla `ciudadano` separada; se compone de `usuarios` + teléfonos + residencias.
+> - No existe una tabla `subregion`: la sede de subregión será una fila de `centros_salud` con `tipo`.
+> - Los exámenes usan un catálogo `examenes` (categoría + nombre) y `usuario_examenes` para resultados.
+> - Lotes, certificados, movimientos, búsquedas e incidencias todavía no están en el script.
 >
 > Regla: si un campo no está dibujado ni es imprescindible para una vista ya bocetada, se marca como
-> _por confirmar_ y no se implementa. Las decisiones ya tomadas están en `docs/diseno/vistas.md` §10 y aquí
-> aparecen como `confirmado`.
+> _por confirmar_ y no se implementa. Las decisiones ya tomadas están en `docs/diseno/vistas.md` §10.
 
 ## 1. Cómo leer las tablas de campos
 
@@ -426,6 +434,9 @@ esquema real solo se traduce en una capa. Los catálogos ya están implementados
 `nucleo/modelos/catalogo.ts`, `nucleo/datos/catalogos.ts` y `nucleo/servicios/catalogos.service.ts`.
 
 ## 8. Preguntas para el equipo de base de datos
+
+> Varias de estas preguntas ya quedaron respondidas o reformuladas por el esquema real. La lista vigente
+> está en [`modelo-datos.md`](./modelo-datos.md) §8.
 
 1. ¿Clave primaria sustituta en todas las tablas o cédula como clave natural en ciudadano y personal?
 2. ¿`examen` en una tabla o `examen` + `resultado_examen` (categoría y prueba separadas)?

@@ -1,0 +1,1702 @@
+/* ------------------------------------------------------------------ */
+/* Contenedor principal de Consulta y Vacunación de Pacientes         */
+/* ------------------------------------------------------------------ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* Alerta de confirmación de vacunación */
+.alerta-exito {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.85rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+}
+
+.alerta-exito ca-icon {
+  font-size: 1.25rem;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.alerta-exito__texto {
+  flex: 1;
+}
+
+.alerta-exito__texto strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.alerta-exito__texto p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Buscador de Pacientes y Tabs de Filtro                             */
+/* ------------------------------------------------------------------ */
+
+.ps-busqueda-caja {
+  padding: 1.35rem 1.6rem;
+  border-radius: 1.25rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.ps-busqueda-caja__input {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--text-muted);
+}
+
+.ui-input--lg {
+  width: 100%;
+  font-size: 1.05rem !important;
+  padding: 0.8rem 1.15rem !important;
+  border-radius: 0.85rem !important;
+}
+
+.ps-busqueda-caja__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.filtro-tabs {
+  display: inline-flex;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.filtro-tab {
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.filtro-tab:hover {
+  color: var(--text);
+}
+
+.filtro-tab.is-activo {
+  background: var(--surface-glass);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ------------------------------------------------------------------ */
+/* Grilla de Pacientes Encontrados                                    */
+/* ------------------------------------------------------------------ */
+
+.ps-resultados-seccion {
+  display: grid;
+  gap: 1rem;
+}
+
+.ps-resultados-cabecera h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ps-resultados-cabecera p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.pacientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19.5rem), 1fr));
+  gap: 1.1rem;
+}
+
+.paciente-tarjeta {
+  padding: 1.25rem 1.4rem;
+  border-radius: 1.1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  cursor: pointer;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.paciente-tarjeta:hover {
+  transform: translateY(-3px);
+  border-color: rgba(2, 132, 199, 0.4);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.paciente-tarjeta__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.paciente-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  background: rgba(2, 132, 199, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.paciente-avatar--menor {
+  background: rgba(139, 92, 246, 0.14);
+}
+
+.paciente-titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.paciente-titulos h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 750;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.paciente-cedula-linea {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.paciente-cedula-linea strong {
+  font-size: 0.85rem;
+  color: #0284c7;
+}
+
+.badge-menor {
+  background: rgba(139, 92, 246, 0.15);
+  color: #7c3aed;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.badge-adulto {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.representante-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  font-size: 0.76rem;
+  color: #6d28d9;
+}
+
+.paciente-tarjeta__datos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.78rem;
+}
+
+.paciente-tarjeta__datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.paciente-tarjeta__datos span {
+  color: var(--text-muted);
+}
+
+.paciente-tarjeta__datos strong {
+  color: var(--text);
+}
+
+.paciente-tarjeta__pie {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.btn-ver-carnet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.flecha {
+  font-size: 1.1rem;
+  transition: transform 180ms ease;
+}
+
+.paciente-tarjeta:hover .flecha {
+  transform: translateX(4px);
+}
+
+.estado-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  border-radius: 1.25rem;
+}
+
+.estado-vacio ca-icon {
+  font-size: 2.2rem;
+  color: var(--text-muted);
+}
+
+.estado-vacio h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text);
+}
+
+.estado-vacio p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  max-width: 28rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Ficha Clínica del Paciente Seleccionado                            */
+/* ------------------------------------------------------------------ */
+
+.ps-ficha-seccion {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.btn-volver {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.ps-paciente-ficha {
+  padding: 1.6rem 2rem;
+  border-radius: 1.25rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ps-paciente-ficha__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.paciente-avatar-grande {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 1.15rem;
+  background: rgba(2, 132, 199, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 1.85rem;
+  flex-shrink: 0;
+}
+
+.paciente-avatar-grande--menor {
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.ps-paciente-ficha__titulos {
+  flex: 1;
+  min-width: min(100%, 16rem);
+}
+
+.titulos-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.titulos-linea h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 750;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.cedula-destacada {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.cedula-destacada strong {
+  color: #0284c7;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.4rem;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.bloque-representante {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.15rem;
+  border-radius: 0.75rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: #6d28d9;
+}
+
+.bloque-representante p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+}
+
+.datos-filiatorios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.dato-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dato-item span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.dato-item strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Contenedor y Switcher del Carnet Digital de Inmunización           */
+/* ------------------------------------------------------------------ */
+
+.ps-bloque-carnet-contenedor {
+  padding: 1.6rem 2rem;
+  border-radius: 1.25rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.carnet-acciones-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+/* Switcher de Vista Carnet vs Tabla */
+.vista-switcher {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-subtle);
+}
+
+.vista-switcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.vista-switcher-btn ca-icon {
+  font-size: 0.85rem;
+}
+
+.vista-switcher-btn:hover {
+  color: var(--text);
+}
+
+.vista-switcher-btn.is-activo {
+  background: var(--surface, #ffffff);
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------------------------------------------------------ */
+/* TARJETA CARNET OFICIAL DE INMUNIZACIÓN (SKIEWUMÓRFICO / VIDRIO)     */
+/* ------------------------------------------------------------------ */
+
+.carnet-oficial {
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.9));
+  border: 1.5px solid rgba(2, 132, 199, 0.28);
+  box-shadow:
+    0 10px 30px -5px rgba(2, 132, 199, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Cinta de Seguridad Superior */
+.carnet-cinta-seguridad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(90deg, #0284c7, #0369a1);
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cinta-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cinta-bandera {
+  font-size: 0.95rem;
+}
+
+.cinta-titulo {
+  text-transform: uppercase;
+}
+
+.cinta-validacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cinta-validacion ca-icon {
+  font-size: 0.8rem;
+}
+
+/* Bloque de Identidad del Titular en el Carnet */
+.carnet-titular-bloque {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.6rem;
+  border-bottom: 1.5px dashed rgba(2, 132, 199, 0.25);
+  background: rgba(2, 132, 199, 0.02);
+  flex-wrap: wrap;
+}
+
+.carnet-titular-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(16, 185, 129, 0.15));
+  border: 1.5px solid rgba(2, 132, 199, 0.3);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+}
+
+.carnet-titular-datos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 14rem;
+}
+
+.carnet-titular-nombre-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.carnet-titular-nombre-fila h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.badge-carnet-cedula {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 750;
+  padding: 0.18rem 0.55rem;
+  border-radius: 0.4rem;
+  background: rgba(2, 132, 199, 0.12);
+  color: #0369a1;
+}
+
+.carnet-titular-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.65rem;
+  font-size: 0.82rem;
+}
+
+.label-mini {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.tag-sangre {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.35rem;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.carnet-titular-folio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.carnet-sello-circular {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 2px dashed #0284c7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  opacity: 0.85;
+}
+
+.folio-texto {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* CUADRÍCULA DE SELLOS CLÍNICOS DE VACUNACIÓN                        */
+/* ------------------------------------------------------------------ */
+
+.carnet-sellos-contenedor {
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.carnet-sellos-titulo h5 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.carnet-sellos-titulo small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.carnet-sellos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+
+/* Sello individual de una vacuna */
+.sello-vacuna-card {
+  padding: 1.15rem 1.25rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  box-shadow:
+    0 4px 16px rgba(16, 185, 129, 0.08),
+    0 0 0 1px rgba(16, 185, 129, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: relative;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.sello-vacuna-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+}
+
+.sello-vacuna-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dashed rgba(16, 185, 129, 0.25);
+}
+
+.sello-dosis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.sello-dosis-badge ca-icon {
+  font-size: 0.8rem;
+}
+
+.sello-lote-tag {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+}
+
+.sello-vacuna-cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.sello-vacuna-icono {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.65rem;
+  background: rgba(16, 185, 129, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.sello-vacuna-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sello-vacuna-info strong {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.sello-fecha-hora {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.sello-fecha-hora ca-icon {
+  font-size: 0.8rem;
+}
+
+.sello-vacuna-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+}
+
+.sello-responsable strong {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.sello-observaciones {
+  margin: 0;
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  background: rgba(0, 0, 0, 0.02);
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.4rem;
+}
+
+.sello-vacuna-pie {
+  margin-top: auto;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+}
+
+.sello-centro-nombre {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.sello-check-verif {
+  color: #059669;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* Tarjeta interactiva para aplicar nueva dosis */
+.sello-vacuna-card--anadir {
+  border: 2px dashed rgba(2, 132, 199, 0.4);
+  background: rgba(2, 132, 199, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 1.75rem 1.25rem;
+  min-height: 12rem;
+}
+
+.sello-vacuna-card--anadir:hover {
+  background: rgba(2, 132, 199, 0.07);
+  border-color: #0284c7;
+  transform: translateY(-2px);
+}
+
+.anadir-dosis-icono {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: #0284c7;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.sello-vacuna-card--anadir strong {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.sello-vacuna-card--anadir p {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 14rem;
+}
+
+.btn-anadir-sello {
+  display: inline-flex;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+/* Pie del Carnet */
+.carnet-oficial-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.6rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(2, 132, 199, 0.15);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.carnet-pie-seguridad {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.carnet-pie-conteo strong {
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Tabla de Inmunizaciones (Modo Tabla Alternativo)                   */
+/* ------------------------------------------------------------------ */
+
+.vacuna-celda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.vacuna-celda strong {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.badge-centro {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.badge-dosis {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.45rem;
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.badge-lote {
+  font-family: monospace;
+  font-size: 0.76rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text);
+}
+
+.fecha-celda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.82rem;
+}
+
+.fecha-celda small {
+  color: var(--text-muted);
+}
+
+.enfermero-tag {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.observaciones-texto {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------------ */
+/* SECCIÓN DE VIGILANCIA FARMACOLÓGICA Y ALERTAS ESAVI                */
+/* ------------------------------------------------------------------ */
+
+.ps-alertas-paciente {
+  padding: 1.6rem 2rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.04), rgba(249, 115, 22, 0.02));
+  border: 1.5px solid rgba(239, 68, 68, 0.25);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ps-alertas-cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.alerta-icono-pulso {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.alerta-titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.badge-alerta-header {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #dc2626;
+}
+
+.alerta-titulos h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.alerta-titulos p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.alertas-paciente-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Ficha Clínica Individual de Evento Adverso */
+.alerta-item-clinico {
+  padding: 1.35rem 1.6rem;
+  border-radius: 1.15rem;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border-subtle);
+  border-left: 5px solid #f97316;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.alerta-item-clinico:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.alerta-item-clinico--leve {
+  border-left-color: #eab308;
+}
+
+.alerta-item-clinico--moderado {
+  border-left-color: #f97316;
+}
+
+.alerta-item-clinico--severo {
+  border-left-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.02), var(--surface, #ffffff));
+}
+
+/* Cabecera de la ficha */
+.alerta-ficha-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.alerta-ficha-vacuna {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.alerta-vacuna-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.alerta-ficha-vacuna h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.alerta-vacuna-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.15rem;
+}
+
+.alerta-fecha-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.alerta-fecha-badge ca-icon {
+  font-size: 0.82rem;
+}
+
+/* Pill de Severidad Clínica */
+.alerta-gravedad-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.14);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.gravedad-punto {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.alerta-gravedad-pill--severo {
+  background: rgba(239, 68, 68, 0.16);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Bloque de Síntomas en Chips */
+.alerta-sintomas-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.alerta-bloque-titulo {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sintomas-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sintoma-chip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.65rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.sintoma-chip-icono {
+  font-size: 0.85rem;
+}
+
+/* Caja de Tratamiento / Receta */
+.alerta-tratamiento-caja {
+  padding: 1rem 1.25rem;
+  border-radius: 0.85rem;
+  background: rgba(2, 132, 199, 0.05);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  border-left: 4px solid #0284c7;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tratamiento-caja-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: #0284c7;
+}
+
+.rx-simbolo {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: serif;
+}
+
+.tratamiento-texto {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* Pie de Notificación y Auditoría */
+.alerta-ficha-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.alerta-auditoria-prof {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.prof-label {
+  color: var(--text-muted);
+}
+
+.alerta-auditoria-prof strong {
+  color: var(--text);
+}
+
+.alerta-subregion-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.alerta-subregion-status ca-icon {
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Modal para Aplicar Vacuna(s) a Paciente (Estación de Inmunización) */
+/* ------------------------------------------------------------------ */
+
+.ps-modal {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.4rem;
+  width: min(94vw, 44rem);
+  box-shadow:
+    0 24px 60px -10px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  z-index: 100;
+}
+
+.ps-modal--vacunar {
+  width: min(94vw, 44rem);
+}
+
+.ps-modal__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 1.75rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.modal-cabecera-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0284c7;
+}
+
+.modal-eyebrow ca-icon {
+  font-size: 0.85rem;
+}
+
+.ps-modal__cabecera h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+/* Tarjeta de Resumen del Paciente Receptor */
+.paciente-resumen-modal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.95rem 1.4rem;
+  margin: 1.15rem 1.75rem 0;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(2, 132, 199, 0.02));
+  border: 1px solid rgba(2, 132, 199, 0.22);
+}
+
+.paciente-resumen-modal__avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: rgba(2, 132, 199, 0.14);
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.paciente-resumen-modal__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.paciente-resumen-modal__linea1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.paciente-resumen-modal__linea1 strong {
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.badge-cedula {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text);
+}
+
+.paciente-resumen-modal__linea2 {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.paciente-resumen-modal__linea2 strong {
+  color: var(--text);
+}
+
+/* Cuerpo del Modal con scroll */
+.ps-modal__cuerpo {
+  padding: 1.25rem 1.75rem 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Encabezados de pasos dentro del modal */
+.estacion-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.estacion-paso-badge {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: #0284c7;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.estacion-cabecera h3,
+.estacion-cabecera h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 750;
+  color: var(--text);
+}
+
+.estacion-cabecera p {
+  margin: 0.1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Panel Estación de Vacunación */
+.panel-estacion-vacunacion {
+  padding: 1.2rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass, rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+.campos-vacunacion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 0.85rem;
+}
+
+.ui-select--destacado {
+  font-weight: 600;
+  font-size: 0.95rem !important;
+}
+
+.boton-anadir-box {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+/* Paso 2: Resumen de Cola */
+.resumen-cola-seccion {
+  padding: 1.2rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass, rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-contador {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.cola-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+.cola-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  transition: transform 150ms ease;
+}
+
+.cola-item:hover {
+  transform: translateX(2px);
+}
+
+.cola-item__numero {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cola-item__datos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cola-item__datos strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.cola-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+}
+
+.cola-item__obs {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.btn-remover {
+  color: #ef4444 !important;
+  padding: 0.35rem !important;
+  border-radius: 0.5rem;
+}
+
+.btn-remover:hover {
+  background: rgba(239, 68, 68, 0.14) !important;
+}
+
+.cola-directa-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 0.85rem;
+  background: rgba(2, 132, 199, 0.06);
+  border: 1px dashed rgba(2, 132, 199, 0.3);
+  color: #0369a1;
+  font-size: 0.82rem;
+}
+
+.cola-directa-aviso ca-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.cola-directa-aviso strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #0284c7;
+  margin-bottom: 0.15rem;
+}
+
+.cola-directa-aviso p {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+/* Paso 3: Profesional */
+.profesional-selector-box {
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass, rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--border-subtle);
+}
+
+.profesional-responsable-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.profesional-activo-ficha {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.profesional-activo-avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.65rem;
+  background: linear-gradient(135deg, #10b981, #0284c7);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.25);
+}
+
+.profesional-activo-datos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.profesional-activo-nombre {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.profesional-activo-nombre strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.badge-sesion-activa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badge-sesion-activa__dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.profesional-activo-credencial {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+/* Pie del modal */
+.ps-modal__pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.15rem 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.btn-confirmar-vacunacion {
+  padding: 0.65rem 1.35rem !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+}

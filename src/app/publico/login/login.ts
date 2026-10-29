@@ -40,9 +40,11 @@ export class Login {
   protected readonly perfilElegido = signal<PerfilAcceso | null>(null);
   protected readonly error = signal('');
 
-  protected readonly perfiles = computed<readonly PerfilAcceso[]>(
-    () => this.cuenta()?.perfiles ?? [],
-  );
+  protected readonly perfiles = computed<readonly PerfilAcceso[]>(() => {
+    const c = this.cuenta();
+    if (!c) return [];
+    return this.sesion.obtenerPerfilesDeCuenta(c.id);
+  });
   protected readonly rolActual = computed(() =>
     this.roles().find((rol) => rol.id === this.rolElegido()),
   );
@@ -60,9 +62,9 @@ export class Login {
   });
 
   constructor() {
-    const activa = this.sesion.sesion();
-    if (activa) {
-      void this.router.navigateByUrl(this.prefijoDe(activa.rol));
+    // Al acceder a la página de login, se cierra cualquier sesión anterior para permitir seleccionar perfil
+    if (this.sesion.sesion()) {
+      this.sesion.salir();
     }
   }
 
@@ -173,6 +175,10 @@ export class Login {
 
   private entrar(cuenta: CuentaAcceso, perfil: PerfilAcceso | null): void {
     this.sesion.entrar(cuenta, perfil);
+    if (cuenta.rol === 2 && perfil?.tipo === 'trabajador') {
+      void this.router.navigateByUrl('/PS/estacion');
+      return;
+    }
     void this.router.navigateByUrl(this.prefijoDe(cuenta.rol));
   }
 

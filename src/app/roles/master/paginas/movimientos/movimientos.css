@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.movimiento-metrica {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.movimiento-metrica span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.movimiento-metrica strong {
+  font-size: clamp(1.7rem, 2.8vw, 2.15rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.movimientos__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}

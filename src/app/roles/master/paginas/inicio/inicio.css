@@ -1,0 +1,337 @@
+:host {
+  display: block;
+}
+
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  min-height: 9rem;
+}
+
+.metrica__icono {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  color: var(--color-accent-2);
+  margin-bottom: 0.15rem;
+}
+
+.metrica__etiqueta {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metrica strong {
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.metrica small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.metrica--alerta .metrica__icono {
+  background: color-mix(in oklab, var(--warn) 16%, transparent);
+  color: var(--warn);
+}
+
+.bloque__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 0.95rem;
+}
+
+.bloque__cabecera h2 {
+  margin: 0.12rem 0 0;
+  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+  letter-spacing: -0.02em;
+}
+
+.bloque__cabecera p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.lote-card {
+  overflow: visible;
+}
+
+.lote-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.65rem;
+  border: 0.5px solid var(--glass-border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--glass-surface) 65%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 560;
+  cursor: pointer;
+}
+
+.lote-card__toggle:hover,
+.lote-card__toggle.is-activo {
+  color: var(--color-accent-2);
+  border-color: color-mix(in oklab, var(--color-accent) 45%, var(--glass-border));
+}
+
+.lotes-preview {
+  display: grid;
+  gap: 0.1rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}
+
+.lote-linea {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(9rem, 1.2fr) minmax(10rem, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.62rem 0;
+  border-bottom: 0.5px solid color-mix(in oklab, var(--glass-border) 55%, transparent);
+  font-size: 0.84rem;
+}
+
+.lote-linea:last-child {
+  border-bottom: 0;
+}
+
+.lote-linea__codigo {
+  font-weight: 650;
+}
+
+.lote-linea__vacuna {
+  color: var(--muted);
+}
+
+.lote-linea__destino {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lotes-detalle {
+  margin-top: 0.8rem;
+}
+
+.ranking {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.ranking__fila {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(7rem, 9.5rem) minmax(4rem, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 1.75rem;
+  font-size: 0.82rem;
+}
+
+.ranking__puesto {
+  color: var(--faint);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.ranking__nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking__barra {
+  height: 0.42rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--glass-border) 45%, transparent);
+}
+
+.ranking__barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+}
+
+.ranking__fila strong {
+  min-width: 3.2rem;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+}
+
+.mapa__lienzo {
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  border: 0.5px dashed color-mix(in oklab, var(--glass-border) 85%, transparent);
+  border-radius: var(--ca-radius-md);
+  background:
+    radial-gradient(
+      circle at 28% 28%,
+      color-mix(in oklab, var(--color-accent) 18%, transparent),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 70% 62%,
+      color-mix(in oklab, var(--color-accent-2) 16%, transparent),
+      transparent 38%
+    ),
+    linear-gradient(135deg, color-mix(in oklab, var(--glass-surface) 80%, transparent), transparent);
+  isolation: isolate;
+}
+
+.mapa__lienzo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(
+      color-mix(in oklab, var(--glass-border) 55%, transparent) 0.5px,
+      transparent 0.5px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--glass-border) 55%, transparent) 0.5px,
+      transparent 0.5px
+    );
+  background-size: 2.2rem 2.2rem;
+  mask-image: radial-gradient(circle at center, #000, transparent 78%);
+}
+
+.mapa__mancha {
+  position: absolute;
+  border-radius: 60% 40% 55% 45%;
+  background: color-mix(in oklab, var(--color-accent) 24%, transparent);
+  filter: blur(1px);
+}
+
+.mapa__mancha--1 {
+  inset: 18% 18% 38% 22%;
+  transform: rotate(-14deg);
+}
+
+.mapa__mancha--2 {
+  inset: 38% 25% 17% 37%;
+  transform: rotate(24deg);
+  background: color-mix(in oklab, var(--color-accent-2) 22%, transparent);
+}
+
+.mapa__mancha--3 {
+  inset: 28% 48% 42% 48%;
+  transform: rotate(-8deg);
+}
+
+.mapa__punto {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--color-accent-2);
+  box-shadow: 0 0 0 0.3rem color-mix(in oklab, var(--color-accent-2) 18%, transparent);
+}
+
+.mapa__punto--1 {
+  top: 28%;
+  left: 38%;
+}
+
+.mapa__punto--2 {
+  top: 46%;
+  left: 58%;
+}
+
+.mapa__punto--3 {
+  top: 62%;
+  left: 44%;
+}
+
+.mapa__punto--4 {
+  top: 35%;
+  left: 68%;
+}
+
+.mapa__centro {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--glass-surface) 88%, transparent);
+  border: 0.5px solid var(--glass-border);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mapa__niveles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.7rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.mapa__nota {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .lote-linea {
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 0.7rem;
+  }
+
+  .lote-linea__vacuna,
+  .lote-linea__destino {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.78rem;
+  }
+
+  .lote-linea__destino {
+    display: none;
+  }
+
+  .lote-linea .master-badge {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .ranking__fila {
+    grid-template-columns: 1.2rem minmax(5.5rem, 8rem) minmax(3rem, 1fr) auto;
+    gap: 0.4rem;
+  }
+}

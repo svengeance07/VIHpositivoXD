@@ -37,5 +37,7 @@ export interface SesionActiva {
   readonly nombre: string;
   /** Nombre de la entidad, o `null` si es master. */
   readonly entidad: string | null;
+  /** Nombre de usuario de la cuenta; solo lo usa el master para el saludo. */
+  readonly nombreUsuario: string | null;
   readonly perfil: Pick<PerfilAcceso, 'id' | 'nombre' | 'tipo'> | null;
 }

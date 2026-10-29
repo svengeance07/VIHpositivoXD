@@ -1,0 +1,218 @@
+CREATE TABLE IF NOT EXISTS `usuarios` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre1` VARCHAR(255) NOT NULL,
+	`nombre2` VARCHAR(255) NOT NULL,
+	`apellido1` VARCHAR(255) NOT NULL,
+	`apellido2` VARCHAR(255) NOT NULL,
+	`cedula` BIGINT NOT NULL,
+	`nacimiento` DATE NOT NULL,
+	`sangre_id` INTEGER NOT NULL,
+	`estatura` INTEGER NOT NULL,
+	`etnia_id` INTEGER,
+	`correo` VARCHAR(255) NOT NULL,
+	`profesion_id` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `usuario_telefonos` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`telefono` VARCHAR(255) NOT NULL,
+	`usuario_id` INTEGER,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `tipoSangre` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`tipo` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `etnias` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `usuario_residencias` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`estado_id` INTEGER NOT NULL,
+	`mcpo_id` INTEGER NOT NULL,
+	`parroquia_id` INTEGER NOT NULL,
+	`direccion` VARCHAR(255) NOT NULL,
+	`usuario_id` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `usuario_vacunas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`usuario_id` INTEGER NOT NULL,
+	`vacuna_id` INTEGER NOT NULL,
+	`nro_dosis` INTEGER,
+	`fecha_aplicacion` DATE NOT NULL,
+	`lote` VARCHAR(255) NOT NULL,
+	`centro_id` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `usuario_examenes` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`usuario_id` INTEGER NOT NULL,
+	`examen_id` INTEGER NOT NULL,
+	`fecha_realizacion` DATE NOT NULL,
+	`resultado_cualitativo` TEXT(65535),
+	`resultado_json` JSON NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `vacunas` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	`descripcion` TEXT(65535),
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `examenes` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	`categoria` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `estado` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `mcpo` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	`estado_id` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `parroquia` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	`mcpo_id` INTEGER,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `centros_salud` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`estado_id` INTEGER NOT NULL,
+	`mcpo_id` INTEGER,
+	`parroquia_id` INTEGER,
+	`nombre` VARCHAR(255) NOT NULL,
+	`codigo` VARCHAR(255) NOT NULL,
+	`encargado_id` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `profesiones` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `personal` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`tipo_cuenta` INTEGER NOT NULL,
+	`centro_id` INTEGER NOT NULL,
+	`cedula` BIGINT NOT NULL,
+	`correo` VARCHAR(255) NOT NULL,
+	`nombre1` VARCHAR(255) NOT NULL,
+	`nombre2` VARCHAR(255) NOT NULL,
+	`apellido1` VARCHAR(255) NOT NULL,
+	`apellido2` VARCHAR(255) NOT NULL,
+	`nacimiento` DATE NOT NULL,
+	`profesion_id` INTEGER NOT NULL,
+	`id_profesional` VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `master` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nombre_usuario` VARCHAR(255) NOT NULL,
+	`correo` VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+ALTER TABLE `usuario_telefonos`
+ADD FOREIGN KEY(`usuario_id`) REFERENCES `usuarios`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuarios`
+ADD FOREIGN KEY(`sangre_id`) REFERENCES `tipoSangre`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuarios`
+ADD FOREIGN KEY(`etnia_id`) REFERENCES `etnias`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_residencias`
+ADD FOREIGN KEY(`usuario_id`) REFERENCES `usuarios`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_vacunas`
+ADD FOREIGN KEY(`usuario_id`) REFERENCES `usuarios`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_vacunas`
+ADD FOREIGN KEY(`vacuna_id`) REFERENCES `vacunas`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_examenes`
+ADD FOREIGN KEY(`usuario_id`) REFERENCES `usuarios`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_examenes`
+ADD FOREIGN KEY(`examen_id`) REFERENCES `examenes`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `mcpo`
+ADD FOREIGN KEY(`estado_id`) REFERENCES `estado`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `parroquia`
+ADD FOREIGN KEY(`mcpo_id`) REFERENCES `mcpo`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_residencias`
+ADD FOREIGN KEY(`estado_id`) REFERENCES `estado`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_residencias`
+ADD FOREIGN KEY(`mcpo_id`) REFERENCES `mcpo`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_residencias`
+ADD FOREIGN KEY(`parroquia_id`) REFERENCES `parroquia`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `centros_salud`
+ADD FOREIGN KEY(`estado_id`) REFERENCES `estado`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `centros_salud`
+ADD FOREIGN KEY(`mcpo_id`) REFERENCES `mcpo`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `centros_salud`
+ADD FOREIGN KEY(`parroquia_id`) REFERENCES `parroquia`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuarios`
+ADD FOREIGN KEY(`profesion_id`) REFERENCES `profesiones`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `personal`
+ADD FOREIGN KEY(`centro_id`) REFERENCES `centros_salud`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `personal`
+ADD FOREIGN KEY(`profesion_id`) REFERENCES `profesiones`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_vacunas`
+ADD FOREIGN KEY(`centro_id`) REFERENCES `centros_salud`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;

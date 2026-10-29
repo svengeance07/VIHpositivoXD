@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import {
   ESTADOS_CERTIFICADO,
   ESTADOS_LOTE,
+  EXAMENES,
   GRADOS_INSTRUCCION,
   GRUPOS_ETNICOS,
   PROFESIONES,
@@ -33,6 +34,7 @@ export class CatalogosService {
     signal<readonly { id: EstadoCertificado; nombre: string }[]>(ESTADOS_CERTIFICADO);
   private readonly _vacunas = signal<readonly VacunaCatalogo[]>(VACUNAS);
   private readonly _profesiones = signal<readonly ItemCatalogo[]>(PROFESIONES);
+  private readonly _examenes = signal<readonly ItemCatalogo[]>(EXAMENES);
   private readonly _gradosInstruccion = signal<readonly ItemCatalogo[]>(GRADOS_INSTRUCCION);
   private readonly _gruposEtnicos = signal<readonly ItemCatalogo[]>(GRUPOS_ETNICOS);
   private readonly _tiposEstablecimiento = signal<readonly ItemCatalogo[]>(TIPOS_ESTABLECIMIENTO);
@@ -44,6 +46,7 @@ export class CatalogosService {
   readonly estadosCertificado = this._estadosCertificado.asReadonly();
   readonly vacunas = this._vacunas.asReadonly();
   readonly profesiones = this._profesiones.asReadonly();
+  readonly examenes = this._examenes.asReadonly();
   readonly gradosInstruccion = this._gradosInstruccion.asReadonly();
   readonly gruposEtnicos = this._gruposEtnicos.asReadonly();
   readonly tiposEstablecimiento = this._tiposEstablecimiento.asReadonly();

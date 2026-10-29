@@ -1,0 +1,846 @@
+<div class="ps-pagina">
+  <!-- Cabecera de la sección -->
+  <app-ps-encabezado
+    [eyebrow]="'Consulta Clínica y Vacunación · ' + nombreCentro()"
+    titulo="Consultar Estatus y Aplicar Vacunas"
+    descripcion="Busca a un ciudadano por su número de cédula o cedula de su representante en caso de ser menor de edad, examina su carnet de inmunización y registra la administración inmediata de una o más vacunas."
+  >
+    <a class="btn btn-primary" routerLink="/PS/pacientes/nuevo">
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      <span>Registrar Nuevo Paciente</span>
+    </a>
+  </app-ps-encabezado>
+
+  <!-- Mensaje de éxito al registrar vacunas -->
+  @if (mensajeExito()) {
+    <aside class="panel alerta-exito" role="status">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <div class="alerta-exito__texto">
+        <strong>¡Vacunación Registrada!</strong>
+        <p>{{ mensajeExito() }}</p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        (click)="mensajeExito.set('')"
+        aria-label="Cerrar aviso"
+      >
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </aside>
+  }
+
+  <!-- ================================================================= -->
+  <!-- ESTADO A: BÚSQUEDA Y SELECCIÓN DE PACIENTES                       -->
+  <!-- ================================================================= -->
+  @if (!pacienteSeleccionado()) {
+    <!-- Barra de Búsqueda Avanzada y Filtros -->
+    <section class="panel ps-busqueda-caja" aria-label="Buscador de pacientes">
+      <div class="ps-busqueda-caja__input">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <input
+          type="search"
+          class="ui-input ui-input--lg"
+          placeholder="Escribe la cédula del paciente, cédula del representante o nombre"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          aria-label="Buscar paciente por cédula o nombre"
+          autofocus
+        />
+      </div>
+
+      <div class="ps-busqueda-caja__filtros">
+        <div class="filtro-tabs" role="group" aria-label="Filtro por grupo de edad">
+          <button
+            type="button"
+            class="filtro-tab"
+            [class.is-activo]="filtroTipoPaciente() === 'todos'"
+            (click)="filtroTipoPaciente.set('todos')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="filtro-tab"
+            [class.is-activo]="filtroTipoPaciente() === 'adultos'"
+            (click)="filtroTipoPaciente.set('adultos')"
+          >
+            Solo Adultos
+          </button>
+          <button
+            type="button"
+            class="filtro-tab"
+            [class.is-activo]="filtroTipoPaciente() === 'menores'"
+            (click)="filtroTipoPaciente.set('menores')"
+          >
+            Menores de Edad (Pediátrico)
+          </button>
+        </div>
+
+        @if (busqueda() || filtroTipoPaciente() !== 'todos') {
+          <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
+            Limpiar búsqueda
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Grilla de Resultados de Pacientes -->
+    <section class="ps-resultados-seccion" aria-label="Resultados de pacientes">
+      <div class="ps-resultados-cabecera">
+        <h3>Pacientes Encontrados ({{ pacientesCoincidentes().length }})</h3>
+        <p>Selecciona un paciente para visualizar su carnet y proceder a inmunizarlo.</p>
+      </div>
+
+      <div class="pacientes-grid">
+        @for (pac of pacientesCoincidentes(); track pac.id) {
+          <article
+            class="panel paciente-tarjeta"
+            (click)="seleccionarPaciente(pac)"
+            tabindex="0"
+            role="button"
+          >
+            <div class="paciente-tarjeta__cabecera">
+              <div class="paciente-avatar" [class.paciente-avatar--menor]="pac.esMenor">
+                {{ pac.esMenor ? '👶' : '👤' }}
+              </div>
+              <div class="paciente-titulos">
+                <h4>{{ pac.nombre }}</h4>
+                <div class="paciente-cedula-linea">
+                  @if (pac.cedula) {
+                    <strong>C.I. {{ pac.cedula }}</strong>
+                  } @else {
+                    <strong>Menor sin cédula</strong>
+                  }
+                  <span
+                    class="badge"
+                    [class.badge-menor]="pac.esMenor"
+                    [class.badge-adulto]="!pac.esMenor"
+                  >
+                    {{ pac.esMenor ? 'Menor de Edad' : 'Adulto' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            @if (pac.esMenor && pac.nombreRepresentante) {
+              <div class="representante-aviso">
+                <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+                <span
+                  ><strong>Representante:</strong> {{ pac.nombreRepresentante }} (C.I.
+                  {{ pac.cedulaRepresentante }})</span
+                >
+              </div>
+            }
+
+            <div class="paciente-tarjeta__datos">
+              <div>
+                <span>Edad:</span>
+                <strong>{{ calcularEdad(pac.fechaNacimiento) }}</strong>
+              </div>
+              <div>
+                <span>Sexo:</span>
+                <strong>{{
+                  pac.sexo === 'M' ? 'Masculino' : pac.sexo === 'F' ? 'Femenino' : 'Otro'
+                }}</strong>
+              </div>
+              <div>
+                <span>Teléfono:</span>
+                <strong>{{ pac.telefonoCelular || pac.telefono || 'No registrado' }}</strong>
+              </div>
+            </div>
+
+            <footer class="paciente-tarjeta__pie">
+              <span class="btn-ver-carnet">
+                <span>Ver Carnet y Vacunar</span>
+                <span class="flecha" aria-hidden="true">→</span>
+              </span>
+            </footer>
+          </article>
+        } @empty {
+          <div class="panel estado-vacio">
+            <ca-icon name="filter" aria-hidden="true"></ca-icon>
+            <h4>No se encontraron pacientes con "{{ busqueda() }}"</h4>
+            <p>Verifica el número de cédula o registra al ciudadano si asiste por primera vez.</p>
+            <a class="btn btn-primary" routerLink="/PS/pacientes/nuevo">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>Registrar Paciente Ahora</span>
+            </a>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================= -->
+  <!-- ESTADO B: FICHA CLÍNICA DEL PACIENTE Y CARNET DE INMUNIZACIÓN     -->
+  <!-- ================================================================= -->
+  @if (pacienteSeleccionado(); as pac) {
+    <div class="ps-ficha-seccion">
+      <!-- Botón de retorno a la lista de búsqueda -->
+      <button type="button" class="btn btn-ghost btn-volver" (click)="deseleccionarPaciente()">
+        <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+        <span>Volver a la búsqueda de pacientes</span>
+      </button>
+
+      <!-- Ficha de Identidad del Paciente -->
+      <section class="panel ps-paciente-ficha">
+        <div class="ps-paciente-ficha__cabecera">
+          <div class="paciente-avatar-grande" [class.paciente-avatar-grande--menor]="pac.esMenor">
+            {{ pac.esMenor ? '👶' : '👤' }}
+          </div>
+
+          <div class="ps-paciente-ficha__titulos">
+            <div class="titulos-linea">
+              <h2>{{ pac.nombre }}</h2>
+              <span
+                class="badge"
+                [class.badge-menor]="pac.esMenor"
+                [class.badge-adulto]="!pac.esMenor"
+              >
+                {{ pac.esMenor ? 'Pediátrico / Menor' : 'Ciudadano Adulto' }}
+              </span>
+            </div>
+            <p class="cedula-destacada">
+              @if (pac.cedula) {
+                Cédula de Identidad: <strong>{{ pac.cedula }}</strong>
+              } @else {
+                Cédula de Identidad:
+                <strong>Sin cédula propia (Vinculado a C.I. {{ pac.cedulaRepresentante }})</strong>
+              }
+            </p>
+          </div>
+
+          <!-- BOTÓN PRINCIPAL: APLICAR VACUNA -->
+          <div class="ps-paciente-ficha__acciones">
+            <button type="button" class="btn btn-primary btn-lg" (click)="abrirModalVacunar()">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>Aplicar Vacuna a este Paciente</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Representante legal en caso de menor -->
+        @if (pac.esMenor) {
+          <div class="bloque-representante">
+            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <div>
+              <strong>Representante Legal Asociado:</strong>
+              <p>{{ pac.nombreRepresentante }} · C.I. {{ pac.cedulaRepresentante }}</p>
+            </div>
+          </div>
+        }
+
+        <!-- Grilla de datos filiatorios -->
+        <div class="datos-filiatorios-grid">
+          <div class="dato-item">
+            <span>Fecha de Nacimiento</span>
+            <strong>{{ pac.fechaNacimiento }} ({{ calcularEdad(pac.fechaNacimiento) }})</strong>
+          </div>
+          <div class="dato-item">
+            <span>Sexo</span>
+            <strong>{{
+              pac.sexo === 'M' ? 'Masculino' : pac.sexo === 'F' ? 'Femenino' : 'Otro'
+            }}</strong>
+          </div>
+          <div class="dato-item">
+            <span>Teléfono Celular</span>
+            <strong>{{ pac.telefonoCelular || pac.telefono || 'No registrado' }}</strong>
+          </div>
+          <div class="dato-item">
+            <span>Domicilio / Residencia</span>
+            <strong>{{ pac.domicilio || pac.direccion || 'No registrada' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN DEL CARNET: Historial de Inmunizaciones Aplicadas (Puntos 4 y 6) -->
+      <section class="panel ps-bloque-carnet-contenedor" aria-label="Carnet digital de vacunación">
+        <header class="ps-bloque-cabecera">
+          <div>
+            <span class="ca-section-eyebrow">
+              <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+              Ficha Sanitaria Oficial
+            </span>
+            <h3>Carnet Digital de Inmunización</h3>
+            <p>Registro oficial y trazabilidad de vacunas recibidas en la red pública de salud.</p>
+          </div>
+
+          <div class="carnet-acciones-cabecera">
+            <!-- Selector de Vista: Carnet vs Tabla -->
+            <div class="vista-switcher" role="radiogroup" aria-label="Modo de visualización">
+              <button
+                type="button"
+                class="vista-switcher-btn"
+                [class.is-activo]="modoVistaCarnet() === 'carnet'"
+                (click)="modoVistaCarnet.set('carnet')"
+                title="Ver en formato Carnet Oficial"
+              >
+                <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+                <span>Carnet</span>
+              </button>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm" (click)="abrirModalVacunar()">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>+ Aplicar Vacuna</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- VISTA MODO 1: CARNET DIGITAL OFICIAL CON SELLOS DE VACUNACIÓN -->
+        @if (modoVistaCarnet() === 'carnet') {
+          <article class="carnet-oficial" aria-label="Carnet de vacunación">
+            <!-- Cinta de seguridad superior -->
+            <div class="carnet-cinta-seguridad">
+              <div class="cinta-info">
+                <span class="cinta-bandera" aria-hidden="true">🇻🇪</span>
+                <span class="cinta-titulo"
+                  >REPÚBLICA BOLIVARIANA DE VENEZUELA · MINISTERIO DEL PODER POPULAR PARA LA
+                  SALUD</span
+                >
+              </div>
+              <span class="cinta-validacion">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span>SISTEMA V · CARNET OFICIAL VÁLIDO</span>
+              </span>
+            </div>
+
+            <!-- Cabecera del carnet con datos del titular -->
+            <div class="carnet-titular-bloque">
+              <div class="carnet-titular-avatar" aria-hidden="true">
+                {{ pac.esMenor ? '👶' : '👤' }}
+              </div>
+              <div class="carnet-titular-datos">
+                <div class="carnet-titular-nombre-fila">
+                  <h4>{{ pac.nombre }}</h4>
+                  @if (pac.esMenor) {
+                    <span class="badge-menor">Menor (Pediátrico)</span>
+                  }
+                  @if (pac.cedula) {
+                    <span class="badge-carnet-cedula">C.I. {{ pac.cedula }}</span>
+                  }
+                </div>
+
+                <div class="carnet-titular-meta-grid">
+                  <div>
+                    <span class="label-mini">Fecha de Nacimiento:</span>
+                    <strong
+                      >{{ pac.fechaNacimiento }} ({{ calcularEdad(pac.fechaNacimiento) }})</strong
+                    >
+                  </div>
+                  <div>
+                    <span class="label-mini">Grupo Sanguíneo:</span>
+                    <strong class="tag-sangre">{{ pac.tipoSangre || 'No registrado' }}</strong>
+                  </div>
+                  <div>
+                    <span class="label-mini">Centro Emisor:</span>
+                    <span>{{ nombreCentro() }}</span>
+                  </div>
+                  @if (pac.esMenor && pac.nombreRepresentante) {
+                    <div>
+                      <span class="label-mini">Representante Legal:</span>
+                      <strong>{{ pac.nombreRepresentante }}</strong>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Sello heráldico / QR digital del carnet -->
+              <div class="carnet-titular-folio">
+                <div class="carnet-sello-circular" aria-hidden="true">
+                  <span>VALIDADO</span>
+                  <strong>MPPS</strong>
+                  <small>2026</small>
+                </div>
+                <span class="folio-texto">FOLIO: #{{ pac.id.toUpperCase() }}</span>
+              </div>
+            </div>
+
+            <!-- Cuadrícula de Sellos de Inmunización Aplicadas -->
+            <div class="carnet-sellos-contenedor">
+              <div class="carnet-sellos-titulo">
+                <h5>Sellos de Inmunización Administradas ({{ historialAplicaciones().length }})</h5>
+                <small
+                  >Cada sello certifica la administración biológica por un profesional
+                  acreditado.</small
+                >
+              </div>
+
+              <div class="carnet-sellos-grid">
+                @for (app of historialAplicaciones(); track app.id) {
+                  <div class="sello-vacuna-card">
+                    <!-- Cabecera del sello con dosis -->
+                    <div class="sello-vacuna-cabecera">
+                      <span class="sello-dosis-badge">
+                        <ca-icon name="check" aria-hidden="true"></ca-icon>
+                        <span>Dosis #{{ app.dosis }}</span>
+                      </span>
+                      <span class="sello-lote-tag">LOTE: {{ app.lote }}</span>
+                    </div>
+
+                    <!-- Nombre de la vacuna -->
+                    <div class="sello-vacuna-cuerpo">
+                      <div class="sello-vacuna-icono" aria-hidden="true">💉</div>
+                      <div class="sello-vacuna-info">
+                        <strong>{{ app.vacunaNombre }}</strong>
+                        <span class="sello-fecha-hora">
+                          <ca-icon name="calendar" aria-hidden="true"></ca-icon>
+                          <span
+                            >{{ app.fechaAplicacion }} · {{ app.horaAplicacion || 'Jornada' }}</span
+                          >
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Detalles de administración -->
+                    <div class="sello-vacuna-detalles">
+                      <div class="sello-responsable">
+                        <span class="label-mini">Aplicado por:</span>
+                        <strong>{{ app.enfermeroNombre }}</strong>
+                      </div>
+                      @if (app.observaciones) {
+                        <p class="sello-observaciones">"{{ app.observaciones }}"</p>
+                      }
+                    </div>
+
+                    <!-- Timbre de pie de sello -->
+                    <div class="sello-vacuna-pie">
+                      <span class="sello-centro-nombre">{{ app.centroId }}</span>
+                      <span class="sello-check-verif">✓ REGISTRO VALIDADO</span>
+                    </div>
+                  </div>
+                }
+
+                <!-- Tarjeta para aplicar la siguiente dosis -->
+                <div
+                  class="sello-vacuna-card sello-vacuna-card--anadir"
+                  (click)="abrirModalVacunar()"
+                  role="button"
+                  tabindex="0"
+                >
+                  <div class="anadir-dosis-icono">
+                    <ca-icon name="plus" aria-hidden="true"></ca-icon>
+                  </div>
+                  <strong>Registrar Nueva Dosis</strong>
+                  <p>Aplica un nuevo biológico a este paciente e incorpóralo al carnet.</p>
+                  <span class="btn-anadir-sello">+ Aplicar Inmunización</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+
+        <!-- VISTA MODO 2: TABLA DE AUDITORÍA CLÍNICA TRADICIONAL -->
+        @if (modoVistaCarnet() === 'tabla') {
+          <div class="tabla-contenedor">
+            <table class="ui-table">
+              <thead>
+                <tr>
+                  <th scope="col">Biológico / Vacuna</th>
+                  <th scope="col">Dosis</th>
+                  <th scope="col">Número de Lote</th>
+                  <th scope="col">Fecha y Hora</th>
+                  <th scope="col">Enfermero Responsable</th>
+                  <th scope="col">Observaciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of historialAplicaciones(); track app.id) {
+                  <tr>
+                    <td>
+                      <div class="vacuna-celda">
+                        <strong>{{ app.vacunaNombre }}</strong>
+                        <small class="badge-centro">Centro: {{ app.centroId }}</small>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge-dosis">Dosis #{{ app.dosis }}</span>
+                    </td>
+                    <td>
+                      <span class="badge-lote">{{ app.lote }}</span>
+                    </td>
+                    <td>
+                      <div class="fecha-celda">
+                        <span>{{ app.fechaAplicacion }}</span>
+                        <small>{{ app.horaAplicacion }}</small>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="enfermero-tag">{{ app.enfermeroNombre }}</span>
+                    </td>
+                    <td>
+                      <span class="observaciones-texto">{{
+                        app.observaciones || 'Sin observaciones registradas'
+                      }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="tabla-vacia">
+                      Este paciente aún no tiene vacunas registradas en el sistema. Puedes proceder
+                      a colocar su primera dosis.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+
+      <!-- SECCIÓN: Historial de Alertas ESAVI del Paciente (Punto 5) -->
+      @if (reportesPaciente().length > 0) {
+        <section class="panel ps-alertas-paciente" aria-label="Historial de reacciones adversas">
+          <header class="ps-alertas-cabecera">
+            <div class="alerta-icono-pulso" aria-hidden="true">
+              <ca-icon name="warning"></ca-icon>
+            </div>
+            <div class="alerta-titulos">
+              <div class="badge-alerta-header">
+                <span>VIGILANCIA FARMACOLÓGICA (ESAVI) · ATENCIÓN CLÍNICA</span>
+              </div>
+              <h3>
+                Antecedentes de Reacciones Adversas Registradas ({{ reportesPaciente().length }})
+              </h3>
+              <p>
+                Eventos supuestamente atribuibles a la vacunación o inmunización documentados en el
+                expediente de este paciente.
+              </p>
+            </div>
+          </header>
+
+          <div class="alertas-paciente-lista">
+            @for (rep of reportesPaciente(); track rep.id) {
+              <article
+                class="alerta-item-clinico"
+                [class.alerta-item-clinico--leve]="rep.gravedad === 'leve'"
+                [class.alerta-item-clinico--moderado]="rep.gravedad === 'moderado'"
+                [class.alerta-item-clinico--severo]="rep.gravedad === 'severo'"
+              >
+                <!-- Cabecera de la ficha del evento adverso -->
+                <div class="alerta-ficha-top">
+                  <div class="alerta-ficha-vacuna">
+                    <span class="alerta-vacuna-label">Biológico Causal Sospechoso:</span>
+                    <h4>{{ rep.vacunaNombre }}</h4>
+                    <div class="alerta-vacuna-meta">
+                      <span class="badge-lote">LOTE: {{ rep.lote }}</span>
+                      <span class="alerta-fecha-badge">
+                        <ca-icon name="calendar" aria-hidden="true"></ca-icon>
+                        <span>Reportado: {{ rep.fechaReporte }} · {{ rep.horaReporte }}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Badge de severidad clínica -->
+                  <div
+                    class="alerta-gravedad-pill"
+                    [class.alerta-gravedad-pill--severo]="rep.gravedad === 'severo'"
+                  >
+                    <span class="gravedad-punto" aria-hidden="true"></span>
+                    <span>GRAVEDAD: {{ rep.gravedad | uppercase }}</span>
+                  </div>
+                </div>
+
+                <!-- Bloque de Síntomas Manifestados en Chips -->
+                <div class="alerta-sintomas-bloque">
+                  <span class="alerta-bloque-titulo"
+                    >Síntomas Clínicos Manifestados por el Paciente:</span
+                  >
+                  <div class="sintomas-chips-grid">
+                    @for (sintoma of rep.sintomas; track sintoma) {
+                      <span class="sintoma-chip-item">
+                        <span class="sintoma-chip-icono" aria-hidden="true">⚠️</span>
+                        <span>{{ sintoma }}</span>
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Bloque de Tratamiento e Indicaciones Dictadas -->
+                <div class="alerta-tratamiento-caja">
+                  <div class="tratamiento-caja-header">
+                    <span class="rx-simbolo" aria-hidden="true">℞</span>
+                    <strong>Tratamiento Clínico Prescrito e Indicaciones Dictadas:</strong>
+                  </div>
+                  <p class="tratamiento-texto">{{ rep.indicacionesDictadas }}</p>
+                </div>
+
+                <!-- Pie de Auditoría y Transmisión a Subregión -->
+                <footer class="alerta-ficha-pie">
+                  <div class="alerta-auditoria-prof">
+                    <span class="prof-label">Profesional Notificador:</span>
+                    <strong>{{ rep.enfermeroNombre }}</strong>
+                  </div>
+
+                  <div class="alerta-subregion-status">
+                    <ca-icon name="send" aria-hidden="true"></ca-icon>
+                    <span
+                      >Notificación Estadal:
+                      <strong>{{ rep.estadoSubregion | titlecase }}</strong> a Subregión</span
+                    >
+                  </div>
+                </footer>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+
+  <!-- ================================================================= -->
+  <!-- MODAL: APLICAR VACUNA(S) A UN PACIENTE (PUNTOS 4 Y 6)              -->
+  <!-- ================================================================= -->
+  <ca-modal
+    [attr.open]="modalVacunarAbierto() ? '' : null"
+    backdrop-label="Cerrar formulario de vacunación"
+    (openchange)="cerrarModalVacunar()"
+  >
+    @if (pacienteSeleccionado(); as pac) {
+      <section class="ps-modal ps-modal--vacunar" role="dialog" aria-modal="true" tabindex="-1">
+        <header class="ps-modal__cabecera">
+          <div class="modal-cabecera-info">
+            <span class="modal-eyebrow">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>Estación de Inmunización · {{ nombreCentro() }}</span>
+            </span>
+            <h2>Aplicar Inmunización</h2>
+          </div>
+          <ca-modal-close (click)="cerrarModalVacunar()" label="Cerrar formulario"></ca-modal-close>
+        </header>
+
+        <!-- Tarjeta de identificación del paciente receptor de la dosis -->
+        <div class="paciente-resumen-modal">
+          <div class="paciente-resumen-modal__avatar" aria-hidden="true">
+            {{ pac.esMenor ? '👶' : '👤' }}
+          </div>
+          <div class="paciente-resumen-modal__datos">
+            <div class="paciente-resumen-modal__linea1">
+              <strong>{{ pac.nombre }}</strong>
+              @if (pac.esMenor) {
+                <span class="badge-menor">Menor (Pediátrico)</span>
+              }
+              @if (pac.cedula) {
+                <span class="badge-cedula">C.I. {{ pac.cedula }}</span>
+              }
+            </div>
+
+            <div class="paciente-resumen-modal__linea2">
+              <span
+                >Edad: <strong>{{ calcularEdad(pac.fechaNacimiento) }}</strong></span
+              >
+              @if (pac.tipoSangre) {
+                <span
+                  >· Sangre: <strong>{{ pac.tipoSangre }}</strong></span
+                >
+              }
+              @if (pac.esMenor && pac.nombreRepresentante) {
+                <span
+                  >· Tutor: <strong>{{ pac.nombreRepresentante }}</strong></span
+                >
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (errorFormulario()) {
+          <aside class="alerta-error" role="alert">
+            <ca-icon name="warning" aria-hidden="true"></ca-icon>
+            <span>{{ errorFormulario() }}</span>
+          </aside>
+        }
+
+        <form class="ps-modal__cuerpo" (submit)="confirmarAplicacion($event)">
+          <!-- PASO 1: SELECCIONAR BIOLÓGICO, DOSIS Y LOTE -->
+          <div class="panel-estacion-vacunacion">
+            <div class="estacion-cabecera">
+              <div class="estacion-paso-badge">1</div>
+              <div>
+                <h3>Seleccionar Biológico, Dosis y Lote</h3>
+                <p>Configura la vacuna a administrar al paciente.</p>
+              </div>
+            </div>
+
+            <div class="campos-vacunacion-grid">
+              <!-- Selector de vacuna -->
+              <label class="field campo-completo">
+                <span class="field-label">Vacuna / Biológico a Administrar *</span>
+                <select
+                  class="ui-select ui-select--destacado"
+                  [ngModel]="vacunaElegidaId()"
+                  (ngModelChange)="onCambioVacuna($event)"
+                  name="vacuna"
+                  required
+                >
+                  @for (v of vacunasDisponibles(); track v.id) {
+                    <option [value]="v.id">{{ v.nombre }}</option>
+                  }
+                </select>
+              </label>
+
+              <!-- Número de dosis -->
+              <label class="field">
+                <span class="field-label">Número de Dosis *</span>
+                <select
+                  class="ui-select"
+                  [ngModel]="dosisElegida()"
+                  (ngModelChange)="dosisElegida.set(+$event)"
+                  name="dosis"
+                  required
+                >
+                  <option [value]="1">Dosis #1 (Primera dosis)</option>
+                  <option [value]="2">Dosis #2 (Segunda dosis)</option>
+                  <option [value]="3">Dosis #3 (Tercera dosis)</option>
+                  <option [value]="4">Dosis #4 (Refuerzo)</option>
+                  <option [value]="5">Refuerzo Anual / Decenal</option>
+                </select>
+              </label>
+
+              <!-- Lote disponible -->
+              <label class="field">
+                <span class="field-label">Lote Biológico Disponible *</span>
+                <select
+                  class="ui-select"
+                  [ngModel]="loteElegido()"
+                  (ngModelChange)="loteElegido.set($event)"
+                  name="lote"
+                  required
+                >
+                  @for (l of lotesDisponibles(); track l) {
+                    <option [value]="l">{{ l }}</option>
+                  }
+                </select>
+              </label>
+
+              <!-- Observaciones / sitio de punción -->
+              <label class="field campo-completo">
+                <span class="field-label"
+                  >Observaciones Clínicas o Sitio de Punción (Opcional)</span
+                >
+                <input
+                  type="text"
+                  class="ui-input"
+                  placeholder="Ej: Vía intramuscular en deltoides izquierdo. Tolera adecuadamente."
+                  [ngModel]="observacionesElegidas()"
+                  (ngModelChange)="observacionesElegidas.set($event)"
+                  name="observaciones"
+                />
+              </label>
+            </div>
+
+            <!-- Botón para multivacunación -->
+            <div class="boton-anadir-box">
+              <button type="button" class="btn btn-secondary btn-sm" (click)="agregarACola()">
+                <ca-icon name="plus" aria-hidden="true"></ca-icon>
+                <span>Añadir a la Sesión (Multivacunación)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PASO 2: RESUMEN DE VACUNAS A APLICAR EN LA SESIÓN -->
+          <div class="resumen-cola-seccion">
+            <div class="estacion-cabecera">
+              <div class="estacion-paso-badge">2</div>
+              <div>
+                <h4>
+                  Vacunas Preparadas en esta Sesión
+                  @if (colaVacunacion().length > 0) {
+                    <span class="badge-contador">({{ colaVacunacion().length }})</span>
+                  }
+                </h4>
+                <p>Biológicos que serán asentados en el carnet clínico al confirmar.</p>
+              </div>
+            </div>
+
+            @if (colaVacunacion().length > 0) {
+              <div class="cola-lista">
+                @for (item of colaVacunacion(); track item.vacunaId; let idx = $index) {
+                  <div class="cola-item">
+                    <div class="cola-item__numero">{{ idx + 1 }}</div>
+                    <div class="cola-item__datos">
+                      <strong>{{ item.vacunaNombre }}</strong>
+                      <div class="cola-item__meta">
+                        <span class="badge-dosis">Dosis #{{ item.dosis }}</span>
+                        <span class="badge-lote">Lote: {{ item.lote }}</span>
+                        @if (item.observaciones) {
+                          <span class="cola-item__obs">· {{ item.observaciones }}</span>
+                        }
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm btn-remover"
+                      (click)="removerDeCola(idx)"
+                      title="Quitar de la sesión"
+                      aria-label="Quitar de la sesión"
+                    >
+                      <ca-icon name="trash" aria-hidden="true"></ca-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="cola-directa-aviso">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <div>
+                  <strong>Aplicación Directa Preparada</strong>
+                  <p>
+                    Se aplicará directamente la vacuna seleccionada en el paso 1. Si necesitas
+                    administrar 2 o más vacunas juntas, presiona
+                    <strong>"Añadir a la Sesión"</strong> arriba.
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- PASO 3: PROFESIONAL RESPONSABLE (ASIGNADO AUTOMÁTICAMENTE POR SESIÓN) -->
+          <div class="profesional-selector-box">
+            <div class="estacion-cabecera">
+              <div class="estacion-paso-badge">3</div>
+              <div class="profesional-responsable-info">
+                <span class="field-label">Profesional Responsable de la Aplicación</span>
+                <div class="profesional-activo-ficha">
+                  <div class="profesional-activo-avatar" aria-hidden="true">
+                    {{ inicialesProfesional() }}
+                  </div>
+                  <div class="profesional-activo-datos">
+                    <div class="profesional-activo-nombre">
+                      <strong>{{ enfermeroActual().nombre }}</strong>
+                      <span class="badge-sesion-activa">
+                        <span class="badge-sesion-activa__dot"></span>
+                        Sesión Activa
+                      </span>
+                    </div>
+                    <div class="profesional-activo-credencial">
+                      <span>C.I. {{ enfermeroActual().cedula }}</span>
+                      <span
+                        >· Colegiado: <strong>{{ enfermeroActual().idProfesional }}</strong></span
+                      >
+                      <span>· {{ nombreCentro() }}</span>
+                    </div>
+                  </div>
+                </div>
+                <small class="field-hint">
+                  La administración se registrará de forma automática a tu nombre y colegiatura en
+                  el carnet oficial del paciente.
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <footer class="ps-modal__pie">
+            <button type="button" class="btn btn-ghost" (click)="cerrarModalVacunar()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary btn-confirmar-vacunacion">
+              <ca-icon name="check" aria-hidden="true"></ca-icon>
+              <span>Confirmar y Asentar en Carnet</span>
+            </button>
+          </footer>
+        </form>
+      </section>
+    }
+  </ca-modal>
+</div>

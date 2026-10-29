@@ -1,0 +1,990 @@
+/**
+ * ====================================================================
+ * Estilos de Vigilancia Farmacológica (ESAVI) e Incidencias con Vacunas
+ * ====================================================================
+ * Lenguaje de diseño Liquid Glass (Caustica Design) con tarjetas translúcidas,
+ * acentos semánticos de severidad médica y modales de alta legibilidad clínica.
+ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* Alerta de confirmación de reporte */
+.alerta-exito {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.85rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+}
+
+.alerta-exito ca-icon {
+  font-size: 1.25rem;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.alerta-exito__texto {
+  flex: 1;
+}
+
+.alerta-exito__texto strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.alerta-exito__texto p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.alerta-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #b91c1c;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* 1. Métricas de Vigilancia Epidemiológica                           */
+/* ------------------------------------------------------------------ */
+
+.ps-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  padding: 1.25rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.metrica__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.metrica__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.75rem;
+  font-size: 1.15rem;
+}
+
+.metrica__icono--rojo {
+  background: rgba(239, 68, 68, 0.14);
+  color: #dc2626;
+}
+
+.metrica__icono--azul {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0284c7;
+}
+
+.metrica__icono--morado {
+  background: rgba(168, 85, 247, 0.14);
+  color: #9333ea;
+}
+
+.metrica__icono--verde {
+  background: rgba(16, 185, 129, 0.14);
+  color: #059669;
+}
+
+.metrica__etiqueta {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metrica strong {
+  font-size: 1.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.metrica small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.gravedad-resumen {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.gravedad-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.gravedad-tag--leve {
+  background: rgba(234, 179, 8, 0.12);
+  color: #ca8a04;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.gravedad-tag--moderado {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.gravedad-tag--severo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Filtros y Búsqueda                                              */
+/* ------------------------------------------------------------------ */
+
+.ps-filtros {
+  padding: 1.15rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ps-filtros__busqueda {
+  flex: 1 1 280px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+}
+
+.ps-filtros__busqueda input {
+  width: 100%;
+}
+
+.ps-filtros__selectores {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.filtro-campo {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.filtro-campo__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Grilla de Reportes Registrados                                 */
+/* ------------------------------------------------------------------ */
+
+.ps-reportes-seccion {
+  display: grid;
+  gap: 1rem;
+}
+
+.ps-reportes-cabecera h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.ps-reportes-cabecera p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.2rem;
+}
+
+.reporte-card {
+  padding: 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  position: relative;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.reporte-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(14, 165, 233, 0.35);
+}
+
+.reporte-card--moderado {
+  border-left: 4px solid #f97316;
+}
+
+.reporte-card--severo {
+  border-left: 4px solid #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.03), var(--surface-glass));
+}
+
+.reporte-card__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.reporte-card__fecha {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.reporte-card__cabecera h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.reporte-card__cedula {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.reporte-card__vacuna-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.reporte-card__vacuna-bloque strong {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.lote-fecha-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.2rem;
+}
+
+.badge-lote {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.label-muted {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sintomas-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.sintoma-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.09);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.reporte-card__indicaciones p {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.45;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.65rem;
+  border: 1px dashed var(--border-subtle);
+}
+
+.reporte-card__pie {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.reporte-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.reporte-card__meta small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.estado-subregion-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #0369a1;
+}
+
+.estado-subregion-badge ca-icon {
+  font-size: 0.85rem;
+}
+
+/* Estado vacío */
+.estado-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--surface-glass);
+  border: 1px dashed var(--border-subtle);
+}
+
+.estado-vacio ca-icon {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+
+.estado-vacio h4 {
+  margin: 0 0 0.3rem;
+  font-size: 1.15rem;
+}
+
+.estado-vacio p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Estilos de Modal y Formularios                                  */
+/* ------------------------------------------------------------------ */
+
+ca-modal {
+  --modal-z: 1200;
+}
+
+.ps-modal {
+  position: relative;
+  z-index: 100;
+  isolation: isolate;
+  width: min(94vw, 780px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #ffffff);
+  border-radius: 1.4rem;
+  border: 1.5px solid var(--border-subtle);
+  box-shadow:
+    0 24px 60px -10px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  color: var(--text);
+}
+
+.ps-modal--amplio {
+  width: min(94vw, 820px);
+}
+
+.ps-modal__cabecera {
+  padding: 1.35rem 1.75rem 1.15rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-cabecera-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ea580c;
+  margin-bottom: 0.15rem;
+}
+
+.modal-eyebrow ca-icon {
+  font-size: 0.85rem;
+}
+
+.ps-modal__cabecera h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.ps-modal__cabecera p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.ps-modal__cuerpo {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ps-paso-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 1.1rem;
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px solid var(--border-subtle);
+}
+
+.ps-paso-bloque h3 {
+  margin: 0;
+  font-size: 1.04rem;
+  font-weight: 750;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.paso-numero-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+.paso-desc {
+  margin: -0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+/* Previsualización del paciente elegido */
+.paciente-elegido-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(14, 165, 233, 0.04));
+  border: 1px solid rgba(2, 132, 199, 0.22);
+}
+
+.paciente-elegido-avatar {
+  font-size: 1.6rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(2, 132, 199, 0.12);
+  flex-shrink: 0;
+}
+
+.paciente-elegido-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.paciente-elegido-info strong {
+  font-size: 0.94rem;
+  color: var(--text);
+}
+
+.paciente-elegido-info small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Grilla de vacunas previas del paciente */
+.vacunas-previas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.75rem;
+}
+
+.vacuna-opcion-card {
+  padding: 0.85rem 1.05rem;
+  border-radius: 0.9rem;
+  background: var(--surface, #ffffff);
+  border: 1.5px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 180ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  position: relative;
+}
+
+.vacuna-opcion-card:hover {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.04);
+  transform: translateY(-1px);
+}
+
+.vacuna-opcion-card.is-seleccionada {
+  border-color: #0284c7;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(14, 165, 233, 0.05));
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35);
+}
+
+.vacuna-opcion-titulos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vacuna-opcion-titulos strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.vacuna-opcion-check {
+  color: #0284c7;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.vacuna-opcion-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.badge-dosis {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(2, 132, 199, 0.1);
+  color: #0284c7;
+}
+
+.campos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+/* Selector interactivo de síntomas */
+.sintomas-selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.sintoma-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border-subtle);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sintoma-toggle-btn:hover {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.sintoma-toggle-btn.is-activo {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.06));
+  border-color: #dc2626;
+  color: #b91c1c;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+  font-weight: 700;
+}
+
+.sintoma-toggle-btn ca-icon {
+  font-size: 0.85rem;
+}
+
+.campo-adicional-sintoma {
+  margin-top: 0.35rem;
+}
+
+.ui-textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface, #ffffff);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  resize: vertical;
+  transition: all 160ms ease;
+}
+
+.ui-textarea:focus {
+  outline: none;
+  border-color: var(--color-primario, #0284c7);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* Nivel de gravedad selector */
+.gravedad-radio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.gravedad-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: 0.95rem;
+  background: var(--surface, #ffffff);
+  border: 1.5px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+}
+
+.gravedad-radio-card:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+.gravedad-radio-card.is-activo {
+  border-width: 2px;
+}
+
+.gravedad-radio-card--leve.is-activo {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.03));
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+}
+
+.gravedad-radio-card--moderado.is-activo {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.03));
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15);
+}
+
+.gravedad-radio-card--severo.is-activo {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04));
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);
+}
+
+.gravedad-radio-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.gravedad-radio-info strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.gravedad-radio-info small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.aviso-envio-subregion {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.95rem 1.25rem;
+  border-radius: 0.95rem;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.05));
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #0369a1;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.aviso-envio-subregion ca-icon {
+  font-size: 1.35rem;
+  color: #0284c7;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.aviso-envio-subregion strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #075985;
+  margin-bottom: 0.15rem;
+}
+
+.aviso-envio-subregion p {
+  margin: 0;
+}
+
+.ps-modal__pie {
+  padding: 1.2rem 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(248, 250, 252, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Ficha Oficial del Reporte (Detalle Clínico)                    */
+/* ------------------------------------------------------------------ */
+
+.ficha-detalle-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ficha-encabezado-paciente {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1.1rem 1.3rem;
+  border-radius: 1rem;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+.ficha-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ficha-campo span {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.ficha-campo strong {
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.ficha-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.1rem 1.3rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+}
+
+.ficha-bloque h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.ficha-grid-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+.ficha-grid-dos div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ficha-grid-dos span {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.ficha-grid-dos strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.ficha-sintomas-lista {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.indicaciones-caja {
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 4px solid var(--color-primario);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.ficha-bloque--auditoria {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Badges de soporte */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--text);
+}
+
+.badge-alerta {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}

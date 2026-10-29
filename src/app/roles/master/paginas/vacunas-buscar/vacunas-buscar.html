@@ -1,0 +1,172 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Control de vacunas"
+    titulo="Buscar lotes"
+    descripcion="Filtra por código, vacuna, estado o centro de destino. Los resultados se actualizan mientras escribes."
+  >
+    <a class="btn btn-ghost" routerLink="/master/vacunas">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      Volver al control
+    </a>
+  </app-master-encabezado>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Código del lote</span>
+        <input
+          type="search"
+          placeholder="LOT-2026-..."
+          [value]="filtros().codigo"
+          (input)="actualizar('codigo', valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Vacuna</span>
+        <select [value]="filtros().vacunaId" (change)="actualizar('vacunaId', valor($event))">
+          <option value="">Todas</option>
+          @for (vacuna of catalogos.vacunas(); track vacuna.id) {
+            <option [value]="vacuna.id">{{ vacuna.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Estado</span>
+        <select [value]="filtros().estado" (change)="actualizar('estado', valor($event))">
+          <option value="">Todos</option>
+          @for (estado of catalogos.estadosLote(); track estado.id) {
+            <option [value]="estado.id">{{ estado.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Centro de destino</span>
+        <select
+          [value]="filtros().destinoCentroId"
+          (change)="actualizar('destinoCentroId', valor($event))"
+        >
+          <option value="">Todos</option>
+          @for (centro of datos.centrosVista(); track centro.centro.id) {
+            <option [value]="centro.centro.id">{{ centro.centro.nombre }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="buscar-lotes__pie">
+      <p>
+        <strong>{{ resultados().length }}</strong> lote(s) ·
+        <strong>{{ totalDosis() }}</strong> dosis
+      </p>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <strong>No hay lotes con esos filtros</strong>
+        <p>Prueba con otro código, vacuna o centro de destino.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Vacuna</th>
+              <th>Destino</th>
+              <th>Envío</th>
+              <th>Recepción</th>
+              <th>Dosis</th>
+              <th>Estado</th>
+              <th>Responsable</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (lote of resultados(); track lote.id) {
+              <tr>
+                <td>
+                  <button type="button" class="buscar-lotes__codigo" (click)="abrirDetalle(lote)">
+                    {{ lote.codigo }}
+                  </button>
+                </td>
+                <td>{{ datos.nombreVacuna(lote.vacunaId) }}</td>
+                <td>{{ datos.nombreCentro(lote.destinoCentroId) }}</td>
+                <td>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ lote.dosis }}</td>
+                <td>
+                  <span
+                    class="master-badge"
+                    [class.master-badge--warn]="lote.estado === 'en_camino'"
+                    [class.master-badge--info]="lote.estado === 'reportado'"
+                    [class.master-badge--ok]="lote.estado === 'aceptado'"
+                  >
+                    {{ etiquetaLote(lote.estado) }}
+                  </span>
+                </td>
+                <td>{{ responsable(lote.responsableId) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <ca-modal
+    [attr.open]="seleccionado() ? '' : null"
+    backdrop-label="Cerrar detalle del lote"
+    (openchange)="cerrarDetalle()"
+  >
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      @if (seleccionado(); as lote) {
+        <header class="master-modal__cabecera">
+          <div>
+            <h2>{{ lote.codigo }}</h2>
+            <p>{{ datos.nombreVacuna(lote.vacunaId) }} · {{ lote.dosis }} dosis</p>
+          </div>
+          <ca-modal-close label="Cerrar detalle"></ca-modal-close>
+        </header>
+        <div class="master-modal__cuerpo">
+          <div class="master-detalle__datos">
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Estado</span>
+              <span class="master-dato__valor">{{ etiquetaLote(lote.estado) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Origen</span>
+              <span class="master-dato__valor">{{ lote.origen }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Destino</span>
+              <span class="master-dato__valor">{{ datos.nombreCentro(lote.destinoCentroId) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Responsable</span>
+              <span class="master-dato__valor">{{ responsable(lote.responsableId) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Fecha de envío</span>
+              <span class="master-dato__valor">{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Fecha de recepción</span>
+              <span class="master-dato__valor">{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Temperatura</span>
+              <span class="master-dato__valor">{{ lote.temperatura }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Observación</span>
+              <span class="master-dato__valor">{{ lote.observacion }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+  </ca-modal>
+</div>

@@ -1,0 +1,16 @@
+<header class="ps-cabecera">
+  <div class="ps-cabecera__texto">
+    <p class="ca-section-eyebrow">
+      <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+      {{ eyebrow() }}
+    </p>
+    <h1>{{ titulo() }}</h1>
+    @if (descripcion()) {
+      <p class="ps-cabecera__lead">{{ descripcion() }}</p>
+    }
+  </div>
+
+  <div class="ps-cabecera__acciones">
+    <ng-content />
+  </div>
+</header>

@@ -149,6 +149,7 @@
               type="email"
               name="correoPerfil"
               autocomplete="email"
+              [value]="perfilElegido()?.correo ?? ''"
               placeholder="nombre@institucion.gob.ve"
               (input)="error.set('')"
             />
@@ -185,7 +186,7 @@
       <details class="demo">
         <summary>Credenciales de prueba</summary>
         <div class="demo__lista">
-          @for (cuenta of cuentasDemo; track cuenta.id) {
+          @for (cuenta of cuentasDemo(); track cuenta.id) {
             <div class="demo__cuenta">
               <p class="demo__titulo">
                 {{ cuenta.nombre }} <span>· rol {{ cuenta.rol }}</span>

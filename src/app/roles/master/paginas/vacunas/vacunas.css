@@ -1,0 +1,153 @@
+:host {
+  display: block;
+}
+
+.resumen-lote {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.resumen-lote__etiqueta {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.resumen-lote strong {
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.resumen-lote small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.resumen-lote--camino strong {
+  color: var(--warn);
+}
+
+.resumen-lote--reportado strong {
+  color: var(--info);
+}
+
+.resumen-lote--aceptado strong {
+  color: var(--ok);
+}
+
+.vacunas__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.vacunas__cabecera h2 {
+  margin: 0.12rem 0 0;
+  font-size: 1.15rem;
+}
+
+.vacunas__cabecera p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.lotes-camino {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.8rem;
+}
+
+.lote-camino {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.9rem;
+  border: 0.5px solid color-mix(in oklab, var(--warn) 26%, var(--glass-border));
+  border-radius: var(--ca-radius-md);
+  background: color-mix(in oklab, var(--warn) 5%, transparent);
+}
+
+.lote-camino__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.lote-camino__top strong {
+  font-size: 0.92rem;
+}
+
+.lote-camino__vacuna {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 570;
+}
+
+.lote-camino__datos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.lote-camino__datos strong {
+  color: var(--text);
+}
+
+.lote-camino__destino,
+.lote-camino__responsable {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.lote-camino__destino {
+  color: var(--text);
+}
+
+.vacunas__disparador {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.15rem 0;
+}
+
+.vacunas__disparador > span:first-child {
+  display: grid;
+  gap: 0.12rem;
+  text-align: left;
+}
+
+.vacunas__disparador strong {
+  font-size: 0.98rem;
+}
+
+.vacunas__disparador small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.vacunas__nota {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+ca-collapse {
+  display: block;
+}

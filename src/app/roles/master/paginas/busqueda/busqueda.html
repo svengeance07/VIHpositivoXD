@@ -1,0 +1,423 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Búsqueda global"
+    titulo="Panel de búsqueda"
+    descripcion="Combina al menos dos filtros para localizar ciudadanos, revisar su historial de vacunas y consultar sus exámenes."
+  >
+    <span class="master-badge master-badge--suave">{{ contarFiltros() }}/2 filtros</span>
+  </app-master-encabezado>
+
+  <section class="panel">
+    <div class="busqueda__cabecera">
+      <div>
+        <h2>Filtros disponibles</h2>
+        <p>Haz clic en un filtro para configurarlo. Los filtros activos se marcan con un check.</p>
+      </div>
+      <button type="button" class="btn btn-ghost" (click)="limpiarTodo()">Limpiar todo</button>
+    </div>
+
+    <div class="master-filtros" role="group" aria-label="Filtros de búsqueda">
+      @for (chip of chips; track chip.id) {
+        <button
+          type="button"
+          class="master-filtro-chip"
+          [class.is-active]="tieneFiltro(chip.id)"
+          [attr.aria-pressed]="tieneFiltro(chip.id)"
+          [attr.aria-expanded]="filtroActivo() === chip.id"
+          (click)="abrirFiltro(chip.id)"
+        >
+          @if (tieneFiltro(chip.id)) {
+            <ca-icon name="check" aria-hidden="true"></ca-icon>
+          }
+          {{ chip.etiqueta }}
+        </button>
+      }
+    </div>
+
+    @if (filtroActivo()) {
+      <div class="master-filtro-panel ca-animate-enter">
+        <div class="filtro-panel__cabecera">
+          <h3 class="master-filtro-panel__titulo">{{ etiquetaFiltroActivo() }}</h3>
+          <button type="button" class="btn btn-ghost btn-compact" (click)="limpiarFiltroActivo()">
+            Quitar filtro
+          </button>
+        </div>
+
+        @switch (filtroActivo()) {
+          @case ('nombres') {
+            <label class="field">
+              <span class="field-label">Nombres</span>
+              <input
+                type="text"
+                placeholder="Ej. María Fernanda"
+                [value]="filtros().nombres"
+                (input)="actualizar('nombres', valor($event))"
+              />
+            </label>
+          }
+          @case ('apellidos') {
+            <label class="field">
+              <span class="field-label">Apellidos</span>
+              <input
+                type="text"
+                placeholder="Ej. González Rivas"
+                [value]="filtros().apellidos"
+                (input)="actualizar('apellidos', valor($event))"
+              />
+            </label>
+          }
+          @case ('cedula') {
+            <label class="field">
+              <span class="field-label">Cédula</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                placeholder="Sin la letra V"
+                [value]="filtros().cedula"
+                (input)="actualizar('cedula', valor($event))"
+              />
+            </label>
+          }
+          @case ('vacuna') {
+            <label class="field">
+              <span class="field-label">Vacuna aplicada</span>
+              <select [value]="filtros().vacunaId" (change)="actualizar('vacunaId', valor($event))">
+                <option value="">Cualquier vacuna</option>
+                @for (vacuna of catalogos.vacunas(); track vacuna.id) {
+                  <option [value]="vacuna.id">{{ vacuna.nombre }}</option>
+                }
+              </select>
+            </label>
+          }
+          @case ('rangoEdad') {
+            <div class="master-campos">
+              <label class="field">
+                <span class="field-label">Edad mínima</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="120"
+                  placeholder="18"
+                  [value]="filtros().edadMin"
+                  (input)="actualizar('edadMin', valor($event))"
+                />
+              </label>
+              <label class="field">
+                <span class="field-label">Edad máxima</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="120"
+                  placeholder="65"
+                  [value]="filtros().edadMax"
+                  (input)="actualizar('edadMax', valor($event))"
+                />
+              </label>
+            </div>
+          }
+          @case ('examen') {
+            <label class="field">
+              <span class="field-label">Examen realizado</span>
+              <select [value]="filtros().examenId" (change)="actualizar('examenId', valor($event))">
+                <option value="">Cualquier examen</option>
+                @for (examen of catalogos.examenes(); track examen.id) {
+                  <option [value]="examen.id">{{ examen.nombre }}</option>
+                }
+              </select>
+            </label>
+          }
+          @case ('fechaRegistro') {
+            <div class="master-campos">
+              <label class="field">
+                <span class="field-label">Registrado desde</span>
+                <input
+                  type="date"
+                  [value]="filtros().creadoDesde"
+                  (input)="actualizar('creadoDesde', valor($event))"
+                />
+              </label>
+              <label class="field">
+                <span class="field-label">Registrado hasta</span>
+                <input
+                  type="date"
+                  [value]="filtros().creadoHasta"
+                  (input)="actualizar('creadoHasta', valor($event))"
+                />
+              </label>
+            </div>
+          }
+          @case ('sexo') {
+            <label class="field">
+              <span class="field-label">Sexo registrado</span>
+              <select [value]="filtros().sexo" (change)="actualizar('sexo', valor($event))">
+                <option value="">Cualquiera</option>
+                <option value="F">Femenino</option>
+                <option value="M">Masculino</option>
+                <option value="otro">Otro</option>
+              </select>
+            </label>
+          }
+          @case ('etnia') {
+            <label class="field">
+              <span class="field-label">Grupo étnico</span>
+              <select [value]="filtros().etniaId" (change)="actualizar('etniaId', valor($event))">
+                <option value="">Cualquiera</option>
+                @for (etnia of catalogos.gruposEtnicos(); track etnia.id) {
+                  <option [value]="etnia.id">{{ etnia.nombre }}</option>
+                }
+              </select>
+            </label>
+          }
+          @case ('ubicacion') {
+            <div class="master-campos">
+              <label class="field">
+                <span class="field-label">Estado</span>
+                <select
+                  [value]="filtros().estadoId"
+                  (change)="actualizar('estadoId', valor($event))"
+                >
+                  <option value="">Cualquiera</option>
+                  @for (estado of datos.estados(); track estado.id) {
+                    <option [value]="estado.id">{{ estado.nombre }}</option>
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Municipio</span>
+                <select
+                  [value]="filtros().municipioId"
+                  [disabled]="!filtros().estadoId"
+                  (change)="actualizar('municipioId', valor($event))"
+                >
+                  <option value="">Cualquiera</option>
+                  @for (municipio of municipios(); track municipio.id) {
+                    <option [value]="municipio.id">{{ municipio.nombre }}</option>
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Parroquia</span>
+                <select
+                  [value]="filtros().parroquiaId"
+                  [disabled]="!filtros().municipioId"
+                  (change)="actualizar('parroquiaId', valor($event))"
+                >
+                  <option value="">Cualquiera</option>
+                  @for (parroquia of parroquias(); track parroquia.id) {
+                    <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+          }
+        }
+
+        <div class="master-filtro-panel__acciones">
+          <button type="button" class="btn btn-ghost" (click)="filtroActivo.set(null)">
+            Listo
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="busqueda__pie">
+      <p class="busqueda__ayuda" [class.busqueda__ayuda--ok]="puedeBuscar()">
+        <ca-icon [name]="puedeBuscar() ? 'check' : 'filter'" aria-hidden="true"></ca-icon>
+        @if (puedeBuscar()) {
+          Filtros suficientes para consultar.
+        } @else {
+          Selecciona al menos 2 filtros para habilitar la búsqueda.
+        }
+      </p>
+      <div class="master-acciones">
+        <button type="button" class="btn btn-ghost" (click)="limpiarTodo()">Restablecer</button>
+        <ca-button
+          variant="primary"
+          icon="filter"
+          [attr.disabled]="puedeBuscar() ? null : ''"
+          (click)="buscar()"
+        >
+          Buscar
+        </ca-button>
+      </div>
+    </div>
+  </section>
+
+  @if (!busquedaHecha()) {
+    <section class="panel">
+      <div class="master-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <strong>Prepara tu búsqueda</strong>
+        <p>Activa al menos dos filtros y pulsa Buscar para consultar los expedientes.</p>
+      </div>
+    </section>
+  }
+
+  @if (busquedaHecha()) {
+    <section class="panel ca-animate-enter">
+      <div class="busqueda__cabecera">
+        <div>
+          <h2>Resultados</h2>
+          <p>
+            {{ resultados().length }} coincidencia(s) para {{ contarFiltros() }} filtro(s)
+            aplicado(s).
+          </p>
+        </div>
+        <span class="master-badge master-badge--info">{{ resultados().length }} encontrados</span>
+      </div>
+
+      @if (resultados().length === 0) {
+        <div class="master-vacio">
+          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <strong>No hay coincidencias</strong>
+          <p>Prueba quitando un filtro o cambiando el rango de edad o la ubicación.</p>
+        </div>
+      } @else {
+        <div class="master-tabla-scroll">
+          <table class="master-tabla">
+            <thead>
+              <tr>
+                <th>Ciudadano</th>
+                <th>Cédula</th>
+                <th>Edad</th>
+                <th>Sexo</th>
+                <th>Vacunas</th>
+                <th>Último examen</th>
+                <th>Registro</th>
+                <th>Ubicación</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ciudadano of resultados(); track ciudadano.id) {
+                <tr>
+                  <td>
+                    <button
+                      type="button"
+                      class="busqueda__nombre"
+                      (click)="abrirDetalle(ciudadano)"
+                    >
+                      <strong>{{ nombre(ciudadano) }}</strong>
+                      <span class="master-tabla__secundario">{{ ciudadano.correo }}</span>
+                    </button>
+                  </td>
+                  <td>V-{{ ciudadano.cedula }}</td>
+                  <td>{{ datos.edad(ciudadano.nacimiento) }} años</td>
+                  <td>{{ etiquetaSexo(ciudadano.sexo) }}</td>
+                  <td>{{ ciudadano.vacunas.length }}</td>
+                  <td>{{ ultimoExamen(ciudadano) | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ ciudadano.creadoEn | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ ubicacion(ciudadano) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  <ca-modal
+    [attr.open]="seleccionado() ? '' : null"
+    backdrop-label="Cerrar ficha ciudadana"
+    (openchange)="cerrarDetalle()"
+  >
+    <section class="master-modal master-modal--ancho" role="dialog" aria-modal="true" tabindex="-1">
+      @if (seleccionado(); as ciudadano) {
+        <header class="master-modal__cabecera">
+          <div>
+            <h2>{{ nombre(ciudadano) }}</h2>
+            <p>V-{{ ciudadano.cedula }} · {{ datos.edad(ciudadano.nacimiento) }} años</p>
+          </div>
+          <ca-modal-close label="Cerrar ficha"></ca-modal-close>
+        </header>
+
+        <div class="master-modal__cuerpo">
+          <div class="master-detalle__datos">
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Sexo</span>
+              <span class="master-dato__valor">{{ etiquetaSexo(ciudadano.sexo) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Etnia</span>
+              <span class="master-dato__valor">{{ datos.nombreEtnia(ciudadano.etniaId) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Correo</span>
+              <span class="master-dato__valor">{{ ciudadano.correo }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Teléfono</span>
+              <span class="master-dato__valor">{{ ciudadano.telefono }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Ubicación</span>
+              <span class="master-dato__valor">{{ ubicacion(ciudadano) }}</span>
+            </div>
+            <div class="master-dato">
+              <span class="master-dato__etiqueta">Registro</span>
+              <span class="master-dato__valor">{{ ciudadano.creadoEn | date: 'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <h3 class="busqueda__seccion">Vacunas aplicadas</h3>
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Vacuna</th>
+                  <th>Dosis</th>
+                  <th>Fecha</th>
+                  <th>Lote</th>
+                  <th>Centro</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (vacuna of ciudadano.vacunas; track vacuna.vacunaId + vacuna.fecha) {
+                  <tr>
+                    <td>{{ datos.nombreVacuna(vacuna.vacunaId) }}</td>
+                    <td>{{ vacuna.dosis }}</td>
+                    <td>{{ vacuna.fecha | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ vacuna.lote }}</td>
+                    <td>{{ datos.nombreCentro(vacuna.centroId) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="busqueda__seccion">Exámenes</h3>
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Examen</th>
+                  <th>Fecha</th>
+                  <th>Resultado</th>
+                  <th>Dato sensible</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (examen of ciudadano.examenes; track examen.examenId + examen.fecha) {
+                  <tr>
+                    <td>{{ datos.nombreExamen(examen.examenId) }}</td>
+                    <td>{{ examen.fecha | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ examen.resultado }}</td>
+                    <td>
+                      <span
+                        class="master-badge"
+                        [class.master-badge--danger]="examen.sensible"
+                        [class.master-badge--suave]="!examen.sensible"
+                      >
+                        {{ examen.sensible ? 'Sí' : 'No' }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </section>
+  </ca-modal>
+</div>

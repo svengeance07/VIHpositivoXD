@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.detalle__cabecera-tabla {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.detalle__cabecera-tabla h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.015em;
+}
+
+.detalle__cabecera-tabla p {
+  margin: 0.22rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.detalle__nota {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.master-cuenta {
+  flex-wrap: wrap;
+}
+
+.master-cuenta .btn {
+  margin-inline-start: auto;
+}

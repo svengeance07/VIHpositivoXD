@@ -97,7 +97,17 @@ export const PROFESIONES: readonly ItemCatalogo[] = [
   { id: 'analista-sistemas', nombre: 'Analista de sistemas' },
   { id: 'secretaria', nombre: 'Secretario/a' },
   { id: 'obrero', nombre: 'Obrero/a' },
+  { id: 'desempleado', nombre: 'Desempleado' },
   { id: 'otro', nombre: 'Otro' },
+];
+
+/** Exámenes que pueden asociarse a una ficha ciudadana. */
+export const EXAMENES: readonly ItemCatalogo[] = [
+  { id: 'vih', nombre: 'VIH' },
+  { id: 'vdrl', nombre: 'VDRL' },
+  { id: 'hepatitis-b', nombre: 'Hepatitis B' },
+  { id: 'hemoglobina', nombre: 'Hemoglobina' },
+  { id: 'glicemia', nombre: 'Glicemia' },
 ];
 
 /** Grado de instrucción más alto alcanzado (`Grado_Instruccion` en el boceto). */

@@ -1,0 +1,858 @@
+/* ------------------------------------------------------------------ */
+/* Contenedor principal de la página del Centro de Salud              */
+/* ------------------------------------------------------------------ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* Conmutador de modo Jefe vs Enfermero en cabecera */
+.selector-modo {
+  display: inline-flex;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 16px));
+}
+
+.selector-modo__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.selector-modo__btn:hover {
+  color: var(--text);
+}
+
+.selector-modo__btn.is-activo {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(2, 132, 199, 0.2));
+  color: var(--text);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+/* ------------------------------------------------------------------ */
+/* Tarjetas de Métricas (KPIs)                                        */
+/* ------------------------------------------------------------------ */
+
+.ps-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.metrica__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.6rem;
+}
+
+.metrica__icono {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.metrica__icono--verde {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.metrica__icono--azul {
+  background: rgba(2, 132, 199, 0.15);
+  color: #0284c7;
+}
+
+.metrica__icono--morado {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.metrica__icono--rojo {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.metrica__etiqueta {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.metrica strong {
+  font-size: 1.9rem;
+  font-weight: 750;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.metrica small {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+}
+
+.metrica--alerta {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, var(--surface-glass), rgba(239, 68, 68, 0.04));
+}
+
+.metrica__texto-turno {
+  font-size: 1.45rem !important;
+  color: #8b5cf6 !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Barra de Búsqueda Rápida de Pacientes                             */
+/* ------------------------------------------------------------------ */
+
+.ps-busqueda-rapida {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(16, 185, 129, 0.06));
+  border: 1px solid rgba(2, 132, 199, 0.22);
+}
+
+.ps-busqueda-rapida__info h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ps-busqueda-rapida__info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.ps-busqueda-rapida__form {
+  flex: 1;
+  min-width: min(100%, 20rem);
+  max-width: 32rem;
+}
+
+.input-grupo {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ui-input {
+  flex: 1;
+  padding: 0.65rem 0.95rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-glass);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ui-input:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+}
+
+/* ------------------------------------------------------------------ */
+/* Hub de Acciones Rápidas (4 Tarjetas)                               */
+/* ------------------------------------------------------------------ */
+
+.ps-acciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  gap: 1rem;
+}
+
+.accion-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.accion-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.accion-card--destacado {
+  background: linear-gradient(135deg, var(--surface-glass), rgba(139, 92, 246, 0.08));
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.accion-card__icono {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.accion-card__icono--azul {
+  background: rgba(2, 132, 199, 0.15);
+  color: #0284c7;
+}
+
+.accion-card__icono--verde {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.accion-card__icono--rojo {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.accion-card__icono--morado {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.accion-card__contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.accion-card__contenido h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.accion-card__contenido p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.accion-card__flecha {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+.accion-card:hover .accion-card__flecha {
+  transform: translateX(3px);
+  opacity: 1;
+  color: var(--color-accent, #10b981);
+}
+
+/* ------------------------------------------------------------------ */
+/* Panel Operativo en Dos Columnas                                    */
+/* ------------------------------------------------------------------ */
+
+.ps-dos-columnas {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .ps-dos-columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ps-bloque-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ps-bloque-cabecera h3 {
+  margin: 0.15rem 0 0.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ps-bloque-cabecera p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.ps-bloque-tabla {
+  padding: 1.4rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.celda-paciente {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.celda-paciente strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.celda-paciente__sub {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.badge-menor {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+}
+
+.nombre-vacuna {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.celda-dosis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.badge-lote {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  width: fit-content;
+}
+
+.enfermero-nombre {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.hora-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+}
+
+.tabla-vacia {
+  text-align: center;
+  padding: 2rem !important;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Columna secundaria (Distribución y Alertas ESAVI) */
+.ps-columna-secundaria {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ps-distribucion,
+.ps-alertas {
+  padding: 1.3rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.distribucion-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.distribucion-item__info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+}
+
+.distribucion-item__nombre {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.barra-progreso {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.barra-progreso__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10b981, #0284c7);
+  transition: width 400ms ease;
+}
+
+/* Alertas de reacción adversa */
+.badge-alerta-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ef4444;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.alertas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.alerta-item {
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.alerta-item--moderado {
+  background: rgba(245, 158, 11, 0.05);
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.alerta-item__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alerta-item__paciente {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.alerta-item__vacuna {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.alerta-item__sintomas {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.alerta-item__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.texto-vacio {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cabecera y acciones superiores                                     */
+/* ------------------------------------------------------------------ */
+
+.cabecera-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Banner de Estación de Vacunación Activa (Modo Enfermero)           */
+/* ------------------------------------------------------------------ */
+
+.estacion-enfermero-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.6rem;
+  border-radius: 1.15rem;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.08) 0%,
+    rgba(2, 132, 199, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.06);
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__identidad {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  min-width: 0;
+}
+
+.estacion-enfermero__avatar {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #10b981, #0284c7);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
+  flex-shrink: 0;
+}
+
+.estacion-enfermero__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.estacion-enfermero__nombre-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__nombre-fila h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.badge-guardia-activa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-guardia-activa__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulsoVerde 2s infinite ease-in-out;
+}
+
+@keyframes pulsoVerde {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+.estacion-enfermero__meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__meta strong {
+  color: var(--text);
+}
+
+.estacion-enfermero__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout Operativo del Enfermero en Dos Columnas (70% - 30%)          */
+/* ------------------------------------------------------------------ */
+
+.ps-dos-columnas-enfermero {
+  display: grid;
+  grid-template-columns: 1fr 22rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .ps-dos-columnas-enfermero {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Celdas de la bitácora de atención */
+.badge-hora {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(2, 132, 199, 0.08);
+  color: #0284c7;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.celda-paciente__sub {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.badge-menor {
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.celda-vacuna-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.btn-ver-carnet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  color: #0284c7;
+}
+
+.btn-ver-carnet:hover {
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+}
+
+.tabla-vacia__contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 2.2rem 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.tabla-vacia__contenido ca-icon {
+  font-size: 2rem;
+  color: #10b981;
+}
+
+.tabla-vacia__contenido p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Panel Lateral: Biológicos en Estación                              */
+/* ------------------------------------------------------------------ */
+
+.ps-stock-biologicos {
+  padding: 1.35rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.stock-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stock-item {
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  transition: all 180ms ease;
+}
+
+.stock-item:hover {
+  background: rgba(2, 132, 199, 0.04);
+  border-color: rgba(2, 132, 199, 0.25);
+  transform: translateX(2px);
+}
+
+.stock-item__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.stock-item__cabecera strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.badge-dosis-requeridas {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stock-item__lotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stock-item__lotes-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.stock-item__lotes-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge-stock-lote {
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: monospace;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}

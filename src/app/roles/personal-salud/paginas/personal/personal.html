@@ -1,0 +1,964 @@
+<div class="ps-pagina">
+  <!-- Cabecera contextual según rol (Jefe vs Enfermero) -->
+  @if (esJefe()) {
+    <app-ps-encabezado
+      [eyebrow]="'Personal de Enfermería · ' + nombreCentro()"
+      titulo="Gestión y Métricas del Personal de Salud"
+      descripcion="Supervisión de la plantilla clínica, análisis de cobertura por turno y generación de perfiles de enfermeros."
+    >
+      <button type="button" class="btn btn-primary" (click)="abrirModalAlta()">
+        <ca-icon name="plus" aria-hidden="true"></ca-icon>
+        <span>Nuevo Perfil de Enfermero</span>
+      </button>
+    </app-ps-encabezado>
+  } @else {
+    <app-ps-encabezado
+      [eyebrow]="'Mi Perfil Profesional · ' + nombreCentro()"
+      titulo="Ficha Técnica y Rendimiento Personal"
+      descripcion="Métricas individuales de inmunización, turno asignado y registro de actividad profesional en el centro."
+    >
+      <div class="badge-perfil-activo">
+        <span class="badge-perfil-activo__dot"></span>
+        <span>Guardia Activa</span>
+      </div>
+    </app-ps-encabezado>
+  }
+
+  <!-- Mensaje de confirmación temporal cuando se crea un nuevo enfermero -->
+  @if (mensajeExito()) {
+    <aside class="panel alerta-exito" role="status">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <div class="alerta-exito__texto">
+        <strong>¡Registro Exitoso!</strong>
+        <p>{{ mensajeExito() }}</p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        (click)="mensajeExito.set('')"
+        aria-label="Cerrar aviso"
+      >
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </aside>
+  }
+
+  <!-- ================================================================= -->
+  <!-- VISTA 1: MODO JEFE DE CENTRO (PLANTILLA vs CREDENCIAL)            -->
+  <!-- ================================================================= -->
+  @if (esJefe()) {
+    <!-- Selector de vista para la Jefatura: Plantilla vs Mi Credencial -->
+    <div class="personal-tabs-bar" role="tablist" aria-label="Secciones del módulo de personal">
+      <button
+        type="button"
+        role="tab"
+        class="personal-tab-btn"
+        [class.is-activo]="tabJefe() === 'plantilla'"
+        [attr.aria-selected]="tabJefe() === 'plantilla'"
+        (click)="tabJefe.set('plantilla')"
+      >
+        <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+        <span>Plantilla de Personal ({{ metricasEquipo().total }})</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="personal-tab-btn"
+        [class.is-activo]="tabJefe() === 'credencial'"
+        [attr.aria-selected]="tabJefe() === 'credencial'"
+        (click)="tabJefe.set('credencial')"
+      >
+        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+        <span>Mi Credencial Digital ({{ miPerfil().idProfesional }})</span>
+      </button>
+    </div>
+  }
+
+  @if (esJefe() && tabJefe() === 'plantilla') {
+    <!-- SECCIÓN A: Métricas Globales del Personal Registrado (Punto 2) -->
+    <section class="ps-metricas" aria-label="Métricas del equipo de enfermería">
+      <article class="panel metrica metrica--azul">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+            <ca-icon name="clipboard"></ca-icon>
+          </span>
+          <span class="metrica__etiqueta">Plantilla Total</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor">{{ metricasEquipo().total }}</strong>
+            <span class="metrica__sufijo">profesionales</span>
+          </div>
+          <div class="metrica__etiquetas-fila">
+            <span class="chip-kpi chip-kpi--verde">
+              <span class="chip-kpi__dot"></span>
+              {{ metricasEquipo().activos }} activos
+            </span>
+            @if (metricasEquipo().total - metricasEquipo().activos > 0) {
+              <span class="chip-kpi chip-kpi--amber">
+                {{ metricasEquipo().total - metricasEquipo().activos }} en permiso
+              </span>
+            }
+          </div>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--verde">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
+            <ca-icon name="check"></ca-icon>
+          </span>
+          <span class="metrica__etiqueta">Dosis Aplicadas Hoy</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--verde">{{
+              metricasEquipo().vacunasHoy
+            }}</strong>
+            <span class="metrica__sufijo">dosis hoy</span>
+          </div>
+          <div class="metrica__etiquetas-fila">
+            <span class="chip-kpi chip-kpi--azul">
+              <ca-icon name="calendar" aria-hidden="true"></ca-icon>
+              {{ metricasEquipo().vacunasTotal | number }} acumuladas
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--morado">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+            <ca-icon name="feedback"></ca-icon>
+          </span>
+          <span class="metrica__etiqueta">Rendimiento Promedio</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--morado">{{
+              metricasEquipo().promedio | number
+            }}</strong>
+            <span class="metrica__sufijo">dosis / prof.</span>
+          </div>
+          <div class="metrica__etiquetas-fila">
+            <span class="chip-kpi chip-kpi--azul"> Promedio de plantilla activa </span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--rojo">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+            <ca-icon name="warning"></ca-icon>
+          </span>
+          <span class="metrica__etiqueta">Farmacovigilancia ESAVI</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--rojo">{{
+              metricasEquipo().reportesTotal
+            }}</strong>
+            <span class="metrica__sufijo">reportes</span>
+          </div>
+          <div class="metrica__etiquetas-fila">
+            <span class="chip-kpi chip-kpi--rojo"> Notificados a Subregión </span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECCIÓN B: Filtros y Búsqueda de Personal -->
+    <section class="panel ps-filtros" aria-label="Filtros de enfermeros">
+      <div class="ps-filtros__busqueda">
+        <span class="ps-filtros__icono-busqueda" aria-hidden="true">
+          <ca-icon name="filter"></ca-icon>
+        </span>
+        <input
+          type="search"
+          class="ui-input ps-filtros__input"
+          placeholder="Buscar por nombre, cédula o matrícula colegiada..."
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          aria-label="Buscar enfermero"
+        />
+        @if (busqueda()) {
+          <button
+            type="button"
+            class="btn-limpiar-busqueda"
+            (click)="busqueda.set('')"
+            aria-label="Limpiar búsqueda"
+          >
+            <ca-icon name="close"></ca-icon>
+          </button>
+        }
+      </div>
+
+      <div class="ps-filtros__selectores">
+        <label class="filtro-campo">
+          <span class="filtro-campo__label">Estado:</span>
+          <div class="select-envoltorio">
+            <select
+              class="ui-select"
+              [ngModel]="filtroEstado()"
+              (ngModelChange)="filtroEstado.set($event)"
+              aria-label="Filtrar por estado"
+            >
+              <option value="todos">Todos los estados</option>
+              <option value="activos">Activos en guardia</option>
+              <option value="inactivos">En permiso</option>
+            </select>
+          </div>
+        </label>
+
+        @if (busqueda() || filtroEstado() !== 'todos') {
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm btn-limpiar-todo"
+            (click)="limpiarFiltros()"
+          >
+            <ca-icon name="close" aria-hidden="true"></ca-icon>
+            <span>Limpiar filtros</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- SECCIÓN C: Tabla de Enfermeros Registrados con Métricas de Desempeño -->
+    <section class="panel ps-bloque-tabla" aria-label="Listado de personal de enfermería">
+      <header class="ps-bloque-cabecera">
+        <div class="ps-bloque-cabecera__info">
+          <div class="ps-bloque-cabecera__titulo-fila">
+            <h3>Personal Registrado en el Centro</h3>
+            <span class="badge-total">{{ enfermerosFiltrados().length }} profesionales</span>
+          </div>
+          <p>
+            Supervisa el rendimiento individual, turnos de atención y gestiona el estado laboral de
+            la plantilla.
+          </p>
+        </div>
+      </header>
+
+      <div class="tabla-contenedor">
+        <table class="ui-table ps-tabla-enfermeros">
+          <thead>
+            <tr>
+              <th scope="col">Profesional de Salud</th>
+              <th scope="col">Cédula y Contacto</th>
+              <th scope="col">Rendimiento (Hoy / Total)</th>
+              <th scope="col">ESAVI</th>
+              <th scope="col">Estado Laboral</th>
+              <th scope="col" class="texto-derecha">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (enf of enfermerosFiltrados(); track enf.id) {
+              <tr [class.fila-inactiva]="!enf.activo">
+                <td>
+                  <div class="celda-profesional">
+                    <div class="avatar-iniciales">
+                      {{ enf.nombre.substring(0, 2) | uppercase }}
+                    </div>
+                    <div class="celda-profesional__info">
+                      <strong class="celda-profesional__nombre">{{ enf.nombre }}</strong>
+                      <span class="badge-matricula">
+                        <ca-icon name="check" aria-hidden="true"></ca-icon>
+                        {{ enf.idProfesional }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="celda-contacto">
+                    <span class="celda-contacto__cedula">V-{{ enf.cedula }}</span>
+                    <small class="celda-contacto__correo">{{ enf.correo }}</small>
+                    @if (enf.telefono && enf.telefono !== 'No especificado') {
+                      <small class="celda-contacto__tel">{{ enf.telefono }}</small>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="celda-rendimiento">
+                    <div class="rendimiento-valores">
+                      <strong class="rendimiento-hoy">+{{ enf.vacunasAplicadasHoy }} hoy</strong>
+                      <span class="rendimiento-total"
+                        >({{ enf.vacunasAplicadasTotal | number }} tot)</span
+                      >
+                    </div>
+                    <div class="barra-rendimiento" title="Avance de actividad diaria">
+                      <div
+                        class="barra-rendimiento__fill"
+                        [style.width.%]="
+                          enf.vacunasAplicadasHoy > 0 ? (enf.vacunasAplicadasHoy / 15) * 100 : 0
+                        "
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="badge-reportes"
+                    [class.badge-reportes--alerta]="enf.reportesGeneradosTotal > 0"
+                    [class.badge-reportes--cero]="enf.reportesGeneradosTotal === 0"
+                  >
+                    {{ enf.reportesGeneradosTotal }} ESAVI
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="badge-estado"
+                    [class.badge-estado--activo]="enf.activo"
+                    [class.badge-estado--permiso]="!enf.activo"
+                  >
+                    <span class="badge-estado__dot"></span>
+                    {{ enf.activo ? 'Activo' : 'En Permiso' }}
+                  </span>
+                </td>
+                <td class="texto-derecha">
+                  <div class="acciones-fila">
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm btn-accion"
+                      (click)="verDetalle(enf)"
+                      title="Ver métricas de desempeño"
+                    >
+                      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+                      <span>Métricas</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm btn-accion"
+                      [class.btn-peligro]="enf.activo"
+                      [class.btn-activar]="!enf.activo"
+                      (click)="alternarEstado(enf)"
+                      [title]="enf.activo ? 'Colocar en permiso' : 'Reactivar profesional'"
+                    >
+                      <span>{{ enf.activo ? 'Pausar' : 'Activar' }}</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="tabla-vacia">
+                  <div class="tabla-vacia__contenido">
+                    <ca-icon name="filter" aria-hidden="true"></ca-icon>
+                    <p>No se encontraron enfermeros con los criterios de búsqueda seleccionados.</p>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
+                      Limpiar filtros
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================= -->
+  <!-- VISTA 2: CREDENCIAL DIGITAL Y MÉTRICAS DEL PROFESIONAL ACTIVO     -->
+  <!-- ================================================================= -->
+  @else {
+    <div class="ps-perfil-enfermero">
+      <!-- Mensaje temporal de descarga o copia de validación -->
+      @if (mensajeCredencial()) {
+        <aside class="panel alerta-exito" role="status">
+          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <div class="alerta-exito__texto">
+            <strong>Credencial Oficial</strong>
+            <p>{{ mensajeCredencial() }}</p>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            (click)="mensajeCredencial.set('')"
+            aria-label="Cerrar aviso"
+          >
+            <ca-icon name="close" aria-hidden="true"></ca-icon>
+          </button>
+        </aside>
+      }
+
+      <!-- SECCIÓN PRINCIPAL: CREDENCIAL DIGITAL INSTITUCIONAL (MPPS) -->
+      <section class="panel ps-credencial-contenedor" aria-label="Credencial digital institucional">
+        <!-- Barra de herramientas superior de la credencial -->
+        <header class="ps-credencial-toolbar">
+          <div class="ps-credencial-toolbar__info">
+            <span class="ca-section-eyebrow">
+              <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+              Documento Oficial de Identificación
+            </span>
+            <h3>Credencial Digital de Personal de Salud</h3>
+            <p>
+              Acreditación profesional autorizada por el Ministerio del Poder Popular para la Salud.
+            </p>
+          </div>
+
+          <div class="ps-credencial-toolbar__acciones">
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              (click)="voltearCredencial()"
+              title="Alternar entre anverso y reverso"
+            >
+              <ca-icon name="reload" aria-hidden="true"></ca-icon>
+              <span>Ver {{ caraCredencial() === 'frente' ? 'Reverso' : 'Anverso' }}</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm"
+              (click)="copiarEnlaceVerificacion()"
+              title="Copiar código de validación"
+            >
+              <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+              <span>Copiar Validación</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- TARJETA FÍSICA / LAMINADA DE LA CREDENCIAL -->
+        <div class="credencial-escena">
+          <div class="credencial-tarjeta" [class.is-reverso]="caraCredencial() === 'reverso'">
+            <!-- ============================================== -->
+            <!-- CARA 1: ANVERSO (FRENTE DE LA CREDENCIAL)      -->
+            <!-- ============================================== -->
+            <article class="credencial-cara credencial-cara--frente">
+              <!-- Cinta tricolor institucional -->
+              <div class="credencial-cinta-tricolor" aria-hidden="true">
+                <span class="cinta-amarilla"></span>
+                <span class="cinta-azul"></span>
+                <span class="cinta-roja"></span>
+              </div>
+
+              <!-- Cabecera institucional del carnet -->
+              <div class="credencial-cabecera">
+                <div class="credencial-escudo" aria-hidden="true">
+                  <span class="escudo-icono">🏛️</span>
+                </div>
+                <div class="credencial-entidad">
+                  <span class="credencial-republica">REPÚBLICA BOLIVARIANA DE VENEZUELA</span>
+                  <span class="credencial-ministerio"
+                    >MINISTERIO DEL PODER POPULAR PARA LA SALUD</span
+                  >
+                  <span class="credencial-sistema"
+                    >SISTEMA PÚBLICO NACIONAL DE SALUD · SISTEMA V</span
+                  >
+                </div>
+                <div
+                  class="credencial-chip"
+                  aria-hidden="true"
+                  title="Chip de Seguridad Criptográfica"
+                >
+                  <div class="chip-lineas"></div>
+                </div>
+              </div>
+
+              <!-- Cuerpo de la credencial -->
+              <div class="credencial-cuerpo">
+                <!-- Foto / Avatar profesional con sello -->
+                <div class="credencial-foto-columna">
+                  <div class="credencial-foto-marco">
+                    <div class="credencial-avatar" aria-hidden="true">
+                      {{ inicialesPerfil() }}
+                    </div>
+                    <div class="credencial-sello-verificado" title="Validado en Sistema Nacional">
+                      <ca-icon name="check" aria-hidden="true"></ca-icon>
+                      <span>MPPS</span>
+                    </div>
+                  </div>
+                  <span class="credencial-codigo-seguridad"
+                    >SEC-{{ miPerfil().cedula.replace('.', '').slice(0, 5) }}</span
+                  >
+                </div>
+
+                <!-- Datos de filiación y colegiatura -->
+                <div class="credencial-datos-columna">
+                  <div class="credencial-nombre-bloque">
+                    <span class="credencial-etiqueta-cargo">PERSONAL DE ENFERMERÍA AUTORIZADO</span>
+                    <h2 class="credencial-nombre">{{ miPerfil().nombre }}</h2>
+                  </div>
+
+                  <div class="credencial-grilla-datos">
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Cédula de Identidad</span>
+                      <strong class="credencial-dato__valor">V-{{ miPerfil().cedula }}</strong>
+                    </div>
+
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Matrícula / Colegiado</span>
+                      <strong class="credencial-dato__valor credencial-dato__valor--destacado">{{
+                        miPerfil().idProfesional
+                      }}</strong>
+                    </div>
+
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Centro de Salud</span>
+                      <strong class="credencial-dato__valor">{{ nombreCentro() }}</strong>
+                    </div>
+
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Subregión de Salud</span>
+                      <strong class="credencial-dato__valor">Distrito Capital</strong>
+                    </div>
+
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Tipo de Sangre</span>
+                      <strong class="credencial-dato__valor">O+ (Factor Rh+)</strong>
+                    </div>
+
+                    <div class="credencial-dato">
+                      <span class="credencial-dato__label">Estado del Personal</span>
+                      <span class="badge-guardia-activa">
+                        <span class="badge-guardia-activa__dot"></span>
+                        Habilitado Activo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pie de la credencial con Código QR y validador -->
+              <footer class="credencial-pie">
+                <div class="credencial-qr-box">
+                  <!-- QR Code en SVG nítido y estilizado -->
+                  <svg
+                    class="credencial-qr"
+                    viewBox="0 0 48 48"
+                    fill="currentColor"
+                    aria-label="Código QR de verificación"
+                  >
+                    <path
+                      d="M4 4h16v16H4V4zm4 4v8h8V8H8zM4 28h16v16H4V28zm4 4v8h8v-8H8zM28 4h16v16H28V4zm4 4v8h8V8h-8zM28 28h4v4h-4v-4zm8 0h4v4h-4v-4zm4 4h4v4h-4v-4zm-8 4h4v4h-4v-4zm8 0h4v4h-4v-4zm-4 4h4v4h-4v-4zm-8-8h4v4h-4v-4zm-4 4h4v4h-4v-4zM10 10h4v4h-4v-4zm0 24h4v4h-4v-4zm24-24h4v4h-4v-4z"
+                    />
+                  </svg>
+                  <div class="credencial-qr-texto">
+                    <strong>VALIDACIÓN BIOMÉTRICA DIGITAL</strong>
+                    <span>Escanear para comprobar vigencia sanitaria</span>
+                  </div>
+                </div>
+
+                <div class="credencial-vigencia">
+                  <span
+                    >Ingreso: <strong>{{ miPerfil().fechaIngreso }}</strong></span
+                  >
+                  <span>Vencimiento: <strong>15/03/2027</strong></span>
+                </div>
+              </footer>
+            </article>
+
+            <!-- ============================================== -->
+            <!-- CARA 2: REVERSO (RESPALDO LEGAL Y FIRMAS)     -->
+            <!-- ============================================== -->
+            <article class="credencial-cara credencial-cara--reverso">
+              <!-- Franja tricolor de reverso -->
+              <div class="credencial-cinta-tricolor" aria-hidden="true">
+                <span class="cinta-amarilla"></span>
+                <span class="cinta-azul"></span>
+                <span class="cinta-roja"></span>
+              </div>
+
+              <div class="credencial-reverso-cabecera">
+                <h4>DISPOSICIONES OFICIALES DE CUSTODIA Y ACREDITACIÓN</h4>
+                <p>
+                  Dirección General de Epidemiología · Viceministerio de Redes de Salud Colectiva
+                </p>
+              </div>
+
+              <div class="credencial-reverso-cuerpo">
+                <p class="credencial-legal-texto">
+                  El titular de este documento oficial está debidamente acreditado y facultado por
+                  el Ministerio del Poder Popular para la Salud para la administración de productos
+                  biológicos, apertura de expedientes clínicos, consulta de carnets e informe de
+                  reacciones adversas (ESAVI).
+                </p>
+                <p class="credencial-legal-texto">
+                  Este carnet es de uso estrictamente personal e intransferible. En caso de extravío
+                  o suspensión, notifique inmediatamente a la Jefatura del Centro de Salud o al
+                  correo oficial <strong>vigilancia.mpps&#64;vih.gob.ve</strong>.
+                </p>
+
+                <!-- Bloque de Firmas Oficiales -->
+                <div class="credencial-firmas-grid">
+                  <div class="credencial-firma">
+                    <div class="firma-linea">
+                      <span class="firma-garabato">Dra. María Pérez</span>
+                    </div>
+                    <strong>Dra. María Pérez</strong>
+                    <span>Directora / Jefe de Centro · MPPS-8765</span>
+                  </div>
+
+                  <div class="credencial-firma">
+                    <div class="firma-linea">
+                      <span class="firma-garabato firma-garabato--enfermero">{{
+                        miPerfil().nombre
+                      }}</span>
+                    </div>
+                    <strong>{{ miPerfil().nombre }}</strong>
+                    <span>Titular Autorizado · {{ miPerfil().idProfesional }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <footer class="credencial-reverso-pie">
+                <div class="credencial-barcode" aria-hidden="true">
+                  <div class="barcode-lineas"></div>
+                  <span>*MPPS-SPNS-{{ miPerfil().idProfesional }}-VE*</span>
+                </div>
+                <div class="credencial-reverso-contacto">
+                  <span>Emergencias y Validación Telefónica: <strong>(0212) 862-1144</strong></span>
+                </div>
+              </footer>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN SECUNDARIA: MÉTRICAS Y ACTIVIDAD HISTÓRICA DEL PROFESIONAL -->
+      <section class="ps-metricas" aria-label="Métricas propias de desempeño">
+        <article class="panel metrica metrica--verde">
+          <div class="metrica__cabecera">
+            <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
+              <ca-icon name="check"></ca-icon>
+            </span>
+            <span class="metrica__etiqueta">Mis Vacunas Hoy</span>
+          </div>
+          <div class="metrica__cuerpo">
+            <div class="metrica__valor-fila">
+              <strong class="metrica__valor metrica__valor--verde">{{
+                misMetricas().misVacunasHoy
+              }}</strong>
+              <span class="metrica__sufijo">aplicadas</span>
+            </div>
+            <small class="metrica__subtexto">En la jornada de atención de hoy</small>
+          </div>
+        </article>
+
+        <article class="panel metrica metrica--azul">
+          <div class="metrica__cabecera">
+            <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+              <ca-icon name="clipboard"></ca-icon>
+            </span>
+            <span class="metrica__etiqueta">Pacientes Atendidos</span>
+          </div>
+          <div class="metrica__cuerpo">
+            <div class="metrica__valor-fila">
+              <strong class="metrica__valor metrica__valor--azul">{{
+                misMetricas().misPacientesHoy
+              }}</strong>
+              <span class="metrica__sufijo">inmunizados</span>
+            </div>
+            <small class="metrica__subtexto">Adultos y niños atendidos hoy</small>
+          </div>
+        </article>
+
+        <article class="panel metrica metrica--morado">
+          <div class="metrica__cabecera">
+            <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+              <ca-icon name="calendar"></ca-icon>
+            </span>
+            <span class="metrica__etiqueta">Total Histórico</span>
+          </div>
+          <div class="metrica__cuerpo">
+            <div class="metrica__valor-fila">
+              <strong class="metrica__valor metrica__valor--morado">{{
+                miPerfil().vacunasAplicadasTotal | number
+              }}</strong>
+              <span class="metrica__sufijo">dosis</span>
+            </div>
+            <small class="metrica__subtexto">En este centro de salud</small>
+          </div>
+        </article>
+
+        <article class="panel metrica metrica--rojo">
+          <div class="metrica__cabecera">
+            <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+              <ca-icon name="warning"></ca-icon>
+            </span>
+            <span class="metrica__etiqueta">Mis Reportes ESAVI</span>
+          </div>
+          <div class="metrica__cuerpo">
+            <div class="metrica__valor-fila">
+              <strong class="metrica__valor metrica__valor--rojo">{{
+                misMetricas().misReportesTotal
+              }}</strong>
+              <span class="metrica__sufijo">emitidos</span>
+            </div>
+            <small class="metrica__subtexto">Eventos adversos documentados</small>
+          </div>
+        </article>
+      </section>
+
+      <!-- SECCIÓN: Historial Resumido de Vacunación del Profesional -->
+      <section
+        class="panel ps-bloque-tabla"
+        aria-label="Historial de vacunas aplicadas por el enfermero"
+      >
+        <header class="ps-bloque-cabecera">
+          <div>
+            <span class="ca-section-eyebrow">
+              <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+              Trazabilidad Profesional
+            </span>
+            <h3>Bitácora de Inmunizaciones Asentadas</h3>
+            <p>
+              Registro de pacientes inmunizados con tu firma y matrícula en {{ nombreCentro() }}.
+            </p>
+          </div>
+          <a class="btn btn-sm btn-ghost" routerLink="/PS/historial">Ver Todo el Centro →</a>
+        </header>
+
+        <div class="tabla-contenedor">
+          <table class="ui-table">
+            <thead>
+              <tr>
+                <th scope="col">Fecha / Hora</th>
+                <th scope="col">Paciente</th>
+                <th scope="col">Vacuna / Dosis</th>
+                <th scope="col">Lote</th>
+                <th scope="col">Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (app of misAplicacionesTotales(); track app.id) {
+                <tr>
+                  <td>
+                    <div class="fecha-celda">
+                      <span>{{ app.fechaAplicacion }}</span>
+                      <small>{{ app.horaAplicacion }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="celda-paciente">
+                      <strong>{{ app.pacienteNombre }}</strong>
+                      <div class="celda-paciente__sub">
+                        <span>C.I. {{ app.pacienteCedula }}</span>
+                        @if (app.esMenor) {
+                          <span class="badge-menor">Menor</span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="celda-vacuna-info">
+                      <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
+                      <small class="badge-dosis">Dosis #{{ app.dosis }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge-lote">{{ app.lote }}</span>
+                  </td>
+                  <td>
+                    <span class="observaciones-texto">{{
+                      app.observaciones || 'Sin observaciones'
+                    }}</span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="tabla-vacia">
+                    No hay aplicaciones registradas en este centro aún.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  }
+
+  <!-- ================================================================= -->
+  <!-- MODAL: GENERAR PERFIL DE ENFERMERO (PUNTO 1 DEL REQUERIMIENTO)     -->
+  <!-- ================================================================= -->
+  <ca-modal
+    [attr.open]="modalAltaAbierto() ? '' : null"
+    backdrop-label="Cerrar formulario de alta"
+    (openchange)="cerrarModalAlta()"
+  >
+    <section class="ps-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="ps-modal__cabecera">
+        <div>
+          <h2>Generar Perfil de Enfermero</h2>
+          <p>Crea la credencial para un nuevo profesional de enfermería en {{ nombreCentro() }}.</p>
+        </div>
+        <ca-modal-close (click)="cerrarModalAlta()" label="Cerrar formulario"></ca-modal-close>
+      </header>
+
+      @if (errorFormulario()) {
+        <aside class="alerta-error" role="alert">
+          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          <span>{{ errorFormulario() }}</span>
+        </aside>
+      }
+
+      <form class="ps-modal__cuerpo" (submit)="guardarAlta($event)">
+        <div class="ps-campos-grid">
+          <label class="field">
+            <span class="field-label">Nombre y Apellidos *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: Lic. María González"
+              required
+              [ngModel]="formAlta().nombre"
+              (ngModelChange)="actualizarCampo('nombre', $event)"
+              name="nombre"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Cédula de Identidad *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: 20.123.456"
+              required
+              [ngModel]="formAlta().cedula"
+              (ngModelChange)="actualizarCampo('cedula', $event)"
+              name="cedula"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Matrícula / Colegiado Profesional *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: COLEG-ENF-14502"
+              required
+              [ngModel]="formAlta().idProfesional"
+              (ngModelChange)="actualizarCampo('idProfesional', $event)"
+              name="idProfesional"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Correo Electrónico Institucional *</span>
+            <input
+              type="email"
+              class="ui-input"
+              placeholder="enfermero@vih.gob.ve"
+              required
+              [ngModel]="formAlta().correo"
+              (ngModelChange)="actualizarCampo('correo', $event)"
+              name="correo"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Teléfono de Contacto</span>
+            <input
+              type="tel"
+              class="ui-input"
+              placeholder="Ej: 0414-1234567"
+              [ngModel]="formAlta().telefono"
+              (ngModelChange)="actualizarCampo('telefono', $event)"
+              name="telefono"
+            />
+          </label>
+
+          <label class="field campo-completo">
+            <span class="field-label">Contraseña de Acceso al Sistema *</span>
+            <input
+              type="password"
+              class="ui-input"
+              placeholder="Mínimo 6 caracteres (ej: enfermero123)"
+              required
+              minlength="6"
+              [ngModel]="formAlta().claveInicial"
+              (ngModelChange)="actualizarCampo('claveInicial', $event)"
+              name="claveInicial"
+            />
+            <small class="field-hint"
+              >Permitirá al enfermero iniciar sesión en el Centro de Salud con su correo
+              institucional y esta clave.</small
+            >
+          </label>
+        </div>
+
+        <footer class="ps-modal__pie">
+          <button type="button" class="btn btn-ghost" (click)="cerrarModalAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <ca-icon name="check" aria-hidden="true"></ca-icon>
+            <span>Generar Perfil y Guardar</span>
+          </button>
+        </footer>
+      </form>
+    </section>
+  </ca-modal>
+
+  <!-- ================================================================= -->
+  <!-- MODAL: FICHA Y MÉTRICAS DETALLADAS DE UN ENFERMERO                -->
+  <!-- ================================================================= -->
+  <ca-modal
+    [attr.open]="modalDetalleAbierto() ? '' : null"
+    backdrop-label="Cerrar detalle de enfermero"
+    (openchange)="cerrarDetalle()"
+  >
+    @if (enfermeroSeleccionado(); as enf) {
+      <section class="ps-modal" role="dialog" aria-modal="true" tabindex="-1">
+        <header class="ps-modal__cabecera">
+          <div>
+            <h2>Ficha de Desempeño: {{ enf.nombre }}</h2>
+            <p>{{ enf.idProfesional }} · Personal Clínico · {{ nombreCentro() }}</p>
+          </div>
+          <ca-modal-close (click)="cerrarDetalle()" label="Cerrar detalle"></ca-modal-close>
+        </header>
+
+        <div class="ps-modal__cuerpo detalle-contenido">
+          <!-- Resumen de Indicadores -->
+          <div class="detalle-stats-grid">
+            <div class="stat-caja stat-caja--verde">
+              <span class="stat-caja__etiqueta">Vacunas hoy</span>
+              <strong>{{ enf.vacunasAplicadasHoy }}</strong>
+            </div>
+            <div class="stat-caja stat-caja--azul">
+              <span class="stat-caja__etiqueta">Total acumulado</span>
+              <strong>{{ enf.vacunasAplicadasTotal }}</strong>
+            </div>
+            <div class="stat-caja stat-caja--rojo">
+              <span class="stat-caja__etiqueta">Reportes ESAVI</span>
+              <strong>{{ enf.reportesGeneradosTotal }}</strong>
+            </div>
+          </div>
+
+          <div class="detalle-datos-lista">
+            <div class="detalle-fila">
+              <span>Cédula de Identidad:</span>
+              <strong>{{ enf.cedula }}</strong>
+            </div>
+            <div class="detalle-fila">
+              <span>Correo Electrónico:</span>
+              <strong>{{ enf.correo }}</strong>
+            </div>
+            <div class="detalle-fila">
+              <span>Teléfono:</span>
+              <strong>{{ enf.telefono }}</strong>
+            </div>
+            <div class="detalle-fila">
+              <span>Fecha de Incorporación:</span>
+              <strong>{{ enf.fechaIngreso }}</strong>
+            </div>
+            <div class="detalle-fila">
+              <span>Estado Actual:</span>
+              <span
+                class="badge-estado"
+                [class.badge-estado--activo]="enf.activo"
+                [class.badge-estado--permiso]="!enf.activo"
+              >
+                {{ enf.activo ? 'Activo en guardia' : 'En Permiso Laboral' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <footer class="ps-modal__pie">
+          <button type="button" class="btn btn-ghost" (click)="cerrarDetalle()">
+            Cerrar Ficha
+          </button>
+        </footer>
+      </section>
+    }
+  </ca-modal>
+</div>

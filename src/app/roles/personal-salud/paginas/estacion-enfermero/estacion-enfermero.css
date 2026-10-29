@@ -1,0 +1,588 @@
+/* ================================================================== */
+/* Estación de Inmunización del Enfermero - Caustica Liquid Glass     */
+/* ================================================================== */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Banner de Estación de Vacunación Activa                            */
+/* ------------------------------------------------------------------ */
+
+.estacion-enfermero-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.35rem 1.6rem;
+  border-radius: 1.15rem;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.09) 0%,
+    rgba(2, 132, 199, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.07);
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__identidad {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  min-width: 0;
+}
+
+.estacion-enfermero__avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #10b981, #0284c7);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
+}
+
+.estacion-enfermero__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.estacion-enfermero__nombre-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__nombre-fila h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.badge-guardia-activa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-guardia-activa__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulsoVerde 2s infinite ease-in-out;
+}
+
+@keyframes pulsoVerde {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+.estacion-enfermero__meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.estacion-enfermero__meta strong {
+  color: var(--text);
+}
+
+.estacion-enfermero__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tarjetas de Métricas (KPIs)                                        */
+/* ------------------------------------------------------------------ */
+
+.ps-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.metrica__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.6rem;
+}
+
+.metrica__icono {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.metrica__icono--verde {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.metrica__icono--azul {
+  background: rgba(2, 132, 199, 0.15);
+  color: #0284c7;
+}
+
+.metrica__icono--morado {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.metrica__icono--rojo {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.metrica__etiqueta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metrica strong {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.metrica small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* Barra de Búsqueda Rápida                                           */
+/* ------------------------------------------------------------------ */
+
+.ps-busqueda-rapida {
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ps-busqueda-rapida__info h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ps-busqueda-rapida__info p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.ps-busqueda-rapida__form .input-grupo {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ps-busqueda-rapida__form .ui-input {
+  flex: 1 1 20rem;
+  height: 2.75rem;
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Hub de Acciones Rápidas (Grid de Cards)                            */
+/* ------------------------------------------------------------------ */
+
+.ps-acciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  gap: 1rem;
+}
+
+.accion-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem;
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  text-decoration: none;
+  color: inherit;
+  transition: all 200ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.accion-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(2, 132, 199, 0.4);
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.1);
+}
+
+.accion-card__icono {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.accion-card__icono--azul {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+}
+
+.accion-card__icono--verde {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.accion-card__icono--rojo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.accion-card__icono--morado {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+}
+
+.accion-card__contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.accion-card__contenido h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.accion-card__contenido p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.accion-card__flecha {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  transition: transform 200ms ease;
+  flex-shrink: 0;
+}
+
+.accion-card:hover .accion-card__flecha {
+  transform: translateX(3px);
+  color: #0284c7;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout Operativo en Dos Columnas (70% - 30%)                       */
+/* ------------------------------------------------------------------ */
+
+.ps-dos-columnas-enfermero {
+  display: grid;
+  grid-template-columns: 1fr 22rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .ps-dos-columnas-enfermero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ps-bloque-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.ps-bloque-cabecera h3 {
+  margin: 0.2rem 0 0.15rem 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.ps-bloque-cabecera p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Celdas de la bitácora de atención */
+.badge-hora {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(2, 132, 199, 0.08);
+  color: #0284c7;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.celda-paciente strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.celda-paciente__sub {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.badge-menor {
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.celda-vacuna-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nombre-vacuna {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.badge-dosis {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.72rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.badge-lote {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-family: monospace;
+  color: var(--text);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-ver-carnet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  color: #0284c7;
+}
+
+.btn-ver-carnet:hover {
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+}
+
+.tabla-vacia__contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 2.2rem 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.tabla-vacia__contenido ca-icon {
+  font-size: 2rem;
+  color: #10b981;
+}
+
+.tabla-vacia__contenido p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Panel Lateral: Biológicos en Estación                              */
+/* ------------------------------------------------------------------ */
+
+.ps-stock-biologicos {
+  padding: 1.35rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.stock-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stock-item {
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  transition: all 180ms ease;
+}
+
+.stock-item:hover {
+  background: rgba(2, 132, 199, 0.04);
+  border-color: rgba(2, 132, 199, 0.25);
+  transform: translateX(2px);
+}
+
+.stock-item__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.stock-item__cabecera strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.badge-dosis-requeridas {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stock-item__lotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stock-item__lotes-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.stock-item__lotes-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge-stock-lote {
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: monospace;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}

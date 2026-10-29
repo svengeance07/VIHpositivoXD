@@ -1,0 +1,638 @@
+<div class="ps-pagina">
+  <!-- Cabecera de la página -->
+  <app-ps-encabezado
+    [eyebrow]="'Registro de Pacientes · ' + nombreCentro()"
+    titulo="Formulario de Registro"
+    descripcion="Incorpora a nuevos ciudadanos (adultos o menores de edad vinculados a su representante) y registra su historial o primera vacuna aplicada."
+  >
+    <a class="btn btn-ghost" routerLink="/PS/pacientes">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span>Volver a Pacientes</span>
+    </a>
+  </app-ps-encabezado>
+
+  <!-- ================================================================= -->
+  <!-- ESTADO A: CONFIRMACIÓN DE EXPEDIENTE CREADO                       -->
+  <!-- ================================================================= -->
+  @if (pacienteCreado(); as pac) {
+    <section class="panel confirmacion-tarjeta" aria-label="Confirmación de registro">
+      <div class="confirmacion-tarjeta__icono">
+        <ca-icon name="check" aria-hidden="true"></ca-icon>
+      </div>
+
+      <div class="confirmacion-tarjeta__cuerpo">
+        <h2>¡Expediente Creado Exitosamente!</h2>
+        <p class="confirmacion-lead">
+          El ciudadano <strong>{{ pac.nombre }}</strong> ha sido registrado en el sistema con la
+          identificación <strong>{{ pac.cedula || 'sin cédula por ser menor de edad' }}</strong> en
+          {{ nombreCentro() }}.
+        </p>
+
+        @if (pac.esMenor) {
+          <div class="confirmacion-representante">
+            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <div>
+              <strong>Menor de edad vinculado a representante legal:</strong>
+              <p>{{ pac.nombreRepresentante }} (C.I. {{ pac.cedulaRepresentante }})</p>
+            </div>
+          </div>
+        }
+
+        @if (vacunasIniciales().length > 0) {
+          <div class="confirmacion-vacunas">
+            <h4>Inmunizaciones registradas en el alta ({{ vacunasIniciales().length }})</h4>
+            <div class="confirmacion-vacunas-lista">
+              @for (vac of vacunasIniciales(); track $index) {
+                <div class="vacuna-registrada-item">
+                  <strong>{{ vac.vacunaNombre }}</strong>
+                  <span>Dosis #{{ vac.dosis }}</span>
+                  <span class="badge-lote">{{ vac.lote }}</span>
+                  <small>{{ vac.centroAplicacion }} ({{ vac.fechaAplicacion }})</small>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <footer class="confirmacion-acciones">
+          <button type="button" class="btn btn-primary" (click)="verCarnetPaciente()">
+            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <span>Ver Carnet de este Paciente</span>
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="registrarOtro()">
+            <ca-icon name="plus" aria-hidden="true"></ca-icon>
+            <span>Registrar Otro Paciente</span>
+          </button>
+        </footer>
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================= -->
+  <!-- ESTADO B: FORMULARIO DE ALTA INTEGRAL DE PACIENTE Y VACUNAS        -->
+  <!-- ================================================================= -->
+  @if (!pacienteCreado()) {
+    <form class="ps-alta-form" (submit)="guardarExpediente($event)">
+      @if (errorFormulario()) {
+        <aside class="panel alerta-error" role="alert">
+          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          <span>{{ errorFormulario() }}</span>
+        </aside>
+      }
+
+      <!-- PASO 1: SELECCIÓN DEL TIPO DE PACIENTE (ADULTO VS MENOR DE EDAD) -->
+      <section class="panel ps-tipo-selector" aria-label="Grupo etario del paciente">
+        <h3>1. Tipo de Paciente a Registrar</h3>
+        <p>
+          Selecciona si se trata de un ciudadano adulto o un menor de edad que debe vincularse a su
+          representante legal.
+        </p>
+
+        <div class="tipo-cards-grid">
+          <div
+            class="tipo-card"
+            [class.is-seleccionada]="!form().esMenor"
+            (click)="cambiarTipoPaciente(false)"
+            tabindex="0"
+            role="radio"
+            [attr.aria-checked]="!form().esMenor"
+          >
+            <div class="tipo-card__icono">👤</div>
+            <div class="tipo-card__info">
+              <h4>Ciudadano Adulto</h4>
+              <p>Mayor de 18 años con cédula de identidad propia.</p>
+            </div>
+            <span class="tipo-card__check" aria-hidden="true">
+              <ca-icon [name]="!form().esMenor ? 'check' : 'minus'"></ca-icon>
+            </span>
+          </div>
+
+          <div
+            class="tipo-card"
+            [class.is-seleccionada]="form().esMenor"
+            (click)="cambiarTipoPaciente(true)"
+            tabindex="0"
+            role="radio"
+            [attr.aria-checked]="form().esMenor"
+          >
+            <div class="tipo-card__icono">👶</div>
+            <div class="tipo-card__info">
+              <h4>Menor de Edad (Pediátrico)</h4>
+              <p>Lactantes, niños o adolescentes vinculados a la cédula del representante legal.</p>
+            </div>
+            <span class="tipo-card__check" aria-hidden="true">
+              <ca-icon [name]="form().esMenor ? 'check' : 'minus'"></ca-icon>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PASO 2: DATOS FILIATORIOS Y DE IDENTIDAD -->
+      <section class="panel ps-seccion-form" aria-label="Datos personales del paciente">
+        <header class="seccion-cabecera">
+          <div>
+            <h3>2. Datos Personales del Paciente</h3>
+            <p>Información básica para la apertura de la ficha clínica en la red de salud.</p>
+          </div>
+        </header>
+
+        <div class="campos-grid">
+          <!-- Primer Nombre -->
+          <label class="field">
+            <span class="field-label">Primer Nombre *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: Alejandro"
+              required
+              [ngModel]="form().primerNombre"
+              (ngModelChange)="actualizarCampo('primerNombre', $event)"
+              name="primerNombre"
+            />
+          </label>
+
+          <!-- Segundo Nombre -->
+          <label class="field">
+            <span class="field-label">Segundo Nombre</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: David (Opcional)"
+              [ngModel]="form().segundoNombre"
+              (ngModelChange)="actualizarCampo('segundoNombre', $event)"
+              name="segundoNombre"
+            />
+          </label>
+
+          <!-- Primer Apellido -->
+          <label class="field">
+            <span class="field-label">Primer Apellido *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: Morales"
+              required
+              [ngModel]="form().primerApellido"
+              (ngModelChange)="actualizarCampo('primerApellido', $event)"
+              name="primerApellido"
+            />
+          </label>
+
+          <!-- Segundo Apellido -->
+          <label class="field">
+            <span class="field-label">Segundo Apellido</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: Peña (Opcional)"
+              [ngModel]="form().segundoApellido"
+              (ngModelChange)="actualizarCampo('segundoApellido', $event)"
+              name="segundoApellido"
+            />
+          </label>
+
+          <!-- Cédula de Identidad (Sólo para adultos; menores no se solicita) -->
+          @if (!form().esMenor) {
+            <label class="field">
+              <span class="field-label">Cédula de Identidad *</span>
+              <input
+                type="text"
+                class="ui-input"
+                placeholder="Ej: 14.567.890"
+                required
+                [ngModel]="form().cedula"
+                (ngModelChange)="actualizarCampo('cedula', $event)"
+                name="cedula"
+              />
+            </label>
+          } @else {
+            <div class="field field-aviso-menor">
+              <span class="field-label">Cédula de Identidad</span>
+              <div class="aviso-cedula-menor">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span>No se solicita (Menor sin cédula · Vinculado a su Representante Legal)</span>
+              </div>
+            </div>
+          }
+
+          <!-- Fecha de Nacimiento -->
+          <label class="field">
+            <span class="field-label">Fecha de Nacimiento *</span>
+            <input
+              type="date"
+              class="ui-input"
+              required
+              [ngModel]="form().fechaNacimiento"
+              (ngModelChange)="actualizarCampo('fechaNacimiento', $event)"
+              name="fechaNacimiento"
+            />
+            @if (edadCalculada() !== null) {
+              <small class="edad-tag">
+                Edad: <strong>{{ edadCalculada() }} años</strong>
+                {{ edadCalculada()! < 18 ? '· Pediátrico' : '· Adulto' }}
+              </small>
+            }
+          </label>
+
+          <!-- Sexo -->
+          <label class="field">
+            <span class="field-label">Sexo *</span>
+            <select
+              class="ui-select"
+              required
+              [ngModel]="form().sexo"
+              (ngModelChange)="actualizarCampo('sexo', $event)"
+              name="sexo"
+            >
+              <option value="F">Femenino</option>
+              <option value="M">Masculino</option>
+              <option value="otro">Otro</option>
+            </select>
+          </label>
+
+          <!-- Tipo de Sangre -->
+          <label class="field">
+            <span class="field-label">Tipo de Sangre *</span>
+            <select
+              class="ui-select"
+              required
+              [ngModel]="form().tipoSangre"
+              (ngModelChange)="actualizarCampo('tipoSangre', $event)"
+              name="tipoSangre"
+            >
+              @for (ts of tiposSangre; track ts.id) {
+                <option [value]="ts.nombre">{{ ts.nombre }}</option>
+              }
+            </select>
+          </label>
+
+          <!-- Etnia -->
+          <label class="field">
+            <span class="field-label">Etnia / Pueblo Indígena</span>
+            <select
+              class="ui-select"
+              [ngModel]="form().etnia"
+              (ngModelChange)="actualizarCampo('etnia', $event)"
+              name="etnia"
+            >
+              <option value="Ninguna / No aplica">Ninguna / No aplica</option>
+              @for (et of gruposEtnicos; track et.id) {
+                <option [value]="et.nombre">{{ et.nombre }}</option>
+              }
+            </select>
+          </label>
+
+          <!-- Estatura -->
+          <label class="field">
+            <span class="field-label">Estatura (cm)</span>
+            <input
+              type="number"
+              class="ui-input"
+              placeholder="Ej: 172"
+              min="30"
+              max="250"
+              [ngModel]="form().estatura"
+              (ngModelChange)="actualizarCampo('estatura', $event)"
+              name="estatura"
+            />
+          </label>
+
+          <!-- CONTACTO Y OCUPACIÓN DEL PACIENTE (Exclusivo para mayores de edad) -->
+          @if (!form().esMenor) {
+            <!-- Correo Electrónico -->
+            <label class="field">
+              <span class="field-label">Correo Electrónico</span>
+              <input
+                type="email"
+                class="ui-input"
+                placeholder="Ej: paciente@correo.com"
+                [ngModel]="form().correo"
+                (ngModelChange)="actualizarCampo('correo', $event)"
+                name="correo"
+              />
+            </label>
+
+            <!-- Ocupación / Profesión -->
+            <label class="field">
+              <span class="field-label">Ocupación / Profesión</span>
+              <select
+                class="ui-select"
+                [ngModel]="form().ocupacion"
+                (ngModelChange)="actualizarCampo('ocupacion', $event)"
+                name="ocupacion"
+              >
+                @for (prof of profesiones; track prof.id) {
+                  <option [value]="prof.nombre">{{ prof.nombre }}</option>
+                }
+              </select>
+            </label>
+
+            <!-- Teléfono Celular -->
+            <label class="field">
+              <span class="field-label">Teléfono Celular *</span>
+              <input
+                type="tel"
+                class="ui-input"
+                placeholder="Ej: 0412-1234567"
+                required
+                [ngModel]="form().telefonoCelular"
+                (ngModelChange)="actualizarCampo('telefonoCelular', $event)"
+                name="telefonoCelular"
+              />
+            </label>
+
+            <!-- Teléfono de Domicilio (Opcional si tiene) -->
+            <label class="field">
+              <span class="field-label">Teléfono de Domicilio (Si tiene)</span>
+              <input
+                type="tel"
+                class="ui-input"
+                placeholder="Ej: 0212-8621144 (Opcional)"
+                [ngModel]="form().telefonoDomicilio"
+                (ngModelChange)="actualizarCampo('telefonoDomicilio', $event)"
+                name="telefonoDomicilio"
+              />
+            </label>
+          }
+
+          <!-- Domicilio / Dirección de Residencia -->
+          <label class="field campo-completo">
+            <span class="field-label">Domicilio / Dirección de Residencia *</span>
+            <input
+              type="text"
+              class="ui-input"
+              placeholder="Ej: Av. Sucre, Sector La Pastora, Edif. Manantial, Apto 4-B"
+              required
+              [ngModel]="form().domicilio"
+              (ngModelChange)="actualizarCampo('domicilio', $event)"
+              name="domicilio"
+            />
+          </label>
+        </div>
+
+        <!-- SUBSECCIÓN OBLIGATORIA PARA MENORES DE EDAD (PUNTO 3) -->
+        @if (form().esMenor) {
+          <div class="bloque-representante-form">
+            <div class="bloque-representante-cabecera">
+              <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+              <div>
+                <h4>Datos del Representante Legal (Obligatorio para menores)</h4>
+                <p>
+                  El menor de edad queda vinculado legalmente a la cédula de su tutor o progenitor.
+                  Los datos de contacto y notificación corresponden a dicho representante.
+                </p>
+              </div>
+            </div>
+
+            <div class="campos-grid">
+              <label class="field">
+                <span class="field-label">Cédula del Representante Legal *</span>
+                <input
+                  type="text"
+                  class="ui-input"
+                  placeholder="Ej: 14.567.890"
+                  required
+                  [ngModel]="form().cedulaRepresentante"
+                  (ngModelChange)="actualizarCampo('cedulaRepresentante', $event)"
+                  name="cedulaRepresentante"
+                />
+              </label>
+
+              <label class="field">
+                <span class="field-label">Nombre y Apellidos del Representante *</span>
+                <input
+                  type="text"
+                  class="ui-input"
+                  placeholder="Ej: Alejandro Morales García"
+                  required
+                  [ngModel]="form().nombreRepresentante"
+                  (ngModelChange)="actualizarCampo('nombreRepresentante', $event)"
+                  name="nombreRepresentante"
+                />
+              </label>
+
+              <label class="field">
+                <span class="field-label">Parentesco o Relación Legal *</span>
+                <select
+                  class="ui-select"
+                  [ngModel]="form().parentesco"
+                  (ngModelChange)="actualizarCampo('parentesco', $event)"
+                  name="parentesco"
+                >
+                  <option value="Madre">Madre</option>
+                  <option value="Padre">Padre</option>
+                  <option value="Abuelo/a">Abuelo / Abuela</option>
+                  <option value="Tutor Legal">Tutor Legal Autorizado</option>
+                </select>
+              </label>
+
+              <!-- Teléfono Celular del Representante / Padre -->
+              <label class="field">
+                <span class="field-label">Teléfono Celular del Representante *</span>
+                <input
+                  type="tel"
+                  class="ui-input"
+                  placeholder="Ej: 0412-1234567"
+                  required
+                  [ngModel]="form().telefonoCelular"
+                  (ngModelChange)="actualizarCampo('telefonoCelular', $event)"
+                  name="telefonoCelularRep"
+                />
+              </label>
+
+              <!-- Teléfono de Domicilio / Fijo del Representante -->
+              <label class="field">
+                <span class="field-label">Teléfono de Domicilio / Fijo (Si tiene)</span>
+                <input
+                  type="tel"
+                  class="ui-input"
+                  placeholder="Ej: 0212-8621144 (Opcional)"
+                  [ngModel]="form().telefonoDomicilio"
+                  (ngModelChange)="actualizarCampo('telefonoDomicilio', $event)"
+                  name="telefonoDomicilioRep"
+                />
+              </label>
+
+              <!-- Correo Electrónico del Representante -->
+              <label class="field">
+                <span class="field-label">Correo Electrónico del Representante</span>
+                <input
+                  type="email"
+                  class="ui-input"
+                  placeholder="Ej: representante@correo.com"
+                  [ngModel]="form().correo"
+                  (ngModelChange)="actualizarCampo('correo', $event)"
+                  name="correoRep"
+                />
+              </label>
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- PASO 3: REGISTRO DE VACUNAS APLICADAS (PUNTO 3 DEL REQUERIMIENTO) -->
+      <section class="panel ps-seccion-form" aria-label="Registro de vacunas iniciales">
+        <header class="seccion-cabecera">
+          <div>
+            <h3>3. Inmunizaciones Iniciales o Aplicadas en Consulta</h3>
+            <p>
+              Registra las vacunas administradas hoy o el historial previo que el paciente trae en
+              su carnet físico.
+            </p>
+          </div>
+        </header>
+
+        <!-- Subformulario para añadir vacunas -->
+        <div class="panel-agregar-vacuna">
+          <div class="campos-grid">
+            <label class="field">
+              <span class="field-label">Biológico / Vacuna</span>
+              <select
+                class="ui-select"
+                [ngModel]="nuevaVacunaId()"
+                (ngModelChange)="onCambioVacuna($event)"
+                name="nuevaVacuna"
+              >
+                @for (v of vacunasDisponibles(); track v.id) {
+                  <option [value]="v.id">{{ v.nombre }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field-label">Dosis</span>
+              <select
+                class="ui-select"
+                [ngModel]="nuevaDosis()"
+                (ngModelChange)="nuevaDosis.set(+$event)"
+                name="nuevaDosis"
+              >
+                <option [value]="1">Dosis #1 (Primera)</option>
+                <option [value]="2">Dosis #2 (Segunda)</option>
+                <option [value]="3">Dosis #3 (Tercera)</option>
+                <option [value]="4">Dosis #4 (Refuerzo)</option>
+                <option [value]="5">Refuerzo Anual / Decenal</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field-label">Número de Lote</span>
+              <select
+                class="ui-select"
+                [ngModel]="nuevoLote()"
+                (ngModelChange)="nuevoLote.set($event)"
+                name="nuevoLote"
+              >
+                @for (l of lotesDisponibles(); track l) {
+                  <option [value]="l">{{ l }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field-label">Fecha de Aplicación</span>
+              <input
+                type="date"
+                class="ui-input"
+                [ngModel]="nuevaFecha()"
+                (ngModelChange)="nuevaFecha.set($event)"
+                name="nuevaFecha"
+              />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Centro de Salud donde se aplicó</span>
+              <input
+                type="text"
+                class="ui-input"
+                placeholder="Centro de Salud La Pastora"
+                [ngModel]="nuevoCentro()"
+                (ngModelChange)="nuevoCentro.set($event)"
+                name="nuevoCentro"
+              />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Observaciones</span>
+              <input
+                type="text"
+                class="ui-input"
+                placeholder="Sin reacciones alérgicas"
+                [ngModel]="nuevasObservaciones()"
+                (ngModelChange)="nuevasObservaciones.set($event)"
+                name="nuevasObservaciones"
+              />
+            </label>
+          </div>
+
+          <div class="boton-agregar-vacuna-box">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="agregarVacunaInicial()">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>+ Añadir Vacuna al Expediente</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Listado de vacunas añadidas al registro inicial -->
+        @if (vacunasIniciales().length > 0) {
+          <div class="vacunas-anadidas-lista">
+            <h4>Vacunas que se guardarán en este expediente ({{ vacunasIniciales().length }})</h4>
+            <div class="tabla-contenedor">
+              <table class="ui-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Vacuna</th>
+                    <th scope="col">Dosis</th>
+                    <th scope="col">Lote</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Centro</th>
+                    <th scope="col" class="texto-derecha">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (vac of vacunasIniciales(); track $index; let idx = $index) {
+                    <tr>
+                      <td>
+                        <strong>{{ vac.vacunaNombre }}</strong>
+                      </td>
+                      <td>Dosis #{{ vac.dosis }}</td>
+                      <td>
+                        <span class="badge-lote">{{ vac.lote }}</span>
+                      </td>
+                      <td>{{ vac.fechaAplicacion }}</td>
+                      <td>{{ vac.centroAplicacion }}</td>
+                      <td class="texto-derecha">
+                        <button
+                          type="button"
+                          class="btn btn-ghost btn-sm btn-remover"
+                          (click)="removerVacunaInicial(idx)"
+                          title="Eliminar de la lista"
+                        >
+                          <ca-icon name="trash" aria-hidden="true"></ca-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        } @else {
+          <p class="aviso-vacunas-opcional">
+            Opcional: Si el paciente ya recibió vacunas o se le aplicará una dosis hoy, agrégala
+            arriba antes de guardar.
+          </p>
+        }
+      </section>
+
+      <!-- BOTÓN PRINCIPAL DE GUARDADO -->
+      <footer class="ps-alta-acciones">
+        <a class="btn btn-ghost" routerLink="/PS/pacientes">Cancelar</a>
+        <button type="submit" class="btn btn-primary btn-lg">
+          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <span>Guardar y Crear Expediente Clínico</span>
+        </button>
+      </footer>
+    </form>
+  }
+</div>

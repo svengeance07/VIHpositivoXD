@@ -52,6 +52,20 @@ describe('Login', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/PS');
   });
 
+  it('lleva al enfermero a su estación de vacunación', () => {
+    const { fixture, element } = crear();
+
+    elegirRol(element, 1);
+    fixture.detectChanges();
+    enviar(fixture, 'centro@vih.gob.ve', 'centro123');
+
+    element.querySelectorAll<HTMLButtonElement>('.perfil')[1].click();
+    fixture.detectChanges();
+    enviar(fixture, 'enfermero.centro@vih.gob.ve', 'enfermero123');
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/PS/estacion');
+  });
+
   it('hace el flujo de dos niveles para la subregión', () => {
     const { fixture, element } = crear();
 

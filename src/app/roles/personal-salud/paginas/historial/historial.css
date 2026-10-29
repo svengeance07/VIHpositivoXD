@@ -1,0 +1,702 @@
+/**
+ * ====================================================================
+ * Estilos de Historial de Vacunación y Auditoría Clínica (/PS/historial)
+ * ====================================================================
+ * Lenguaje de diseño Liquid Glass con tablas translúcidas, badges semánticos
+ * de eventos clínicos y modales de formato comprobante oficial sanitario.
+ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* Alerta de confirmación */
+.alerta-exito {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 0.85rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+}
+
+.alerta-exito ca-icon {
+  font-size: 1.25rem;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.alerta-exito__texto {
+  flex: 1;
+}
+
+.alerta-exito__texto strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.alerta-exito__texto p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* 1. Métricas Globales del Historial                                 */
+/* ------------------------------------------------------------------ */
+
+.ps-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  padding: 1.25rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.metrica__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.metrica__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.75rem;
+  font-size: 1.15rem;
+}
+
+.metrica__icono--azul {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0284c7;
+}
+
+.metrica__icono--verde {
+  background: rgba(16, 185, 129, 0.14);
+  color: #059669;
+}
+
+.metrica__icono--morado {
+  background: rgba(168, 85, 247, 0.14);
+  color: #9333ea;
+}
+
+.metrica__icono--amarillo {
+  background: rgba(234, 179, 8, 0.14);
+  color: #ca8a04;
+}
+
+.metrica__etiqueta {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metrica strong {
+  font-size: 1.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.metrica small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Barra de Control, Tabs y Filtros                                */
+/* ------------------------------------------------------------------ */
+
+.ps-filtros {
+  padding: 1.15rem 1.4rem;
+  border-radius: 1.15rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filtro-tabs {
+  display: inline-flex;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.filtro-tab {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 180ms ease;
+}
+
+.filtro-tab:hover {
+  color: var(--text);
+}
+
+.filtro-tab.is-activo {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.ps-filtros__herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ps-filtros__busqueda {
+  flex: 1 1 280px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+}
+
+.ps-filtros__busqueda input {
+  width: 100%;
+}
+
+.filtro-campo {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.filtro-campo__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Tabla de Bitácora Histórica                                     */
+/* ------------------------------------------------------------------ */
+
+.ps-bitacora-tabla {
+  padding: 1.4rem;
+  border-radius: 1.25rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: grid;
+  gap: 1.1rem;
+}
+
+.ps-bitacora-titulo h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.ps-bitacora-titulo p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0.85rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.ui-table thead {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ui-table th {
+  padding: 0.85rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ui-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.ui-table tbody tr {
+  transition: background 150ms ease;
+}
+
+.ui-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.03);
+}
+
+.ui-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fila-reporte {
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.fila-reporte:hover {
+  background: rgba(239, 68, 68, 0.06) !important;
+}
+
+/* Chips de tipo de evento */
+.chip-evento {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.chip-evento--vacuna {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+.chip-evento--reporte {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.chip-evento ca-icon {
+  font-size: 0.8rem;
+}
+
+.td-fecha {
+  white-space: nowrap;
+}
+
+.td-fecha strong {
+  display: block;
+  font-size: 0.86rem;
+}
+
+.td-fecha small {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.td-paciente strong {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.paciente-meta-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.badge-menor {
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.td-vacuna strong {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.badge-lote {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 0.4rem;
+  background: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.badge-dosis {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.badge-gravedad {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.12);
+  color: #ca8a04;
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badge-gravedad--moderado {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.badge-gravedad--severo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.td-profesional span {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.th-accion,
+.td-accion {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Estado vacío */
+.estado-vacio {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.estado-vacio ca-icon {
+  font-size: 2.2rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.estado-vacio h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.estado-vacio p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  max-width: 420px;
+}
+
+/* ------------------------------------------------------------------ */
+ca-modal {
+  --modal-z: 1200;
+}
+
+.ps-modal {
+  position: relative;
+  z-index: 100;
+  isolation: isolate;
+  width: min(94vw, 760px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #ffffff);
+  border-radius: 1.4rem;
+  border: 1.5px solid var(--border-subtle);
+  box-shadow:
+    0 24px 60px -10px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  color: var(--text);
+}
+
+.ps-modal--comprobante {
+  width: min(94vw, 760px);
+}
+
+.ps-modal__cabecera {
+  padding: 1.35rem 1.75rem 1.15rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-cabecera-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0284c7;
+  margin-bottom: 0.15rem;
+}
+
+.modal-eyebrow ca-icon {
+  font-size: 0.85rem;
+}
+
+.ps-modal__cabecera h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.ps-modal__cabecera p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.comprobante-cuerpo {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.comprobante-timbre {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.1rem 1.35rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(14, 165, 233, 0.03));
+  border: 1px solid rgba(2, 132, 199, 0.22);
+}
+
+.comprobante-timbre__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #fff;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.comprobante-timbre__info h4 {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #0284c7;
+}
+
+.comprobante-timbre__info p {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.comprobante-timbre__info small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.comprobante-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.15rem 1.35rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid var(--border-subtle);
+}
+
+.comprobante-seccion h4 {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.comprobante-grid-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+}
+
+.comprobante-grid-datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label-muted {
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.comprobante-grid-datos strong {
+  font-size: 0.94rem;
+  color: var(--text);
+}
+
+.comprobante-observaciones {
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.85rem;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border-subtle);
+  border-left: 3.5px solid #0284c7;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.comprobante-seccion--firma {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1rem 0 0.5rem;
+  background: transparent;
+  border: none;
+}
+
+.firma-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 220px;
+}
+
+.linea-firma {
+  width: 100%;
+  height: 1.5px;
+  background: #cbd5e1;
+  margin-bottom: 0.4rem;
+}
+
+.firma-caja strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.firma-caja small {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.timbre-digital {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: right;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px dashed rgba(16, 185, 129, 0.35);
+}
+
+.timbre-digital__check {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #047857;
+  letter-spacing: 0.02em;
+}
+
+.timbre-digital small {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.ps-modal__pie {
+  padding: 1.2rem 1.75rem;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(248, 250, 252, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+}

@@ -1,0 +1,392 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.master-shell {
+  --barra-ancho: 5.25rem;
+  --barra-expandida: 17rem;
+  min-height: 100dvh;
+}
+
+.barra {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 40;
+  width: var(--barra-ancho);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.9rem 0.65rem 1rem;
+  border-inline-end: 0.5px solid var(--glass-border);
+  overflow: hidden;
+  transition: width 0.22s ease;
+}
+
+.barra::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: color-mix(in oklab, var(--glass-surface) 92%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.7)) saturate(170%);
+}
+
+.barra > * {
+  position: relative;
+  z-index: 1;
+}
+
+.barra.is-expandida {
+  width: var(--barra-expandida);
+}
+
+.barra__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.9rem;
+  padding-inline: 0.2rem;
+}
+
+.barra__cabecera .marca {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.barra__marca-texto {
+  display: grid;
+  gap: 0.02rem;
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-0.3rem);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.barra__marca-texto strong {
+  font-size: 0.92rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.barra.is-expandida .barra__marca-texto {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.barra__pin,
+.barra__cerrar {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 0.5px solid var(--glass-border);
+  border-radius: 0.65rem;
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.barra__pin:hover,
+.barra__cerrar:hover {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--color-accent) 50%, var(--glass-border));
+}
+
+.barra__cerrar {
+  display: none;
+}
+
+.barra__nav {
+  display: grid;
+  gap: 0.28rem;
+  align-content: start;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-block: 0.2rem;
+}
+
+.barra__item {
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.82rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.barra__item:hover,
+.barra__item:focus-visible {
+  color: var(--text);
+  background: color-mix(in oklab, var(--glass-surface) 55%, transparent);
+}
+
+.barra__item.is-active {
+  color: var(--color-accent-2);
+  background: color-mix(in oklab, var(--color-accent) 13%, transparent);
+}
+
+.barra__icono {
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 0.68rem;
+  background: color-mix(in oklab, var(--glass-surface) 70%, transparent);
+}
+
+.barra__item.is-active .barra__icono {
+  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+
+.barra__etiqueta {
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 570;
+  transition: opacity 0.16s ease;
+}
+
+.barra.is-expandida .barra__etiqueta {
+  opacity: 1;
+}
+
+.barra__pie {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.6rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}
+
+.barra__sesion {
+  display: flex;
+  align-items: center;
+  gap: 0.58rem;
+  min-width: 0;
+  padding: 0.2rem;
+}
+
+.barra__avatar {
+  width: 2.15rem;
+  height: 2.15rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.barra__sesion-texto {
+  display: grid;
+  gap: 0.02rem;
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.barra.is-expandida .barra__sesion-texto {
+  opacity: 1;
+}
+
+.barra__sesion-texto strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.barra__salir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.4rem;
+  padding: 0.4rem;
+  border: 0.5px solid transparent;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.barra__salir span {
+  display: none;
+  white-space: nowrap;
+}
+
+.barra.is-expandida .barra__salir span {
+  display: inline;
+}
+
+.barra__salir:hover {
+  color: var(--danger);
+}
+
+.master-contenido {
+  min-height: 100dvh;
+  margin-inline-start: var(--barra-ancho);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.barra-superior {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 4rem;
+  padding: 0.55rem clamp(1rem, 3vw, 2rem);
+  border-bottom: 0.5px solid color-mix(in oklab, var(--glass-border) 75%, transparent);
+  background: color-mix(in oklab, var(--bg, #f5f7fb) 76%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.45));
+}
+
+.barra-superior__menu {
+  display: none;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border: 0.5px solid var(--glass-border);
+  border-radius: 0.7rem;
+  background: color-mix(in oklab, var(--glass-surface) 65%, transparent);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.barra-superior__ruta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.barra-superior__rol {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.barra-superior__cuenta {
+  margin-inline-start: auto;
+}
+
+.master-area {
+  width: 100%;
+  max-width: 104rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 2.6vw, 2.2rem);
+  flex: 1 1 auto;
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: block;
+  border: 0;
+  background: color-mix(in oklab, #08111f 38%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: default;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.velo.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (min-width: 901px) {
+  .velo {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .barra,
+  .barra.is-expandida {
+    width: var(--barra-expandida);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+
+  .barra.is-expandida {
+    transform: translateX(0);
+  }
+
+  .barra__marca-texto,
+  .barra__etiqueta,
+  .barra__sesion-texto {
+    opacity: 1;
+    transform: none;
+  }
+
+  .barra__salir span {
+    display: inline;
+  }
+
+  .barra__pin {
+    display: none;
+  }
+
+  .barra__cerrar {
+    display: grid;
+  }
+
+  .master-contenido {
+    margin-inline-start: 0;
+  }
+
+  .barra-superior__menu {
+    display: grid;
+  }
+
+  .barra-superior__ruta {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .barra-superior {
+    padding-inline: 0.8rem;
+  }
+
+  .master-cuenta__texto {
+    display: none;
+  }
+
+  .master-area {
+    padding: 0.9rem;
+  }
+}

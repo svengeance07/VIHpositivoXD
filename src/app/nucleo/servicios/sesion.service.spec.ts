@@ -6,6 +6,7 @@ describe('SesionService', () => {
   let service: SesionService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(SesionService);
   });
@@ -25,6 +26,7 @@ describe('SesionService', () => {
 
     expect(sesion.rol).toBe(1);
     expect(sesion.nombre).toBe('Ana Rodríguez');
+    expect(sesion.nombreUsuario).toBe('master');
     expect(sesion.entidad).toBeNull();
     expect(service.autenticado()).toBe(true);
   });
@@ -50,6 +52,25 @@ describe('SesionService', () => {
     const sesion = service.entrar(centro, perfil);
     expect(sesion.entidad).toBe('Centro de Salud La Pastora');
     expect(sesion.nombre).toBe('Dra. María Pérez');
+  });
+
+  it('registra un perfil nuevo solo en la cuenta del centro indicado', () => {
+    service.registrarPerfilEnCentro('centro-la-pastora', {
+      id: 'enf-nuevo',
+      nombre: 'Enf. Nuevo',
+      tipo: 'trabajador',
+      correo: 'nuevo@vih.gob.ve',
+      clave: 'nuevo123',
+    });
+
+    const centro = requerir(service.validarCuenta(2, 'centro@vih.gob.ve', 'centro123'));
+    const perfil = requerir(
+      service.validarPerfil(centro, 'enf-nuevo', 'nuevo@vih.gob.ve', 'nuevo123'),
+    );
+    expect(perfil.tipo).toBe('trabajador');
+
+    const subregion = requerir(service.validarCuenta(3, 'subregion@vih.gob.ve', 'subregion123'));
+    expect(subregion.perfiles.some((p) => p.correo === 'nuevo@vih.gob.ve')).toBe(false);
   });
 
   it('permite sub-perfiles en la subregión y cierra la sesión', () => {
