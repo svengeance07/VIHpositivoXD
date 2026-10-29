@@ -49,6 +49,42 @@
   min-width: 0;
 }
 
+/* Las tarjetas de resumen responden con el mismo movimiento suave que las
+   métricas del Centro de Salud. */
+.master-pagina .metrica,
+.master-pagina .resumen-lote,
+.master-pagina .movimiento-metrica,
+.master-pagina .subregion-metrica {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.master-pagina .metrica:hover,
+.master-pagina .resumen-lote:hover,
+.master-pagina .movimiento-metrica:hover,
+.master-pagina .subregion-metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .master-pagina .metrica,
+  .master-pagina .resumen-lote,
+  .master-pagina .movimiento-metrica,
+  .master-pagina .subregion-metrica {
+    transition: none;
+  }
+
+  .master-pagina .metrica:hover,
+  .master-pagina .resumen-lote:hover,
+  .master-pagina .movimiento-metrica:hover,
+  .master-pagina .subregion-metrica:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 .master-grid {
   display: grid;
   gap: 1rem;
@@ -153,6 +189,10 @@
 .master-enlace-fila {
   color: inherit;
   text-decoration: none;
+}
+
+.master-enlace-fila strong {
+  transition: color 160ms ease;
 }
 
 .master-enlace-fila:hover strong {

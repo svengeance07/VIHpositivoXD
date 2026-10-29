@@ -80,8 +80,18 @@
   cursor: pointer;
 }
 
+.busqueda__nombre strong {
+  transition: color 160ms ease;
+}
+
 .busqueda__nombre:hover strong {
   color: var(--color-accent-2);
+}
+
+.busqueda__nombre:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-accent) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
 }
 
 .busqueda__nombre .master-tabla__secundario {

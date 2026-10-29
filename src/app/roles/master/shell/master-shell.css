@@ -6,6 +6,7 @@
 .master-shell {
   --barra-ancho: 5.25rem;
   --barra-expandida: 17rem;
+  --barra-transicion: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   min-height: 100dvh;
 }
 
@@ -21,7 +22,7 @@
   padding: 0.9rem 0.65rem 1rem;
   border-inline-end: 0.5px solid var(--glass-border);
   overflow: hidden;
-  transition: width 0.22s ease;
+  transition: width var(--barra-transicion);
 }
 
 .barra::before {
@@ -54,6 +55,34 @@
 .barra__cabecera .marca {
   min-width: 0;
   flex: 1 1 auto;
+  gap: 0.75rem;
+  border-radius: 0.8rem;
+}
+
+.barra__cabecera .marca:focus-visible {
+  outline: 2px solid color-mix(in oklab, #10b981 65%, transparent);
+  outline-offset: 3px;
+}
+
+/* El logo replica el tratamiento del Centro de Salud: degradado verde-azul
+   y sombra corta, para que la cabecera de la barra se lea igual. */
+.barra .marca__logo {
+  width: 2.3rem;
+  height: 2.3rem;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #10b981, #0284c7);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  font-size: 0.95rem;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.barra .marca:hover .marca__logo,
+.barra .marca:focus-visible .marca__logo {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.32);
 }
 
 .barra__marca-texto {
@@ -64,8 +93,8 @@
   opacity: 0;
   transform: translateX(-0.3rem);
   transition:
-    opacity 0.16s ease,
-    transform 0.16s ease;
+    opacity 160ms ease,
+    transform var(--barra-transicion);
 }
 
 .barra__marca-texto strong {
@@ -83,27 +112,41 @@
 .barra__cerrar {
   width: 2rem;
   height: 2rem;
-  display: grid;
   place-items: center;
   flex-shrink: 0;
-  border: 0.5px solid var(--glass-border);
   border-radius: 0.65rem;
-  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
   color: var(--muted);
   cursor: pointer;
   transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.barra__pin {
+  display: none;
+  border: 0;
+  background: transparent;
+}
+
+.barra.is-expandida .barra__pin {
+  display: grid;
+}
+
+.barra__cerrar {
+  display: none;
+  border: 0.5px solid var(--glass-border);
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
 }
 
 .barra__pin:hover,
 .barra__cerrar:hover {
   color: var(--text);
-  border-color: color-mix(in oklab, var(--color-accent) 50%, var(--glass-border));
+  background: color-mix(in oklab, var(--glass-surface) 70%, transparent);
 }
 
-.barra__cerrar {
-  display: none;
+.barra__cerrar:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 50%, var(--glass-border));
 }
 
 .barra__nav {
@@ -125,8 +168,8 @@
   color: var(--muted);
   text-decoration: none;
   transition:
-    color 0.15s ease,
-    background-color 0.15s ease;
+    color 160ms ease,
+    background-color 160ms ease;
 }
 
 .barra__item:hover,
@@ -148,6 +191,7 @@
   flex-shrink: 0;
   border-radius: 0.68rem;
   background: color-mix(in oklab, var(--glass-surface) 70%, transparent);
+  transition: background-color 160ms ease;
 }
 
 .barra__item.is-active .barra__icono {
@@ -161,11 +205,15 @@
   white-space: nowrap;
   font-size: 0.86rem;
   font-weight: 570;
-  transition: opacity 0.16s ease;
+  transform: translateX(-0.35rem);
+  transition:
+    opacity 160ms ease,
+    transform var(--barra-transicion);
 }
 
 .barra.is-expandida .barra__etiqueta {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .barra__pie {
@@ -202,11 +250,15 @@
   min-width: 0;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.16s ease;
+  transform: translateX(-0.35rem);
+  transition:
+    opacity 160ms ease,
+    transform var(--barra-transicion);
 }
 
 .barra.is-expandida .barra__sesion-texto {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .barra__sesion-texto strong {
@@ -230,6 +282,9 @@
   font: inherit;
   font-size: 0.8rem;
   cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
 }
 
 .barra__salir span {
@@ -243,6 +298,7 @@
 
 .barra__salir:hover {
   color: var(--danger);
+  background: color-mix(in oklab, var(--danger) 10%, transparent);
 }
 
 .master-contenido {
@@ -316,9 +372,11 @@
   visibility: hidden;
   pointer-events: none;
   cursor: default;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   transition:
-    opacity 0.2s ease,
-    visibility 0.2s ease;
+    opacity 220ms ease,
+    visibility 220ms ease;
 }
 
 .velo.is-visible {
@@ -338,7 +396,7 @@
   .barra.is-expandida {
     width: var(--barra-expandida);
     transform: translateX(-100%);
-    transition: transform 0.22s ease;
+    transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .barra.is-expandida {
@@ -356,7 +414,8 @@
     display: inline;
   }
 
-  .barra__pin {
+  .barra__pin,
+  .barra.is-expandida .barra__pin {
     display: none;
   }
 
@@ -388,5 +447,25 @@
 
   .master-area {
     padding: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra,
+  .barra__marca-texto,
+  .barra__etiqueta,
+  .barra__sesion-texto,
+  .barra__item,
+  .barra__pin,
+  .barra__cerrar,
+  .barra__salir,
+  .velo,
+  .barra .marca__logo {
+    transition: none;
+  }
+
+  .barra .marca:hover .marca__logo,
+  .barra .marca:focus-visible .marca__logo {
+    transform: none;
   }
 }
