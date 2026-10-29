@@ -73,6 +73,11 @@ export class SubregionSaludShell {
       { etiqueta: 'Personal de salud', ruta: '/SRS/trabajadores', icono: 'clipboard' },
       { etiqueta: 'Ciudadanos', ruta: '/SRS/ciudadanos', icono: 'filter' },
       {
+        etiqueta: 'Centros',
+        ruta: '/SRS/centros',
+        icono: 'clipboard',
+      },
+      {
         etiqueta: 'Certificados',
         ruta: '/SRS/certificados',
         icono: 'check',

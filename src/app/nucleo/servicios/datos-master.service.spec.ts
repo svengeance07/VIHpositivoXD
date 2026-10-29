@@ -28,6 +28,7 @@ describe('DatosMasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(DatosMasterService);
+    service.limpiarAlmacenamiento();
     catalogos = TestBed.inject(CatalogosService);
   });
 

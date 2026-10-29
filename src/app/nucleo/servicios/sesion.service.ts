@@ -7,6 +7,7 @@ import type {
   RolInterno,
   SesionActiva,
 } from '../modelos/cuenta-acceso';
+import type { TipoEmpleado } from '../modelos/enumeraciones';
 
 const CLAVE_STORAGE_CUENTAS = 'vih_cuentas_acceso_v1';
 
@@ -63,11 +64,11 @@ export class SesionService {
   }
 
   /**
-   * Registra un nuevo perfil de enfermero en el centro de salud para permitir su inicio de sesión.
+   * Registra un nuevo perfil de trabajador o jefe en el centro de salud para permitir su inicio de sesión.
    */
   registrarPerfilEnCentro(
     centroId: string,
-    perfil: { id: string; nombre: string; tipo: 'trabajador'; correo: string; clave: string },
+    perfil: { id: string; nombre: string; tipo: TipoEmpleado; correo: string; clave: string },
   ): void {
     const correoNorm = this.normalizar(perfil.correo);
     this._cuentas.update((lista) => {
@@ -84,6 +85,45 @@ export class SesionService {
         }
         return cuenta;
       });
+      guardarCuentas(actualizadas);
+      return actualizadas;
+    });
+  }
+
+  /**
+   * Registra una nueva cuenta de entidad para un centro recién creado con su jefe inicial.
+   */
+  registrarCuentaCentro(
+    centro: { id: string; nombre: string; codigo: string },
+    jefe: { id: string; nombre: string; correo: string },
+  ): void {
+    const correoNormalizado = this.normalizar(
+      `contacto.${centro.codigo.toLowerCase().replace(/[^a-z0-9]/g, '')}@vih.gob.ve`,
+    );
+
+    this._cuentas.update((lista) => {
+      if (lista.some((c) => c.id === centro.id)) {
+        return lista;
+      }
+
+      const nuevaCuenta: CuentaAcceso = {
+        id: centro.id,
+        rol: 2,
+        nombre: centro.nombre,
+        correo: correoNormalizado,
+        clave: 'centro123',
+        perfiles: [
+          {
+            id: jefe.id,
+            nombre: jefe.nombre,
+            tipo: 'jefe',
+            correo: jefe.correo,
+            clave: 'jefe123',
+          },
+        ],
+      };
+
+      const actualizadas = [...lista, nuevaCuenta];
       guardarCuentas(actualizadas);
       return actualizadas;
     });

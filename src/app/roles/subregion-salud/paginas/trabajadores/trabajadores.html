@@ -5,6 +5,10 @@
     descripcion="Consulta los registros del personal de salud asignado a los centros de la subregión, incluidos jefes y trabajadores."
   >
     <span class="srs-badge srs-badge--suave">{{ datos.trabajadores().length }} registros</span>
+    <button type="button" class="btn btn-primary" (click)="abrirAlta()">
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      <span>Agregar trabajador</span>
+    </button>
     <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
       <ca-icon name="filter" aria-hidden="true"></ca-icon>
       <span>Buscar ciudadanos</span>
@@ -206,4 +210,118 @@
       </div>
     }
   </section>
+
+  <ca-modal
+    [attr.open]="altaAbierta() ? '' : null"
+    backdrop-label="Cerrar formulario de trabajador"
+    (openchange)="cerrarAlta()"
+  >
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="master-modal__cabecera">
+        <div>
+          <h2>Registrar trabajador de salud</h2>
+          <p>Crea un nuevo usuario de tipo 2 y asígnalo a un centro de {{ datos.estadoNombre }}.</p>
+        </div>
+        <ca-modal-close label="Cerrar formulario"></ca-modal-close>
+      </header>
+
+      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre y apellido</span>
+            <input
+              type="text"
+              placeholder="Ej. Dr. Pedro Pérez"
+              [value]="alta().nombre"
+              (input)="actualizarAlta('nombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Cédula</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              placeholder="12345678"
+              [value]="alta().cedula"
+              (input)="actualizarAlta('cedula', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Correo institucional</span>
+            <input
+              type="email"
+              placeholder="pedro.perez@vih.gob.ve"
+              [value]="alta().correo"
+              (input)="actualizarAlta('correo', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Teléfono</span>
+            <input
+              type="tel"
+              placeholder="0414-000-0000"
+              [value]="alta().telefono"
+              (input)="actualizarAlta('telefono', valor($event))"
+            />
+          </label>
+        </div>
+
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Profesión</span>
+            <select
+              [value]="alta().profesionId"
+              (change)="actualizarAlta('profesionId', valor($event))"
+              required
+            >
+              <option value="">Selecciona una profesión</option>
+              @for (profesion of catalogos.profesiones(); track profesion.id) {
+                <option [value]="profesion.id">{{ profesion.nombre }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field-label">Centro de salud ({{ datos.estadoNombre }})</span>
+            <select
+              [value]="alta().centroId"
+              (change)="actualizarAlta('centroId', valor($event))"
+              required
+            >
+              <option value="">Selecciona un centro</option>
+              @for (centro of datos.centros(); track centro.centro.id) {
+                <option [value]="centro.centro.id">{{ centro.centro.nombre }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field-label">Rol en el centro</span>
+            <select
+              [value]="alta().tipo"
+              (change)="actualizarAlta('tipo', valor($event))"
+              required
+            >
+              <option value="trabajador">Trabajador</option>
+              <option value="jefe">Jefe de centro</option>
+            </select>
+          </label>
+        </div>
+
+        @if (errorAlta()) {
+          <p class="field-error" role="alert">{{ errorAlta() }}</p>
+        }
+
+        <div class="master-acciones master-acciones--fin">
+          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
+            Registrar trabajador
+          </button>
+        </div>
+      </form>
+    </section>
+  </ca-modal>
 </div>

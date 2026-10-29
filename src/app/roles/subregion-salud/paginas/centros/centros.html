@@ -1,0 +1,124 @@
+<div class="master-pagina">
+  <app-srs-encabezado
+    eyebrow="Administración de personal"
+    titulo="Centros de salud"
+    descripcion="Centros registrados dentro de la subregión. Al crear un centro se solicita el perfil inicial del jefe de centro, que podrá luego agregar trabajadores."
+  >
+    <button type="button" class="btn btn-primary" (click)="abrirAlta()">
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      Agregar centro
+    </button>
+    <a class="btn btn-ghost" routerLink="/SRS/trabajadores">
+      <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+      <span>Ver trabajadores</span>
+    </a>
+  </app-srs-encabezado>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Nombre</span>
+        <input type="search" placeholder="Hospital, ambulatorio o CDI" [value]="filtros().nombre" (input)="actualizar('nombre', valor($event))" />
+      </label>
+      <label class="field">
+        <span class="field-label">Código</span>
+        <input type="search" placeholder="CS-DC-014" [value]="filtros().codigo" (input)="actualizar('codigo', valor($event))" />
+      </label>
+      <label class="field">
+        <span class="field-label">Municipio</span>
+        <select [value]="filtros().municipioId" (change)="actualizar('municipioId', valor($event))">
+          <option value="">Todos</option>
+          @for (m of municipios(); track m.id) { <option [value]="m.id">{{ m.nombre }}</option> }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Parroquia</span>
+        <select [value]="filtros().parroquiaId" [disabled]="!filtros().municipioId" (change)="actualizar('parroquiaId', valor($event))">
+          <option value="">Todas</option>
+          @for (p of parroquias(); track p.id) { <option [value]="p.id">{{ p.nombre }}</option> }
+        </select>
+      </label>
+    </div>
+    <div class="centros__pie">
+      <span class="master-badge master-badge--suave">{{ resultados().length }} centros</span>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+        <strong>No hay centros registrados</strong>
+        <p>Usa "Agregar centro" para crear el primer establecimiento de la subregión.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead><tr><th>Centro</th><th>Ubicación</th><th>Jefe</th><th>Trabajadores</th></tr></thead>
+          <tbody>
+            @for (fila of resultados(); track fila.centro.id) {
+              <tr>
+                <td><strong>{{ fila.centro.nombre }}</strong> <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span></td>
+                <td><strong>{{ fila.municipioNombre }}</strong> · {{ fila.parroquiaNombre }}</td>
+                <td>{{ fila.jefe?.nombre ?? 'Sin jefe asignado' }}</td>
+                <td>{{ fila.trabajadores }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <ca-modal [attr.open]="altaAbierta() ? '' : null" backdrop-label="Cerrar formulario" (openchange)="cerrarAlta()">
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="master-modal__cabecera">
+        <div><h2>Agregar centro de salud</h2><p>Crea el centro y su jefe inicial. El jefe podrá agregar trabajadores después.</p></div>
+        <ca-modal-close label="Cerrar"></ca-modal-close>
+      </header>
+      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+        <div class="master-campos">
+          <label class="field"><span class="field-label">Nombre del centro</span>
+            <input type="text" placeholder="Hospital / CDI" [value]="alta().nombre" (input)="actualizarAlta('nombre', valor($event))" required />
+          </label>
+          <label class="field"><span class="field-label">Código</span>
+            <input type="text" placeholder="CS-DC-000" [value]="alta().codigo" (input)="actualizarAlta('codigo', valor($event))" required />
+          </label>
+        </div>
+        <div class="master-campos">
+          <label class="field"><span class="field-label">Estado</span><input type="text" [value]="datos.estadoNombre" disabled /></label>
+          <label class="field"><span class="field-label">Municipio</span>
+            <select [value]="alta().municipioId" (change)="actualizarAlta('municipioId', valor($event))" required>
+              <option value="">Selecciona</option>
+              @for (m of municipiosAlta(); track m.id) { <option [value]="m.id">{{ m.nombre }}</option> }
+            </select>
+          </label>
+          <label class="field"><span class="field-label">Parroquia</span>
+            <select [value]="alta().parroquiaId" [disabled]="!alta().municipioId" (change)="actualizarAlta('parroquiaId', valor($event))" required>
+              <option value="">Selecciona</option>
+              @for (p of parroquiasAlta(); track p.id) { <option [value]="p.id">{{ p.nombre }}</option> }
+            </select>
+          </label>
+        </div>
+        <h3 class="centros__seccion">Perfil inicial del jefe de centro</h3>
+        <div class="master-campos">
+          <label class="field"><span class="field-label">Nombre y apellido</span>
+            <input type="text" placeholder="Dr. Nombre Apellido" [value]="alta().jefeNombre" (input)="actualizarAlta('jefeNombre', valor($event))" required />
+          </label>
+          <label class="field"><span class="field-label">Cédula</span>
+            <input type="text" inputmode="numeric" placeholder="12345678" [value]="alta().jefeCedula" (input)="actualizarAlta('jefeCedula', valor($event))" required />
+          </label>
+          <label class="field"><span class="field-label">Correo institucional</span>
+            <input type="email" placeholder="nombre@vih.gob.ve" [value]="alta().jefeCorreo" (input)="actualizarAlta('jefeCorreo', valor($event))" required />
+          </label>
+        </div>
+        @if (errorAlta()) { <p class="field-error" role="alert">{{ errorAlta() }}</p> }
+        <div class="master-acciones master-acciones--fin">
+          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">Crear centro</button>
+        </div>
+      </form>
+    </section>
+  </ca-modal>
+</div>

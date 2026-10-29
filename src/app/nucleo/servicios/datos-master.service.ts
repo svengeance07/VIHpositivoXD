@@ -34,6 +34,63 @@ import type {
 } from '../modelos/master';
 import { CatalogosService } from './catalogos.service';
 
+const CLAVE_STORAGE_CENTROS = 'vih_centros_master_v1';
+const CLAVE_STORAGE_PERSONAL = 'vih_personal_master_v1';
+
+function cargarCentros(): readonly CentroSalud[] {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(CLAVE_STORAGE_CENTROS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return CENTROS;
+}
+
+function guardarCentros(lista: readonly CentroSalud[]): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(CLAVE_STORAGE_CENTROS, JSON.stringify(lista));
+    }
+  } catch {
+    // ignorar cuotas
+  }
+}
+
+function cargarPersonal(): readonly PersonalSalud[] {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(CLAVE_STORAGE_PERSONAL);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return PERSONAL;
+}
+
+function guardarPersonal(lista: readonly PersonalSalud[]): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(CLAVE_STORAGE_PERSONAL, JSON.stringify(lista));
+    }
+  } catch {
+    // ignorar cuotas
+  }
+}
+
 /**
  * Acceso a los datos de las vistas del master.
  *
@@ -48,8 +105,8 @@ export class DatosMasterService {
   private readonly _estados = signal<readonly Estado[]>(ESTADOS);
   private readonly _municipios = signal<readonly Municipio[]>(MUNICIPIOS);
   private readonly _parroquias = signal<readonly Parroquia[]>(PARROQUIAS);
-  private readonly _centros = signal<readonly CentroSalud[]>(CENTROS);
-  private readonly _personal = signal<readonly PersonalSalud[]>(PERSONAL);
+  private readonly _centros = signal<readonly CentroSalud[]>(cargarCentros());
+  private readonly _personal = signal<readonly PersonalSalud[]>(cargarPersonal());
   private readonly _ciudadanos = signal<readonly Ciudadano[]>(CIUDADANOS);
   private readonly _lotes = signal<readonly LoteVacuna[]>(LOTES);
   private readonly _movimientos = signal<readonly MovimientoSistema[]>(MOVIMIENTOS);
@@ -388,8 +445,16 @@ export class DatosMasterService {
       activo: true,
     };
 
-    this._personal.update((personal) => [...personal, jefe]);
-    this._centros.update((centros) => [...centros, centro]);
+    this._personal.update((personal) => {
+      const actual = [...personal, jefe];
+      guardarPersonal(actual);
+      return actual;
+    });
+    this._centros.update((centros) => {
+      const actual = [...centros, centro];
+      guardarCentros(actual);
+      return actual;
+    });
     this.registrarMovimiento(
       'creacion',
       'Centros',
@@ -442,8 +507,16 @@ export class DatosMasterService {
       activo: true,
     };
 
-    this._personal.update((personal) => [...personal, jefe]);
-    this._centros.update((centros) => [...centros, centro]);
+    this._personal.update((personal) => {
+      const actual = [...personal, jefe];
+      guardarPersonal(actual);
+      return actual;
+    });
+    this._centros.update((centros) => {
+      const actual = [...centros, centro];
+      guardarCentros(actual);
+      return actual;
+    });
     this.registrarMovimiento(
       'creacion',
       'Centros',
@@ -475,14 +548,20 @@ export class DatosMasterService {
       activo: true,
     };
 
-    this._personal.update((personal) => [...personal, empleado]);
+    this._personal.update((personal) => {
+      const actual = [...personal, empleado];
+      guardarPersonal(actual);
+      return actual;
+    });
 
     if (datos.tipo === 'jefe') {
-      this._centros.update((centros) =>
-        centros.map((candidato) =>
+      this._centros.update((centros) => {
+        const actual = centros.map((candidato) =>
           candidato.id === centro.id ? { ...candidato, encargadoId: empleado.id } : candidato,
-        ),
-      );
+        );
+        guardarCentros(actual);
+        return actual;
+      });
     }
 
     this.registrarMovimiento(
@@ -493,6 +572,20 @@ export class DatosMasterService {
     );
 
     return empleado;
+  }
+
+  /** Reinicia centros y personal al catálogo original (útil para pruebas y desarrollo). */
+  limpiarAlmacenamiento(): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(CLAVE_STORAGE_CENTROS);
+        localStorage.removeItem(CLAVE_STORAGE_PERSONAL);
+      }
+    } catch {
+      // ignorar
+    }
+    this._centros.set(CENTROS);
+    this._personal.set(PERSONAL);
   }
 
   private registrarMovimiento(

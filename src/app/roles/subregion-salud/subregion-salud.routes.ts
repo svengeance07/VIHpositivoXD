@@ -60,6 +60,12 @@ export const SUBREGION_SALUD_ROUTES: Routes = [
           ),
       },
       {
+        path: 'centros',
+        title: 'Centros de salud · Sistema V',
+        loadComponent: () =>
+          import('./paginas/centros/centros').then((m) => m.SubregionSaludCentros),
+      },
+      {
         path: 'notificaciones',
         title: 'Notificaciones de la subregión · Sistema V',
         loadComponent: () =>

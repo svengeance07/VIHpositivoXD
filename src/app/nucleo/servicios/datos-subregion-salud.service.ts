@@ -11,7 +11,7 @@ import {
   VIGENCIA_EXAMENES_MESES,
 } from '../datos/subregion-salud';
 import type { EstadoCertificado } from '../modelos/enumeraciones';
-import type { Ciudadano } from '../modelos/master';
+import type { AltaCentro, AltaEmpleado, CentroSalud, Ciudadano, PersonalSalud } from '../modelos/master';
 import type {
   CentroSubregionVista,
   EstadoRequisito,
@@ -31,6 +31,7 @@ import type {
 } from '../modelos/subregion-salud';
 import { CatalogosService } from './catalogos.service';
 import { DatosMasterService } from './datos-master.service';
+import { SesionService } from './sesion.service';
 
 /**
  * Datos y reglas de presentación de la Subregión de Salud.
@@ -44,6 +45,7 @@ import { DatosMasterService } from './datos-master.service';
 export class DatosSubregionSaludService {
   private readonly datos = inject(DatosMasterService);
   private readonly catalogos = inject(CatalogosService);
+  private readonly sesion = inject(SesionService);
 
   private readonly _solicitudes = signal<readonly SolicitudCertificado[]>(
     SOLICITUDES_CERTIFICADO_MOCK,
@@ -789,5 +791,47 @@ export class DatosSubregionSaludService {
 
   private generarId(prefijo: string): string {
     return `${prefijo}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  municipiosDeEstado(estadoId: string): readonly import('../modelos/master').Municipio[] {
+    return this.datos.municipiosDeEstado(estadoId);
+  }
+
+  parroquiasDeMunicipio(municipioId: string): readonly import('../modelos/master').Parroquia[] {
+    return this.datos.parroquiasDeMunicipio(municipioId);
+  }
+
+  crearCentro(datos: AltaCentro): CentroSalud | null {
+    if (datos.estadoId !== this.estadoId) {
+      return null;
+    }
+    const creado = this.datos.crearCentro(datos);
+    if (creado && creado.tipo === 2 && creado.estadoId === this.estadoId) {
+      this.sesion.registrarCuentaCentro(
+        { id: creado.id, nombre: creado.nombre, codigo: creado.codigo },
+        { id: creado.encargadoId ?? '', nombre: datos.jefeNombre, correo: datos.jefeCorreo },
+      );
+      return creado;
+    }
+    return creado ?? null;
+  }
+
+  crearTrabajador(datos: AltaEmpleado): PersonalSalud | null {
+    const centro = this.datos.centro(datos.centroId);
+    if (!centro || centro.estadoId !== this.estadoId || centro.tipo !== 2) {
+      return null;
+    }
+
+    const creado = this.datos.crearEmpleado(datos);
+    if (creado) {
+      this.sesion.registrarPerfilEnCentro(centro.id, {
+        id: creado.id,
+        nombre: creado.nombre,
+        tipo: datos.tipo,
+        correo: creado.correo,
+        clave: 'trabajador123',
+      });
+    }
+    return creado;
   }
 }
