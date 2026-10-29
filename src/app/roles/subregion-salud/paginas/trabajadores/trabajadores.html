@@ -300,11 +300,7 @@
 
           <label class="field">
             <span class="field-label">Rol en el centro</span>
-            <select
-              [value]="alta().tipo"
-              (change)="actualizarAlta('tipo', valor($event))"
-              required
-            >
+            <select [value]="alta().tipo" (change)="actualizarAlta('tipo', valor($event))" required>
               <option value="trabajador">Trabajador</option>
               <option value="jefe">Jefe de centro</option>
             </select>

@@ -57,7 +57,9 @@ describe('SubregionSaludTrabajadores', () => {
     component['rol'].set('todos');
     component['termino'].set(primerTrabajador.personal.cedula);
     fixture.detectChanges();
-    expect(component['resultados']().some((t) => t.personal.cedula === primerTrabajador.personal.cedula)).toBe(true);
+    expect(
+      component['resultados']().some((t) => t.personal.cedula === primerTrabajador.personal.cedula),
+    ).toBe(true);
 
     // Limpiar filtros
     component['limpiar']();
@@ -113,4 +115,3 @@ describe('SubregionSaludTrabajadores', () => {
     expect(el.textContent).toContain('27999888');
   });
 });
-

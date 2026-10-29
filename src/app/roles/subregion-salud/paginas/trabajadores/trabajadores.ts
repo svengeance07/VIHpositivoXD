@@ -53,11 +53,7 @@ export class SubregionSaludTrabajadores {
   protected readonly formularioValido = computed(() => {
     const a = this.alta();
     return Boolean(
-      a.nombre.trim() &&
-        a.cedula.trim() &&
-        a.correo.trim() &&
-        a.profesionId &&
-        a.centroId,
+      a.nombre.trim() && a.cedula.trim() && a.correo.trim() && a.profesionId && a.centroId,
     );
   });
 

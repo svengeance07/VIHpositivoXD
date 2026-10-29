@@ -163,4 +163,77 @@ describe('DatosMasterService', () => {
     expect(service.busquedas()[0].resultados).toBe(3);
     expect(service.busquedas()[0].usuario).toBe('master');
   });
+
+  it('persiste empleados creados en localStorage y los recupera al reinstanciar', () => {
+    const centro = service.centrosVista()[0];
+    const personalAntes = service.personalVista().length;
+
+    const empleado = service.crearEmpleado({
+      nombre: 'Lic. Persistencia',
+      cedula: '77001122',
+      correo: 'persistencia@vih.gob.ve',
+      telefono: '0412-000-0000',
+      profesionId: 'prof-enf',
+      centroId: centro.centro.id,
+      tipo: 'trabajador',
+    });
+
+    expect(empleado).not.toBeNull();
+    expect(service.personalVista().length).toBe(personalAntes + 1);
+
+    // Verificar que se guardó en localStorage
+    const raw = localStorage.getItem('vih_personal_master_v1');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!);
+    expect(parsed.some((p: { cedula: string }) => p.cedula === '77001122')).toBe(true);
+
+    // Reinstanciar y comprobar que carga
+    const service2 = TestBed.inject(DatosMasterService);
+    expect(service2.personalVista().some((fila) => fila.personal.cedula === '77001122')).toBe(true);
+  });
+
+  it('persiste centros creados en localStorage', () => {
+    const centrosAntes = service.centrosVista().length;
+
+    const centro = service.crearCentro({
+      nombre: 'Centro Persistido',
+      codigo: 'CS-PER-01',
+      estadoId: 'guarico',
+      municipioId: 'm-san-juan',
+      parroquiaId: 'p-san-juan',
+      jefeNombre: 'Dra. Persistida',
+      jefeCedula: '66001122',
+      jefeCorreo: 'persistida@vih.gob.ve',
+    });
+
+    expect(centro).not.toBeNull();
+    expect(service.centrosVista().length).toBe(centrosAntes + 1);
+
+    const raw = localStorage.getItem('vih_centros_master_v1');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!);
+    expect(parsed.some((c: { codigo: string }) => c.codigo === 'CS-PER-01')).toBe(true);
+  });
+
+  it('limpiarAlmacenamiento resetea datos al catálogo original', () => {
+    // Crear datos nuevos
+    service.crearEmpleado({
+      nombre: 'Temporal',
+      cedula: '00099900',
+      correo: 'temporal@vih.gob.ve',
+      telefono: '',
+      profesionId: 'prof-enf',
+      centroId: service.centrosVista()[0].centro.id,
+      tipo: 'trabajador',
+    });
+
+    const conNuevo = service.personalVista().length;
+
+    // Limpiar
+    service.limpiarAlmacenamiento();
+
+    expect(service.personalVista().length).toBeLessThan(conNuevo);
+    expect(localStorage.getItem('vih_personal_master_v1')).toBeNull();
+    expect(localStorage.getItem('vih_centros_master_v1')).toBeNull();
+  });
 });

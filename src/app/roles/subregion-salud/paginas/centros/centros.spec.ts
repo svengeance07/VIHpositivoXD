@@ -80,7 +80,7 @@ describe('Flujo DOM de creacion de centro y jefe desde SRS', () => {
     expect((centrosComponent as any).altaAbierta()).toBe(false);
 
     // Verificar en datosSRS
-    const nuevoTrabajador = datosSRS.trabajadores().find(t => t.personal.cedula === '25890123');
+    const nuevoTrabajador = datosSRS.trabajadores().find((t) => t.personal.cedula === '25890123');
     expect(nuevoTrabajador).toBeDefined();
     expect(nuevoTrabajador?.personal.nombre).toBe('Dr. Juan Llanero');
 

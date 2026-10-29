@@ -96,13 +96,13 @@ export class SubregionSaludCentros {
     const alta = this.alta();
     return Boolean(
       alta.nombre.trim() &&
-        alta.codigo.trim() &&
-        alta.estadoId &&
-        alta.municipioId &&
-        alta.parroquiaId &&
-        alta.jefeNombre.trim() &&
-        alta.jefeCedula.trim() &&
-        alta.jefeCorreo.trim(),
+      alta.codigo.trim() &&
+      alta.estadoId &&
+      alta.municipioId &&
+      alta.parroquiaId &&
+      alta.jefeNombre.trim() &&
+      alta.jefeCedula.trim() &&
+      alta.jefeCorreo.trim(),
     );
   });
 

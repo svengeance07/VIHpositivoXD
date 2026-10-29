@@ -11,7 +11,13 @@ import {
   VIGENCIA_EXAMENES_MESES,
 } from '../datos/subregion-salud';
 import type { EstadoCertificado } from '../modelos/enumeraciones';
-import type { AltaCentro, AltaEmpleado, CentroSalud, Ciudadano, PersonalSalud } from '../modelos/master';
+import type {
+  AltaCentro,
+  AltaEmpleado,
+  CentroSalud,
+  Ciudadano,
+  PersonalSalud,
+} from '../modelos/master';
 import type {
   CentroSubregionVista,
   EstadoRequisito,

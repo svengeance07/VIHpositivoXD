@@ -1,3 +1,18 @@
-:host { display: block; }
-.centros__pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.9rem; padding-top: 0.8rem; border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent); }
-.centros__seccion { margin: 1.2rem 0 0.7rem; font-size: 0.95rem; font-weight: 600; }
+:host {
+  display: block;
+}
+.centros__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}
+.centros__seccion {
+  margin: 1.2rem 0 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
