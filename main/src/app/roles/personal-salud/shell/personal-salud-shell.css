@@ -1,0 +1,459 @@
+.ps-shell {
+  display: flex;
+  min-height: 100dvh;
+  position: relative;
+  background: var(--bg-canvas, transparent);
+}
+
+.velo {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Barra lateral (Sidebar Liquid Glass)                               */
+/* ------------------------------------------------------------------ */
+
+.barra {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 4.75rem;
+  flex-shrink: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.65rem 0.9rem;
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  -webkit-backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  border-right: 1px solid var(--border-subtle);
+  transition: width 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.barra.is-expandida {
+  width: 17rem;
+}
+
+.barra__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0 0.25rem;
+}
+
+.barra .marca {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.marca__logo {
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #10b981, #0284c7);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  flex-shrink: 0;
+}
+
+.barra__marca-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.barra.is-expandida .barra__marca-texto {
+  opacity: 1;
+}
+
+.barra__marca-texto strong {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.barra__marca-texto small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.barra__pin {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.barra.is-expandida .barra__pin {
+  display: grid;
+  place-items: center;
+}
+
+.barra__pin:hover {
+  background: var(--surface-glass-hover);
+  color: var(--text);
+}
+
+.barra__cerrar {
+  display: none;
+}
+
+/* Indicador de modo (Jefe vs Enfermero) */
+.barra__modo-box {
+  padding: 0.4rem 0.25rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.barra__modo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  color: #0284c7;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.barra__modo-pill--jefe {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #059669;
+}
+
+.barra__modo-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.barra__modo-texto {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.barra.is-expandida .barra__modo-texto {
+  opacity: 1;
+}
+
+.barra__modo-switch {
+  display: none;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  color: var(--text-muted);
+  justify-content: flex-start;
+  gap: 0.45rem;
+}
+
+.barra.is-expandida .barra__modo-switch {
+  display: inline-flex;
+}
+
+/* Navegación */
+.barra__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.barra__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+  position: relative;
+}
+
+.barra__item:hover {
+  background: var(--surface-glass-hover);
+  color: var(--text);
+}
+
+.barra__item.is-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  font-weight: 650;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.barra__icono {
+  width: 1.5rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.barra__item-etiqueta {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.barra.is-expandida .barra__item-etiqueta {
+  opacity: 1;
+}
+
+.barra__item-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.barra.is-expandida .barra__item-badge {
+  opacity: 1;
+}
+
+/* Pie de barra y usuario */
+.barra__pie {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.usuario-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.25rem;
+  border-radius: 0.65rem;
+  white-space: nowrap;
+}
+
+.usuario-pill__avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent, #3b82f6), #10b981);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.usuario-pill__datos {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  opacity: 0;
+  transition: opacity 160ms ease;
+  overflow: hidden;
+}
+
+.barra.is-expandida .usuario-pill__datos {
+  opacity: 1;
+}
+
+.usuario-pill__nombre {
+  font-size: 0.85rem;
+  color: var(--text);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.usuario-pill__rol {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.barra__logout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.55rem 0.75rem;
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+.barra__logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+/* ------------------------------------------------------------------ */
+/* Contenido principal y Barra móvil                                  */
+/* ------------------------------------------------------------------ */
+
+.ps-shell__cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.barra-superior {
+  display: none;
+}
+
+.contenido {
+  flex: 1;
+  padding: clamp(1rem, 2.5vw, 2.25rem);
+  max-width: 86rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* Adaptación Responsive para Móviles / Tablets                      */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .barra {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    width: 17rem;
+    z-index: 60;
+    transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .barra.is-expandida {
+    transform: translateX(0);
+  }
+
+  .barra__cabecera .barra__cerrar {
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+
+  .barra__pin {
+    display: none !important;
+  }
+
+  .barra__marca-texto,
+  .barra__modo-texto,
+  .barra__item-etiqueta,
+  .barra__item-badge,
+  .usuario-pill__datos {
+    opacity: 1 !important;
+  }
+
+  .velo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    border: none;
+  }
+
+  .velo.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .barra-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--surface-glass);
+    backdrop-filter: blur(var(--ca-blur-glass, 16px));
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  .barra-superior__hamburguesa {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 0.35rem;
+    border-radius: 0.4rem;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .barra-superior__titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .barra-superior__badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(2, 132, 199, 0.12);
+    color: #0284c7;
+    font-weight: 600;
+  }
+
+  .barra-superior__badge--jefe {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+
+  .barra-superior__acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}

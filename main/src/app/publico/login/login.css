@@ -1,0 +1,314 @@
+:host {
+  display: block;
+}
+
+.acceso {
+  width: min(100%, 1180px);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 30rem);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+}
+
+.acceso__lateral {
+  display: grid;
+  align-content: center;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+h1 {
+  margin: 0.9rem 0 0;
+  font-size: clamp(2.1rem, 3.8vw, 3.2rem);
+  font-weight: 680;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 33rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pasos li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--faint);
+  font-size: 0.88rem;
+  transition: color 0.15s ease;
+}
+
+.pasos li span {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pasos li.is-active {
+  color: var(--text);
+}
+
+.pasos li.is-active span {
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 15%, transparent);
+  color: var(--color-accent);
+}
+
+.acceso__panel {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.volver-inicio,
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.volver-inicio:hover,
+.enlace-volver:hover {
+  color: var(--text);
+}
+
+.enlace-volver:focus-visible,
+.rol:focus-visible,
+.perfil:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.paso {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+}
+
+.paso > .badge {
+  justify-self: start;
+  margin-top: 0.35rem;
+}
+
+.paso h2 {
+  margin: 0.45rem 0 0.2rem;
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.sub {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.roles,
+.perfiles {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.rol {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--ca-radius-md);
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rol:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 42%, var(--glass-border));
+  transform: translateY(-1px);
+}
+
+.rol__num {
+  flex: 0 0 auto;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.rol__texto {
+  display: grid;
+  flex: 1;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.rol__texto strong {
+  font-size: 0.95rem;
+}
+
+.rol__texto span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.rol ca-icon {
+  color: var(--faint);
+}
+
+.perfil {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--ca-radius-md);
+  background: color-mix(in oklab, var(--glass-surface) 45%, transparent);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.perfil.is-selected {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+}
+
+.perfil__tipo {
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.perfil strong {
+  font-size: 0.92rem;
+}
+
+.form {
+  margin-top: 0.7rem;
+}
+
+.form ca-button {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.35rem;
+}
+
+.pie-panel {
+  margin: 1rem 0 0;
+  color: var(--faint);
+  font-size: 0.85rem;
+}
+
+.pie-panel a {
+  color: var(--color-accent);
+}
+
+.demo {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.demo summary {
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.demo__lista {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 12rem;
+  margin-top: 0.6rem;
+  overflow: auto;
+}
+
+.demo__cuenta {
+  padding-left: 0.55rem;
+  border-left: 2px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+.demo__titulo {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.demo__titulo span {
+  color: var(--faint);
+}
+
+.demo__cred,
+.demo__cuenta li {
+  margin: 0.1rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.72rem;
+  word-break: break-word;
+}
+
+.demo__cuenta ul {
+  margin: 0.15rem 0 0;
+  padding-left: 1rem;
+}
+
+@media (max-width: 860px) {
+  .acceso {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .acceso__lateral {
+    gap: 1.25rem;
+  }
+
+  .pasos {
+    display: none;
+  }
+}

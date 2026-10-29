@@ -1,0 +1,266 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Administración de personal"
+    titulo="Buscar empleados"
+    descripcion="Encuentra jefes y trabajadores por nombre, cédula, profesión o centro de salud."
+  >
+    <button type="button" class="btn btn-primary" (click)="abrirAlta()">
+      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      Agregar empleado
+    </button>
+  </app-master-encabezado>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Nombre o profesión</span>
+        <input
+          type="search"
+          placeholder="Dra. Pérez, enfermería..."
+          [value]="filtros().nombre"
+          (input)="actualizar('nombre', valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Cédula</span>
+        <input
+          type="search"
+          inputmode="numeric"
+          placeholder="12345678"
+          [value]="filtros().cedula"
+          (input)="actualizar('cedula', valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Tipo</span>
+        <select [value]="filtros().tipo" (change)="actualizar('tipo', valor($event))">
+          <option value="">Todos</option>
+          <option value="jefe">Jefes</option>
+          <option value="trabajador">Trabajadores</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Centro</span>
+        <select [value]="filtros().centroId" (change)="actualizar('centroId', valor($event))">
+          <option value="">Todos</option>
+          @for (centro of datos.centros(); track centro.id) {
+            <option [value]="centro.id">{{ centro.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Estado</span>
+        <select [value]="filtros().estadoId" (change)="actualizar('estadoId', valor($event))">
+          <option value="">Todos</option>
+          @for (estado of datos.estados(); track estado.id) {
+            <option [value]="estado.id">{{ estado.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Municipio</span>
+        <select
+          [value]="filtros().municipioId"
+          [disabled]="!filtros().estadoId"
+          (change)="actualizar('municipioId', valor($event))"
+        >
+          <option value="">Todos</option>
+          @for (municipio of municipios(); track municipio.id) {
+            <option [value]="municipio.id">{{ municipio.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Parroquia</span>
+        <select
+          [value]="filtros().parroquiaId"
+          [disabled]="!filtros().municipioId"
+          (change)="actualizar('parroquiaId', valor($event))"
+        >
+          <option value="">Todas</option>
+          @for (parroquia of parroquias(); track parroquia.id) {
+            <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="empleados__pie">
+      <span class="master-badge master-badge--suave">{{ resultados().length }} empleados</span>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+        <strong>No hay empleados que coincidan</strong>
+        <p>Prueba con otro nombre, cédula, centro o ubicación.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Empleado</th>
+              <th>Cédula</th>
+              <th>Profesión</th>
+              <th>Centro</th>
+              <th>Tipo</th>
+              <th>Ubicación</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.personal.id) {
+              <tr>
+                <td>
+                  <a
+                    class="master-tabla__principal master-enlace-fila"
+                    [routerLink]="['/master/personal/empleados', fila.personal.id]"
+                  >
+                    <strong>{{ fila.personal.nombre }}</strong>
+                    <span class="master-tabla__secundario">{{ fila.personal.correo }}</span>
+                  </a>
+                </td>
+                <td>V-{{ fila.personal.cedula }}</td>
+                <td>{{ fila.profesion }}</td>
+                <td>{{ fila.centro?.nombre ?? 'Sin centro' }}</td>
+                <td>
+                  <span
+                    class="master-badge"
+                    [class.master-badge--info]="fila.esJefe"
+                    [class.master-badge--suave]="!fila.esJefe"
+                  >
+                    {{ tipo(fila) }}
+                  </span>
+                </td>
+                <td>
+                  {{ fila.estado?.nombre ?? '—' }} · {{ fila.municipio?.nombre ?? '—' }} ·
+                  {{ fila.parroquia?.nombre ?? '—' }}
+                </td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-compact"
+                    [routerLink]="['/master/personal/empleados', fila.personal.id]"
+                  >
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <ca-modal
+    [attr.open]="altaAbierta() ? '' : null"
+    backdrop-label="Cerrar formulario de empleado"
+    (openchange)="cerrarAlta()"
+  >
+    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+      <header class="master-modal__cabecera">
+        <div>
+          <h2>Agregar empleado</h2>
+          <p>Registra un nuevo perfil de personal y asígnalo a un centro.</p>
+        </div>
+        <ca-modal-close label="Cerrar formulario"></ca-modal-close>
+      </header>
+
+      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Nombre y apellido</span>
+            <input
+              type="text"
+              placeholder="Dr. Nombre Apellido"
+              [value]="alta().nombre"
+              (input)="actualizarAlta('nombre', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Cédula</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              placeholder="12345678"
+              [value]="alta().cedula"
+              (input)="actualizarAlta('cedula', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Correo</span>
+            <input
+              type="email"
+              placeholder="nombre@vih.gob.ve"
+              [value]="alta().correo"
+              (input)="actualizarAlta('correo', valor($event))"
+              required
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Teléfono</span>
+            <input
+              type="tel"
+              placeholder="0414-000-0000"
+              [value]="alta().telefono"
+              (input)="actualizarAlta('telefono', valor($event))"
+            />
+          </label>
+        </div>
+
+        <div class="master-campos">
+          <label class="field">
+            <span class="field-label">Profesión</span>
+            <select
+              [value]="alta().profesionId"
+              (change)="actualizarAlta('profesionId', valor($event))"
+              required
+            >
+              <option value="">Selecciona una profesión</option>
+              @for (profesion of catalogos.profesiones(); track profesion.id) {
+                <option [value]="profesion.id">{{ profesion.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Centro o subregión</span>
+            <select
+              [value]="alta().centroId"
+              (change)="actualizarAlta('centroId', valor($event))"
+              required
+            >
+              <option value="">Selecciona un centro</option>
+              @for (centro of datos.centros(); track centro.id) {
+                <option [value]="centro.id">{{ centro.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Rol en el centro</span>
+            <select [value]="alta().tipo" (change)="actualizarAlta('tipo', valor($event))">
+              <option value="trabajador">Trabajador</option>
+              <option value="jefe">Jefe de centro</option>
+            </select>
+          </label>
+        </div>
+
+        @if (errorAlta()) {
+          <p class="field-error" role="alert">{{ errorAlta() }}</p>
+        }
+
+        <div class="master-acciones master-acciones--fin">
+          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
+            Registrar empleado
+          </button>
+        </div>
+      </form>
+    </section>
+  </ca-modal>
+</div>

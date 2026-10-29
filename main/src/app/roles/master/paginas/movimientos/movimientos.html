@@ -1,0 +1,105 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Auditoría del sistema"
+    titulo="Registro de movimientos"
+    descripcion="Historial de altas, cambios y consultas realizadas por los usuarios del sistema."
+  >
+    <span class="master-badge master-badge--suave">{{ conteos().total }} movimientos</span>
+  </app-master-encabezado>
+
+  <section class="master-grid master-grid--tarjetas" aria-label="Resumen de movimientos">
+    <article class="panel movimiento-metrica">
+      <span>Creaciones</span>
+      <strong>{{ conteos().creaciones }}</strong>
+    </article>
+    <article class="panel movimiento-metrica">
+      <span>Actualizaciones</span>
+      <strong>{{ conteos().actualizaciones }}</strong>
+    </article>
+    <article class="panel movimiento-metrica">
+      <span>Accesos consultados</span>
+      <strong>{{ conteos().accesos }}</strong>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="master-campos">
+      <label class="field">
+        <span class="field-label">Buscar</span>
+        <input
+          type="search"
+          placeholder="Actor, módulo, entidad o detalle"
+          [value]="busqueda()"
+          (input)="busqueda.set(valor($event))"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Tipo de movimiento</span>
+        <select [value]="tipo()" (change)="tipo.set(valor($event))">
+          <option value="">Todos</option>
+          <option value="creacion">Creación</option>
+          <option value="actualizacion">Actualización</option>
+          <option value="acceso">Acceso</option>
+          <option value="eliminacion">Eliminación</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="movimientos__pie">
+      <span class="master-badge master-badge--suave">{{ resultados().length }} registros</span>
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    @if (resultados().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+        <strong>No hay movimientos que coincidan</strong>
+        <p>Prueba con otro término o cambia el tipo de movimiento.</p>
+      </div>
+    } @else {
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Actor</th>
+              <th>Tipo</th>
+              <th>Módulo</th>
+              <th>Entidad</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (movimiento of resultados(); track movimiento.id) {
+              <tr>
+                <td>{{ movimiento.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ movimiento.actor }}</strong>
+                    <span class="master-tabla__secundario">{{ movimiento.rol }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="master-badge"
+                    [class.master-badge--ok]="movimiento.tipo === 'creacion'"
+                    [class.master-badge--info]="movimiento.tipo === 'actualizacion'"
+                    [class.master-badge--warn]="movimiento.tipo === 'acceso'"
+                    [class.master-badge--danger]="movimiento.tipo === 'eliminacion'"
+                  >
+                    {{ etiquetaTipo(movimiento.tipo) }}
+                  </span>
+                </td>
+                <td>{{ movimiento.modulo }}</td>
+                <td>{{ movimiento.entidad }}</td>
+                <td>{{ movimiento.detalle }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

@@ -1,0 +1,183 @@
+<div class="master-pagina">
+  <app-master-encabezado
+    eyebrow="Control de vacunas"
+    titulo="Control de vacunas"
+    descripcion="Sigue el recorrido de cada cargamento desde el despacho nacional hasta el centro de salud."
+  >
+    <a class="btn btn-primary" routerLink="/master/vacunas/buscar">Buscar lotes</a>
+  </app-master-encabezado>
+
+  <section class="master-grid master-grid--tarjetas" aria-label="Resumen de lotes">
+    <article class="panel resumen-lote resumen-lote--camino">
+      <span class="resumen-lote__etiqueta">En camino</span>
+      <strong>{{ enCamino().length }}</strong>
+      <small>Lotes despachados y aún no recibidos</small>
+    </article>
+    <article class="panel resumen-lote resumen-lote--reportado">
+      <span class="resumen-lote__etiqueta">Reportados</span>
+      <strong>{{ reportados().length }}</strong>
+      <small>Recepciones con observaciones</small>
+    </article>
+    <article class="panel resumen-lote resumen-lote--aceptado">
+      <span class="resumen-lote__etiqueta">Aceptados</span>
+      <strong>{{ aceptados().length }}</strong>
+      <small>Lotes confirmados por el centro</small>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="vacunas__cabecera">
+      <div>
+        <p class="ca-section-eyebrow">
+          <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+          Prioridad operativa
+        </p>
+        <h2>Lotes en camino</h2>
+        <p>Seguimiento de los cargamentos que todavía no han sido recibidos.</p>
+      </div>
+      <span class="master-badge master-badge--warn">{{ enCamino().length }} activos</span>
+    </div>
+
+    @if (enCamino().length === 0) {
+      <div class="master-vacio">
+        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <strong>No hay lotes en camino</strong>
+        <p>Todos los cargamentos despachados ya fueron recibidos.</p>
+      </div>
+    } @else {
+      <div class="lotes-camino">
+        @for (lote of enCamino(); track lote.id) {
+          <article class="lote-camino">
+            <div class="lote-camino__top">
+              <strong>{{ lote.codigo }}</strong>
+              <span class="master-badge master-badge--warn">{{ etiquetaLote(lote.estado) }}</span>
+            </div>
+            <p class="lote-camino__vacuna">{{ datos.nombreVacuna(lote.vacunaId) }}</p>
+            <div class="lote-camino__datos">
+              <span
+                ><strong>{{ lote.dosis }}</strong> dosis</span
+              >
+              <span>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <p class="lote-camino__destino">{{ datos.nombreCentro(lote.destinoCentroId) }}</p>
+            <p class="lote-camino__responsable">
+              Responsable: {{ responsable(lote.responsableId) }}
+            </p>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="panel">
+    <ca-collapse open>
+      <ca-collapse-trigger>
+        <span class="vacunas__disparador">
+          <span>
+            <strong>Lotes reportados</strong>
+            <small>Recepciones que requieren revisión de la subregión</small>
+          </span>
+          <span class="master-badge master-badge--info">{{ reportados().length }}</span>
+        </span>
+      </ca-collapse-trigger>
+      <ca-collapse-panel>
+        @if (reportados().length === 0) {
+          <p class="vacunas__nota">No hay lotes reportados.</p>
+        } @else {
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Lote</th>
+                  <th>Vacuna</th>
+                  <th>Destino</th>
+                  <th>Envío</th>
+                  <th>Recepción</th>
+                  <th>Dosis</th>
+                  <th>Responsable</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (lote of reportados(); track lote.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ lote.codigo }}</strong>
+                    </td>
+                    <td>{{ datos.nombreVacuna(lote.vacunaId) }}</td>
+                    <td>{{ datos.nombreCentro(lote.destinoCentroId) }}</td>
+                    <td>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.dosis }}</td>
+                    <td>{{ responsable(lote.responsableId) }}</td>
+                    <td>
+                      <span class="master-badge master-badge--info">{{
+                        etiquetaLote(lote.estado)
+                      }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </ca-collapse-panel>
+    </ca-collapse>
+  </section>
+
+  <section class="panel">
+    <ca-collapse>
+      <ca-collapse-trigger>
+        <span class="vacunas__disparador">
+          <span>
+            <strong>Lotes aceptados</strong>
+            <small>Entregas confirmadas por el centro de destino</small>
+          </span>
+          <span class="master-badge master-badge--ok">{{ aceptados().length }}</span>
+        </span>
+      </ca-collapse-trigger>
+      <ca-collapse-panel>
+        @if (aceptados().length === 0) {
+          <p class="vacunas__nota">Todavía no hay lotes aceptados.</p>
+        } @else {
+          <div class="master-tabla-scroll">
+            <table class="master-tabla">
+              <thead>
+                <tr>
+                  <th>Lote</th>
+                  <th>Vacuna</th>
+                  <th>Destino</th>
+                  <th>Envío</th>
+                  <th>Recepción</th>
+                  <th>Dosis</th>
+                  <th>Responsable</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (lote of aceptados(); track lote.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ lote.codigo }}</strong>
+                    </td>
+                    <td>{{ datos.nombreVacuna(lote.vacunaId) }}</td>
+                    <td>{{ datos.nombreCentro(lote.destinoCentroId) }}</td>
+                    <td>{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ lote.dosis }}</td>
+                    <td>{{ responsable(lote.responsableId) }}</td>
+                    <td>
+                      <span class="master-badge master-badge--ok">{{
+                        etiquetaLote(lote.estado)
+                      }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </ca-collapse-panel>
+    </ca-collapse>
+  </section>
+</div>

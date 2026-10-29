@@ -1,0 +1,396 @@
+/* ------------------------------------------------------------------ */
+/* Contenedor principal de Nuevo Paciente                             */
+/* ------------------------------------------------------------------ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Confirmación de Expediente Creado                                  */
+/* ------------------------------------------------------------------ */
+
+.confirmacion-tarjeta {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 2rem 2.25rem;
+  border-radius: 1.35rem;
+  background: linear-gradient(135deg, var(--surface-glass), rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.confirmacion-tarjeta__icono {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.15rem;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: grid;
+  place-items: center;
+  font-size: 1.85rem;
+  flex-shrink: 0;
+}
+
+.confirmacion-tarjeta__cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.confirmacion-tarjeta__cuerpo h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 750;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.confirmacion-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.confirmacion-representante {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: #6d28d9;
+  font-size: 0.88rem;
+}
+
+.confirmacion-representante p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+}
+
+.confirmacion-vacunas h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.confirmacion-vacunas-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.vacuna-registrada-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.6rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 0.82rem;
+}
+
+.vacuna-registrada-item strong {
+  color: var(--text);
+}
+
+.confirmacion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding-top: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Formulario de Alta Integral                                        */
+/* ------------------------------------------------------------------ */
+
+.ps-alta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.alerta-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  font-size: 0.88rem;
+}
+
+/* Selector de tipo (Adulto vs Menor) */
+.ps-tipo-selector {
+  padding: 1.4rem 1.65rem;
+  border-radius: 1.2rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+}
+
+.ps-tipo-selector h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ps-tipo-selector p {
+  margin: 0 0 1rem;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.tipo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+
+.tipo-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 2px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+}
+
+.tipo-card:hover {
+  background: var(--surface-glass-hover);
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.tipo-card.is-seleccionada {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(16, 185, 129, 0.06));
+  border-color: #0284c7;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+}
+
+.tipo-card__icono {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.tipo-card__info {
+  flex: 1;
+}
+
+.tipo-card__info h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tipo-card__info p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.tipo-card__check {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+/* Secciones de formulario */
+.ps-seccion-form {
+  padding: 1.5rem 1.75rem;
+  border-radius: 1.2rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--ca-blur-glass, 20px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.seccion-cabecera h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.seccion-cabecera p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.campos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.campo-completo {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.edad-tag {
+  font-size: 0.76rem;
+  color: #0284c7;
+}
+
+.aviso-cedula-menor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.65rem;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px dashed rgba(14, 165, 233, 0.35);
+  color: #0369a1;
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-height: 42px;
+}
+
+.aviso-cedula-menor ca-icon {
+  font-size: 1rem;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.edad-tag strong {
+  font-weight: 700;
+}
+
+/* Subsección para representante legal de menor */
+.bloque-representante-form {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bloque-representante-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #6d28d9;
+}
+
+.bloque-representante-cabecera h4 {
+  margin: 0 0 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.bloque-representante-cabecera p {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+/* Subsección de Inmunizaciones Iniciales */
+.panel-agregar-vacuna {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(2, 132, 199, 0.04);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.boton-agregar-vacuna-box {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vacunas-anadidas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vacunas-anadidas-lista h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.badge-lote {
+  font-family: monospace;
+  font-size: 0.74rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-remover {
+  color: #ef4444 !important;
+}
+
+.btn-remover:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.aviso-vacunas-opcional {
+  margin: 0;
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Pie de acciones de guardado */
+.ps-alta-acciones {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.6rem;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+}
+
+.texto-derecha {
+  text-align: right;
+}

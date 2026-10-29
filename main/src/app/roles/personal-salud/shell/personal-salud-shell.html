@@ -1,0 +1,148 @@
+<div class="ps-shell">
+  <!-- Velo oscuro para cerrar el menú en dispositivos táctiles / pantallas pequeñas -->
+  <button
+    type="button"
+    class="velo"
+    [class.is-visible]="menuMovil()"
+    (click)="cerrarTodo()"
+    aria-label="Cerrar menú de navegación"
+  ></button>
+
+  <!-- Barra lateral de navegación con estilo Liquid Glass -->
+  <aside
+    id="barra-ps"
+    class="barra"
+    [class.is-expandida]="expandido()"
+    (mouseenter)="abrirHover()"
+    (mouseleave)="cerrarHover()"
+    (focusin)="abrirHover()"
+    (focusout)="cerrarEnfoque($event)"
+  >
+    <div class="barra__cabecera">
+      <a
+        class="marca"
+        routerLink="/PS"
+        (click)="alNavegar()"
+        aria-label="Ir al centro de control de salud"
+      >
+        <span class="marca__logo" aria-hidden="true">CS</span>
+        <span class="barra__marca-texto">
+          <strong>Sistema V</strong>
+          <small>Centro de Salud</small>
+        </span>
+      </a>
+
+      <!-- Botón para fijar / soltar el menú en pantallas grandes -->
+      <button
+        type="button"
+        class="barra__pin"
+        (click)="alternarFijado()"
+        [attr.aria-pressed]="fijado()"
+        [attr.aria-label]="fijado() ? 'Soltar menú' : 'Fijar menú'"
+        [attr.title]="fijado() ? 'Soltar menú' : 'Fijar menú'"
+      >
+        <ca-icon [name]="fijado() ? 'chevron-left' : 'chevron-right'" aria-hidden="true"></ca-icon>
+      </button>
+
+      <!-- Botón cerrar en vista móvil -->
+      <button type="button" class="barra__cerrar" (click)="cerrarMenu()" aria-label="Cerrar menú">
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </div>
+
+
+
+    <!-- Lista de rutas del Centro de Salud -->
+    <nav class="barra__nav" aria-label="Navegación del Centro de Salud">
+      @for (item of navegacionFiltrada(); track item.ruta) {
+        <a
+          class="barra__item"
+          [routerLink]="item.ruta"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
+          [attr.title]="item.etiqueta"
+          (click)="alNavegar()"
+        >
+          <span class="barra__icono" aria-hidden="true">
+            <ca-icon [name]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></ca-icon>
+          </span>
+          <span class="barra__item-etiqueta">{{ item.etiqueta }}</span>
+          @if (item.badge) {
+            <span class="barra__item-badge">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- Pie de barra: Datos de usuario, Centro de Salud y botón de salir -->
+    <div class="barra__pie">
+      <div class="usuario-pill">
+        <span class="usuario-pill__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="usuario-pill__datos">
+          <strong class="usuario-pill__nombre">{{ nombreUsuario() }}</strong>
+          <small class="usuario-pill__rol">{{ cargoUsuario() }} · {{ nombreCentro() }}</small>
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-ghost barra__logout"
+        (click)="cerrarSesion()"
+        aria-label="Cerrar sesión"
+        title="Cerrar sesión"
+      >
+        <ca-icon name="log-out" aria-hidden="true"></ca-icon>
+        <span class="barra__item-etiqueta">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenido principal y cabecera móvil -->
+  <div class="ps-shell__cuerpo">
+    <!-- Barra superior visible en móviles -->
+    <header class="barra-superior" aria-label="Cabecera móvil">
+      <button
+        type="button"
+        class="barra-superior__hamburguesa"
+        (click)="abrirMenu()"
+        aria-label="Abrir menú de navegación"
+        aria-controls="barra-ps"
+        [attr.aria-expanded]="menuMovil()"
+      >
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+      </button>
+
+      <span class="barra-superior__titulo">
+        <strong>{{ nombreCentro() }}</strong>
+        <span class="barra-superior__badge" [class.barra-superior__badge--jefe]="esJefe()">
+          {{ esJefe() ? 'Jefe' : 'Enfermero' }}
+        </span>
+      </span>
+
+      <div class="barra-superior__acciones">
+        <button
+          type="button"
+          class="btn btn-sm btn-ghost"
+          (click)="conmutarModo()"
+          [title]="'Cambiar a ' + (esJefe() ? 'Enfermero' : 'Jefe')"
+        >
+          <ca-icon name="reload" aria-hidden="true"></ca-icon>
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-ghost"
+          (click)="cerrarSesion()"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <ca-icon name="log-out" aria-hidden="true"></ca-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Enrutamiento de páginas internas -->
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="master-pagina">
+  <nav class="personal-tabs" aria-label="Administración de personal">
+    <a class="personal-tab" routerLink="/master/personal/subregiones" routerLinkActive="is-active">
+      <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+      Subregiones
+    </a>
+    <a class="personal-tab" routerLink="/master/personal/centros" routerLinkActive="is-active">
+      <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+      Buscar centros
+    </a>
+    <a class="personal-tab" routerLink="/master/personal/empleados" routerLinkActive="is-active">
+      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+      Buscar empleados
+    </a>
+  </nav>
+
+  <router-outlet />
+</div>

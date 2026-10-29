@@ -1,0 +1,369 @@
+<div class="ps-pagina">
+  <!-- Cabecera de la sección -->
+  <app-ps-encabezado
+    [eyebrow]="'Registro y Auditoría Sanitaria · ' + nombreCentro()"
+    titulo="Historial de Vacunación y Reportes Clínicos"
+    descripcion="Bitácora centralizada de todas las dosis biológicas administradas y eventos adversos (ESAVI) notificados por el personal de salud del centro."
+  >
+  </app-ps-encabezado>
+
+  <!-- Mensaje temporal de exportación exitosa -->
+  @if (mensajeExportacion()) {
+    <aside class="panel alerta-exito" role="status">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <div class="alerta-exito__texto">
+        <strong>Reporte Generado</strong>
+        <p>{{ mensajeExportacion() }}</p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        (click)="mensajeExportacion.set('')"
+        aria-label="Cerrar aviso"
+      >
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </aside>
+  }
+
+  <!-- SECCIÓN 1: Métricas Globales del Historial Clínico -->
+  <section class="ps-metricas" aria-label="Métricas del historial de inmunización">
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+          <ca-icon name="plus"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Total Dosis Aplicadas</span>
+      </div>
+      <strong>{{ metricasHistorial().totalDosis }}</strong>
+      <small>Registros biológicos administrados</small>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--amarillo" aria-hidden="true">
+          <ca-icon name="warning"></ca-icon>
+        </span>
+        <span class="metrica__etiqueta">Reportes de Incidencias</span>
+      </div>
+      <strong>{{ metricasHistorial().totalReportes }}</strong>
+    </article>
+  </section>
+
+  <!-- SECCIÓN 2: Barra de Control, Tabs y Filtros de Búsqueda -->
+  <section class="panel ps-filtros" aria-label="Filtros de bitácora">
+    <!-- Pestañas de tipo de evento -->
+    <div class="filtro-tabs" role="tablist" aria-label="Tipo de registro">
+      <button
+        type="button"
+        role="tab"
+        class="filtro-tab"
+        [class.is-activo]="tabTipo() === 'todos'"
+        [attr.aria-selected]="tabTipo() === 'todos'"
+        (click)="tabTipo.set('todos')"
+      >
+        Todos ({{ cronologiaCompleta().length }})
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="filtro-tab"
+        [class.is-activo]="tabTipo() === 'vacunas'"
+        [attr.aria-selected]="tabTipo() === 'vacunas'"
+        (click)="tabTipo.set('vacunas')"
+      >
+        Dosis Aplicadas ({{ todasLasAplicaciones().length }})
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="filtro-tab"
+        [class.is-activo]="tabTipo() === 'reportes'"
+        [attr.aria-selected]="tabTipo() === 'reportes'"
+        (click)="tabTipo.set('reportes')"
+      >
+        Reportes ESAVI ({{ todosLosReportes().length }})
+      </button>
+    </div>
+
+    <!-- Buscador y filtro de vacuna -->
+    <div class="ps-filtros__herramientas">
+      <div class="ps-filtros__busqueda">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <input
+          type="search"
+          class="ui-input"
+          placeholder="Buscar por paciente, cédula, vacuna, lote o enfermero..."
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          aria-label="Buscar en la bitácora"
+        />
+      </div>
+
+      <label class="filtro-campo">
+        <span class="filtro-campo__label">Vacuna:</span>
+        <select
+          class="ui-select"
+          [ngModel]="filtroVacuna()"
+          (ngModelChange)="filtroVacuna.set($event)"
+          aria-label="Filtrar por tipo de vacuna"
+        >
+          <option value="todas">Todas las vacunas</option>
+          @for (vac of vacunasEnHistorial(); track vac) {
+            <option [value]="vac">{{ vac }}</option>
+          }
+        </select>
+      </label>
+
+      @if (busqueda() || tabTipo() !== 'todos' || filtroVacuna() !== 'todas') {
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: Tabla / Timeline de Registros Históricos -->
+  <section class="panel ps-bitacora-tabla" aria-label="Tabla de bitácora histórica">
+    <div class="ps-bitacora-cabecera">
+      <div class="ps-bitacora-titulo">
+        <h3>Registros Clínicos Auditados ({{ historialFiltrado().length }})</h3>
+        <p>Listado cronológico de administración biológica y farmacovigilancia.</p>
+      </div>
+    </div>
+
+    @if (historialFiltrado().length > 0) {
+      <div class="tabla-responsive">
+        <table class="ui-table">
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Paciente</th>
+              <th scope="col">Biológico / Vacuna</th>
+              <th scope="col">Lote</th>
+              <th scope="col">Dosis / Severidad</th>
+              <th scope="col">Profesional</th>
+              <th scope="col" class="th-accion">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of historialFiltrado(); track item.tipo + '-' + item.id) {
+              <tr [class.fila-reporte]="item.tipo === 'reporte'">
+                <!-- Tipo de evento -->
+                <td>
+                  @if (item.tipo === 'vacuna') {
+                    <span class="chip-evento chip-evento--vacuna" title="Dosis Aplicada">
+                      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+                      <span>Vacuna</span>
+                    </span>
+                  } @else {
+                    <span class="chip-evento chip-evento--reporte" title="Incidencia ESAVI">
+                      <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                      <span>ESAVI</span>
+                    </span>
+                  }
+                </td>
+
+                <!-- Fecha y hora -->
+                <td class="td-fecha">
+                  <strong>{{ item.fecha }}</strong>
+                  @if (item.hora) {
+                    <small>{{ item.hora }}</small>
+                  }
+                </td>
+
+                <!-- Paciente y Cédula -->
+                <td class="td-paciente">
+                  <strong>{{ item.pacienteNombre }}</strong>
+                  <div class="paciente-meta-sub">
+                    <span>C.I. {{ item.pacienteCedula }}</span>
+                    @if (item.pacienteEsMenor) {
+                      <span class="badge-menor">Menor</span>
+                    }
+                  </div>
+                </td>
+
+                <!-- Vacuna -->
+                <td class="td-vacuna">
+                  <strong>{{ item.vacunaNombre }}</strong>
+                </td>
+
+                <!-- Lote -->
+                <td>
+                  <span class="badge-lote">{{ item.lote }}</span>
+                </td>
+
+                <!-- Dosis o Nivel de Gravedad -->
+                <td>
+                  @if (item.tipo === 'vacuna') {
+                    <span class="badge-dosis">Dosis #{{ item.dosis }}</span>
+                  } @else {
+                    <span
+                      class="badge-gravedad"
+                      [class.badge-gravedad--severo]="item.subtipo === 'severo'"
+                      [class.badge-gravedad--moderado]="item.subtipo === 'moderado'"
+                    >
+                      {{ item.subtipo | uppercase }}
+                    </span>
+                  }
+                </td>
+
+                <!-- Enfermero / Profesional -->
+                <td class="td-profesional">
+                  <span>{{ item.profesionalNombre }}</span>
+                </td>
+
+                <!-- Botón de Inspección / Comprobante -->
+                <td class="td-accion">
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-sm"
+                    (click)="abrirDetalle(item)"
+                    title="Ver detalle del registro"
+                    aria-label="Ver detalle del registro"
+                  >
+                    <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+                    <span>Detalle</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="estado-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <h4>No se encontraron registros con los filtros seleccionados</h4>
+        <p>Prueba ajustando el término de búsqueda, la vacuna o la pestaña de visualización.</p>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">
+          Restablecer Filtros
+        </button>
+      </div>
+    }
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- MODAL: COMPROBANTE OFICIAL / FICHA DE REGISTRO HISTÓRICO          -->
+  <!-- ================================================================= -->
+  <ca-modal
+    [attr.open]="modalDetalleAbierto() ? '' : null"
+    backdrop-label="Cerrar comprobante clínico"
+    (openchange)="cerrarDetalle()"
+  >
+    @if (itemSeleccionado(); as it) {
+      <section class="ps-modal ps-modal--comprobante" role="dialog" aria-modal="true" tabindex="-1">
+        <header class="ps-modal__cabecera">
+          <div class="modal-cabecera-info">
+            <span class="modal-eyebrow">
+              <ca-icon [name]="it.tipo === 'vacuna' ? 'check' : 'warning'" aria-hidden="true"></ca-icon>
+              <span>{{ it.tipo === 'vacuna' ? 'Certificación Oficial de Inmunización' : 'Vigilancia Epidemiológica ESAVI' }} · {{ nombreCentro() }}</span>
+            </span>
+            <h2>
+              {{ it.tipo === 'vacuna' ? 'Comprobante de Vacunación' : 'Ficha de Incidencia ESAVI' }}
+            </h2>
+            <p>Folio de Auditoría Sanitaria: <strong>#{{ it.id }}</strong> · Trazabilidad Criptográfica MPPS</p>
+          </div>
+          <ca-modal-close (click)="cerrarDetalle()" label="Cerrar ventana"></ca-modal-close>
+        </header>
+
+        <div class="ps-modal__cuerpo comprobante-cuerpo">
+          <!-- Timbre oficial del Ministerio / Centro -->
+          <div class="comprobante-timbre">
+            <div class="comprobante-timbre__logo">
+              <ca-icon
+                [name]="it.tipo === 'vacuna' ? 'check' : 'warning'"
+                aria-hidden="true"
+              ></ca-icon>
+            </div>
+            <div class="comprobante-timbre__info">
+              <h4>REPÚBLICA BOLIVARIANA DE VENEZUELA</h4>
+              <p>MINISTERIO DEL PODER POPULAR PARA LA SALUD · SISTEMA NACIONAL DE INMUNIZACIONES</p>
+              <small>{{ nombreCentro() }} · REGISTRO OFICIAL</small>
+            </div>
+          </div>
+
+          <!-- Datos del Paciente -->
+          <div class="comprobante-seccion">
+            <h4>Datos del Paciente</h4>
+            <div class="comprobante-grid-datos">
+              <div>
+                <span class="label-muted">Nombre y Apellidos:</span>
+                <strong>{{ it.pacienteNombre }}</strong>
+              </div>
+              <div>
+                <span class="label-muted">Cédula de Identidad:</span>
+                <strong>{{ it.pacienteCedula }}</strong>
+              </div>
+              <div>
+                <span class="label-muted">Condición:</span>
+                <span>{{
+                  it.pacienteEsMenor ? 'Menor de edad (Bajo tutor legal)' : 'Adulto'
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos del Biológico y la Aplicación -->
+          <div class="comprobante-seccion">
+            <h4>Información de la Administración</h4>
+            <div class="comprobante-grid-datos">
+              <div>
+                <span class="label-muted">Biológico / Vacuna:</span>
+                <strong>{{ it.vacunaNombre }}</strong>
+              </div>
+              <div>
+                <span class="label-muted">Número de Lote:</span>
+                <span class="badge-lote">{{ it.lote }}</span>
+              </div>
+              <div>
+                <span class="label-muted">Fecha del Evento:</span>
+                <strong>{{ it.fecha }} {{ it.hora ? '· ' + it.hora : '' }}</strong>
+              </div>
+              <div>
+                <span class="label-muted">{{
+                  it.tipo === 'vacuna' ? 'Dosis:' : 'Severidad:'
+                }}</span>
+                <strong>{{
+                  it.tipo === 'vacuna' ? 'Dosis #' + it.dosis : (it.subtipo | uppercase)
+                }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observaciones clínicas / Síntomas -->
+          <div class="comprobante-seccion">
+            <h4>
+              {{ it.tipo === 'vacuna' ? 'Observaciones Clínicas' : 'Síntomas e Indicaciones' }}
+            </h4>
+            <div class="comprobante-observaciones">
+              {{ it.detalles }}
+            </div>
+          </div>
+
+          <!-- Responsable y Firma -->
+          <div class="comprobante-seccion comprobante-seccion--firma">
+            <div class="firma-caja">
+              <div class="linea-firma"></div>
+              <strong>{{ it.profesionalNombre }}</strong>
+              <small>Profesional de Enfermería Responsable</small>
+            </div>
+            <div class="timbre-digital">
+              <span class="timbre-digital__check">✓ REGISTRO VALIDADO EN SISTEMA V</span>
+              <small>ID: {{ it.id }} · Trazabilidad Criptográfica</small>
+            </div>
+          </div>
+        </div>
+
+        <footer class="ps-modal__pie">
+          <button type="button" class="btn btn-ghost" (click)="cerrarDetalle()">Cerrar</button>
+          <button type="button" class="btn btn-primary" (click)="exportarBitacora()">
+            <ca-icon name="download" aria-hidden="true"></ca-icon>
+            <span>Imprimir / Descargar Comprobante</span>
+          </button>
+        </footer>
+      </section>
+    }
+  </ca-modal>
+</div>
