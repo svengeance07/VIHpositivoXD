@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+.certificados-filtros {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.certificados-busqueda__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.certificados-busqueda__control ca-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.certificados-busqueda__control input {
+  padding-left: 2.25rem;
+}
+
+.certificados-tabla {
+  min-width: 60rem;
+}
+
+.certificados-fila--pendiente {
+  background: color-mix(in oklab, var(--color-accent) 5%, transparent);
+}
+
+.certificados-codigo {
+  color: var(--color-accent-2);
+  font-size: 0.8rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.certificados-codigo:hover {
+  text-decoration: underline;
+}
+
+.certificados-requisitos {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 6.5rem;
+}
+
+.certificados-requisitos .srs-progreso {
+  height: 0.32rem;
+}
+
+.certificados-aviso {
+  margin-top: 1rem;
+}

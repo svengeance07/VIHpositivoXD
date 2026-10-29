@@ -441,6 +441,413 @@
   font-size: 0.72rem;
 }
 
+/* ------------------------------------------------------------------ */
+/* Vistas internas de la subregión de salud                            */
+/* ------------------------------------------------------------------ */
+
+.srs-pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1rem, 1.6vw, 1.4rem);
+  min-width: 0;
+}
+
+.srs-pagina > * {
+  min-width: 0;
+}
+
+.srs-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.srs-grid--dos {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+
+.srs-grid--tres {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.srs-metricas {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
+
+.srs-metrica {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  min-width: 0;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.srs-metrica:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.srs-metrica__icono {
+  width: 2.15rem;
+  height: 2.15rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: color-mix(in oklab, #0ea5e9 14%, transparent);
+  color: #0284c7;
+  margin-bottom: 0.2rem;
+}
+
+.srs-metrica--alerta .srs-metrica__icono {
+  background: color-mix(in oklab, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.srs-metrica--ok .srs-metrica__icono {
+  background: color-mix(in oklab, var(--ok) 14%, transparent);
+  color: var(--ok);
+}
+
+.srs-metrica__etiqueta {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.srs-metrica strong {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.srs-metrica small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.srs-panel-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.srs-panel-cabecera h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  letter-spacing: -0.015em;
+}
+
+.srs-panel-cabecera p {
+  margin: 0.22rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.srs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.srs-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.srs-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.srs-acciones--fin {
+  justify-content: flex-end;
+}
+
+.srs-tabla-scroll {
+  overflow: auto;
+  border-radius: var(--ca-radius-md);
+  border: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+}
+
+.srs-tabla {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.srs-tabla th {
+  padding: 0.72rem 0.8rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: color-mix(in oklab, var(--glass-surface) 75%, transparent);
+  white-space: nowrap;
+}
+
+.srs-tabla td {
+  padding: 0.78rem 0.8rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 65%, transparent);
+  vertical-align: middle;
+}
+
+.srs-tabla .btn {
+  white-space: nowrap;
+}
+
+.srs-tabla tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.srs-tabla tbody tr:hover {
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
+}
+
+.srs-tabla__principal {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.srs-tabla__principal strong {
+  font-weight: 620;
+}
+
+.srs-tabla__secundario {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.srs-enlace-fila {
+  color: inherit;
+  text-decoration: none;
+}
+
+.srs-enlace-fila strong {
+  transition: color 160ms ease;
+}
+
+.srs-enlace-fila:hover strong {
+  color: var(--color-accent-2);
+}
+
+.srs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  width: fit-content;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  border: 0.5px solid color-mix(in oklab, currentColor 30%, transparent);
+  background: color-mix(in oklab, currentColor 10%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.srs-badge--ok {
+  color: var(--ok);
+}
+
+.srs-badge--warn {
+  color: var(--warn);
+}
+
+.srs-badge--danger {
+  color: var(--danger);
+}
+
+.srs-badge--info {
+  color: var(--info);
+}
+
+.srs-badge--suave {
+  color: var(--muted);
+}
+
+.srs-vacio {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.srs-vacio ca-icon {
+  opacity: 0.6;
+}
+
+.srs-dato {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.srs-dato__etiqueta {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.srs-dato__valor {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.srs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.srs-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.68rem;
+  border: 0.5px solid var(--glass-border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--glass-surface) 65%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 560;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.srs-chip:hover,
+.srs-chip:focus-visible {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--color-accent) 50%, var(--glass-border));
+}
+
+.srs-chip.is-active {
+  color: var(--color-accent-2);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+}
+
+.srs-chip__conteo {
+  min-width: 1.1rem;
+  padding: 0.02rem 0.3rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 11%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.srs-progreso {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--glass-border) 65%, transparent);
+  overflow: hidden;
+}
+
+.srs-progreso > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0ea5e9, #10b981);
+  transition: width 260ms ease;
+}
+
+.srs-progreso--alerta > span {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+}
+
+.srs-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.75rem 0.9rem;
+  border: 0.5px solid color-mix(in oklab, var(--info) 32%, var(--glass-border));
+  border-radius: var(--ca-radius-md);
+  background: color-mix(in oklab, var(--info) 8%, transparent);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.srs-aviso--warn {
+  border-color: color-mix(in oklab, var(--warn) 36%, var(--glass-border));
+  background: color-mix(in oklab, var(--warn) 9%, transparent);
+}
+
+.srs-aviso ca-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.srs-seccion {
+  margin: 1.35rem 0 0.65rem;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  .srs-toolbar {
+    align-items: stretch;
+  }
+
+  .srs-acciones {
+    width: 100%;
+  }
+
+  .srs-acciones .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .srs-metrica,
+  .srs-progreso > span {
+    transition: none;
+  }
+
+  .srs-metrica:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 @media (max-width: 640px) {
   .master-toolbar {
     align-items: stretch;

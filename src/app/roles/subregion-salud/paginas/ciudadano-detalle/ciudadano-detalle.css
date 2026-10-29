@@ -1,0 +1,306 @@
+:host {
+  display: block;
+}
+
+.ciudadano-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ciudadano-grid {
+  align-items: start;
+}
+
+.ciudadano-hero__avatar {
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0284c7, #10b981);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 750;
+  flex-shrink: 0;
+  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.22);
+}
+
+.ciudadano-hero__texto {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.ciudadano-hero__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.ciudadano-hero__titulo h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+  letter-spacing: -0.025em;
+}
+
+.ciudadano-hero__texto p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.ciudadano-hero__texto small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.ciudadano-tramite {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ciudadano-tramite > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.ciudadano-tramite .btn {
+  width: fit-content;
+}
+
+.ciudadano-tramite__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ciudadano-historial {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 0.5px solid var(--glass-border);
+}
+
+.ciudadano-historial h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.85rem;
+}
+
+.ciudadano-historial__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--ca-radius-sm);
+  color: inherit;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.ciudadano-historial__item:hover {
+  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
+}
+
+.ciudadano-historial__codigo {
+  font-size: 0.78rem;
+  font-weight: 620;
+  color: var(--color-accent-2);
+}
+
+.ciudadano-historial__item .srs-badge {
+  margin-left: auto;
+}
+
+.ciudadano-progreso {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.ciudadano-progreso__cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.ciudadano-progreso__cabecera strong {
+  color: var(--text);
+}
+
+.ciudadano-requisitos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.ciudadano-requisito {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 60%, transparent);
+}
+
+.ciudadano-requisito:first-child {
+  border-top: none;
+}
+
+.ciudadano-requisito__icono {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--warn) 12%, transparent);
+  color: var(--warn);
+}
+
+.ciudadano-requisito__icono--ok {
+  background: color-mix(in oklab, var(--ok) 13%, transparent);
+  color: var(--ok);
+}
+
+.ciudadano-requisito__texto {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.ciudadano-requisito__texto strong {
+  font-size: 0.85rem;
+}
+
+.ciudadano-requisito__texto small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.ciudadano-requisito .srs-badge {
+  flex-shrink: 0;
+}
+
+.ciudadano-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.ciudadano-timeline__item {
+  display: flex;
+  gap: 0.7rem;
+  position: relative;
+  padding-bottom: 0.9rem;
+}
+
+.ciudadano-timeline__item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 0.82rem;
+  top: 1.7rem;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in oklab, var(--glass-border) 80%, transparent);
+}
+
+.ciudadano-timeline__punto {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--info) 12%, transparent);
+  color: var(--info);
+  z-index: 1;
+}
+
+.ciudadano-timeline__punto--ok {
+  background: color-mix(in oklab, var(--ok) 13%, transparent);
+  color: var(--ok);
+}
+
+.ciudadano-timeline__punto--warn {
+  background: color-mix(in oklab, var(--warn) 13%, transparent);
+  color: var(--warn);
+}
+
+.ciudadano-timeline__texto {
+  display: grid;
+  gap: 0.08rem;
+  min-width: 0;
+}
+
+.ciudadano-timeline__fecha {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.ciudadano-timeline__texto strong {
+  font-size: 0.84rem;
+}
+
+.ciudadano-timeline__texto small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.ciudadano-contacto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.ciudadano-contacto dd {
+  margin: 0;
+}
+
+.ciudadano-privacidad {
+  margin-top: 1rem;
+}
+
+.ciudadano-tabla-vacunas {
+  min-width: 52rem;
+}
+
+.ciudadano-tabla-examenes {
+  min-width: 44rem;
+}
+
+@media (max-width: 560px) {
+  .ciudadano-hero {
+    align-items: flex-start;
+  }
+
+  .ciudadano-hero__avatar {
+    width: 3.3rem;
+    height: 3.3rem;
+    font-size: 1rem;
+  }
+
+  .ciudadano-requisito {
+    flex-wrap: wrap;
+  }
+
+  .ciudadano-requisito .srs-badge {
+    margin-left: 2.3rem;
+  }
+}

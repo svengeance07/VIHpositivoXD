@@ -90,6 +90,6 @@ Consecuencias:
 
 ## Qué pasa después de entrar
 
-Cada rol navega a su prefijo (`/master`, `/PS` o `/SRS`). El master abre su panel con navegación y vistas mock;
-`/PS` y `/SRS` siguen mostrando una página provisional con la sesión activa y el cierre de sesión. La consulta pública
-(`/consulta`) también es un placeholder y no pide credenciales.
+Cada rol navega a su prefijo (`/master`, `/PS` o `/SRS`). El master, `/PS` y `/SRS` abren sus paneles con navegación
+y vistas mock; la subregión incluye personal, ciudadanos, certificados y notificaciones. La consulta pública
+(`/consulta`) sigue siendo un placeholder y no pide credenciales.

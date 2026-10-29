@@ -1,0 +1,237 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    [eyebrow]="'Notificaciones · ' + datos.estadoNombre"
+    titulo="Bandeja de notificaciones"
+    descripcion="Eventos de personas, centros y trámites del estado asignado a esta subregión."
+  >
+    <span class="srs-badge srs-badge--warn">{{ conteos().noLeidas }} sin leer</span>
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="conteos().noLeidas === 0"
+      (click)="marcarTodas()"
+    >
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span>Marcar todas como leídas</span>
+    </button>
+  </app-srs-encabezado>
+
+  <section class="srs-metricas" aria-label="Resumen de notificaciones">
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="feedback"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Notificaciones totales</span>
+      <strong>{{ conteos().total }}</strong>
+      <small>Eventos disponibles en la bandeja del estado.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--alerta">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="warning"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Sin leer</span>
+      <strong>{{ conteos().noLeidas }}</strong>
+      <small>Requieren atención de la subregión.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="clipboard"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Eventos ESAVI</span>
+      <strong>{{ conteos().esavi }}</strong>
+      <small>Reportes de reacciones adversas a vacunas.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--ok">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Trámites de certificado</span>
+      <strong>{{ conteos().certificado }}</strong>
+      <small>Solicitudes, decisiones y emisiones.</small>
+    </article>
+  </section>
+
+  <section class="panel" aria-label="Filtros de notificaciones">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Filtrar la bandeja</h2>
+        <p>Combina el estado de lectura con el tipo de evento.</p>
+      </div>
+      @if (hayFiltros()) {
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+          Limpiar filtros
+        </button>
+      }
+    </header>
+
+    <div class="notificaciones-filtros">
+      <div class="srs-chips" role="group" aria-label="Estado de lectura">
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="lectura() === 'todas'"
+          [attr.aria-pressed]="lectura() === 'todas'"
+          (click)="lectura.set('todas')"
+        >
+          Todas <span class="srs-chip__conteo">{{ conteos().total }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="lectura() === 'no_leidas'"
+          [attr.aria-pressed]="lectura() === 'no_leidas'"
+          (click)="lectura.set('no_leidas')"
+        >
+          Sin leer <span class="srs-chip__conteo">{{ conteos().noLeidas }}</span>
+        </button>
+      </div>
+
+      <div class="srs-chips" role="group" aria-label="Tipo de notificación">
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="tipo() === 'todos'"
+          [attr.aria-pressed]="tipo() === 'todos'"
+          (click)="tipo.set('todos')"
+        >
+          Todos los tipos
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="tipo() === 'esavi'"
+          [attr.aria-pressed]="tipo() === 'esavi'"
+          (click)="tipo.set('esavi')"
+        >
+          ESAVI <span class="srs-chip__conteo">{{ conteos().esavi }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="tipo() === 'certificado'"
+          [attr.aria-pressed]="tipo() === 'certificado'"
+          (click)="tipo.set('certificado')"
+        >
+          Certificados <span class="srs-chip__conteo">{{ conteos().certificado }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="tipo() === 'expediente'"
+          [attr.aria-pressed]="tipo() === 'expediente'"
+          (click)="tipo.set('expediente')"
+        >
+          Expedientes <span class="srs-chip__conteo">{{ conteos().expediente }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="tipo() === 'sistema'"
+          [attr.aria-pressed]="tipo() === 'sistema'"
+          (click)="tipo.set('sistema')"
+        >
+          Sistema <span class="srs-chip__conteo">{{ conteos().sistema }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Listado de notificaciones">
+    @if (resultados().length === 0) {
+      <article class="panel">
+        <div class="srs-vacio">
+          <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+          <strong>No hay notificaciones con esos filtros</strong>
+          <p>La bandeja está al día para el criterio seleccionado.</p>
+          @if (hayFiltros()) {
+            <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+              Ver todas las notificaciones
+            </button>
+          }
+        </div>
+      </article>
+    } @else {
+      <div class="notificaciones-lista">
+        @for (notificacion of resultados(); track notificacion.id) {
+          <article class="panel notificacion" [class.is-no-leida]="!notificacion.leida">
+            <span
+              class="notificacion__icono"
+              [class.notificacion__icono--alta]="notificacion.prioridad === 'alta'"
+              [class.notificacion__icono--ok]="notificacion.tipo === 'certificado'"
+              aria-hidden="true"
+            >
+              <ca-icon [name]="icono(notificacion)"></ca-icon>
+            </span>
+
+            <div class="notificacion__contenido">
+              <div class="notificacion__meta">
+                <span class="srs-badge srs-badge--info">
+                  {{ datos.etiquetaTipoNotificacion(notificacion.tipo) }}
+                </span>
+                <span
+                  class="srs-badge"
+                  [class.srs-badge--danger]="notificacion.prioridad === 'alta'"
+                  [class.srs-badge--warn]="notificacion.prioridad === 'media'"
+                  [class.srs-badge--suave]="notificacion.prioridad === 'baja'"
+                >
+                  Prioridad {{ datos.etiquetaPrioridad(notificacion.prioridad) }}
+                </span>
+                <span class="notificacion__fecha">
+                  {{ notificacion.fecha | date: 'dd/MM/yyyy · HH:mm' }}
+                </span>
+                @if (!notificacion.leida) {
+                  <span class="notificacion__no-leida">Sin leer</span>
+                }
+              </div>
+
+              <h2>{{ notificacion.titulo }}</h2>
+              <p>{{ notificacion.mensaje }}</p>
+
+              <div class="notificacion__pie">
+                <span>
+                  <strong>{{ notificacion.personaNombre }}</strong>
+                  @if (notificacion.personaCedula) {
+                    · C.I. {{ notificacion.personaCedula }}
+                  }
+                  @if (notificacion.centroNombre) {
+                    · {{ notificacion.centroNombre }}
+                  }
+                </span>
+
+                <span class="notificacion__acciones">
+                  @if (notificacion.enlace; as enlace) {
+                    <a
+                      class="btn btn-sm btn-ghost"
+                      [routerLink]="enlace"
+                      (click)="marcarLeida(notificacion)"
+                    >
+                      Abrir
+                      <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+                    </a>
+                  }
+                  @if (!notificacion.leida) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-ghost"
+                      (click)="marcarLeida(notificacion)"
+                    >
+                      Marcar leída
+                    </button>
+                  }
+                </span>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <div class="srs-aviso">
+    <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+    <span>
+      Las notificaciones se generan con los eventos de las personas y centros de Guárico. El envío
+      de correos y las notificaciones externas se incorporarán en una fase posterior.
+    </span>
+  </div>
+</div>

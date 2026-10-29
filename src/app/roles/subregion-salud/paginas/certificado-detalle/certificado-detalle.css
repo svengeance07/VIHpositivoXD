@@ -1,0 +1,313 @@
+:host {
+  display: block;
+}
+
+.certificado-alerta {
+  margin: 0;
+}
+
+.certificado-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.certificado-hero__avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0284c7, #10b981);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 750;
+  flex-shrink: 0;
+}
+
+.certificado-hero__texto {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.certificado-hero__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.certificado-hero__titulo h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.1vw, 1.5rem);
+  letter-spacing: -0.02em;
+}
+
+.certificado-hero__texto p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.certificado-hero__texto small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.certificado-hero__accion {
+  flex-shrink: 0;
+}
+
+.certificado-progreso {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.certificado-progreso small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.certificado-requisitos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.certificado-requisito {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.65rem 0;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 60%, transparent);
+}
+
+.certificado-requisito:first-child {
+  border-top: none;
+}
+
+.certificado-requisito__icono {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--warn) 12%, transparent);
+  color: var(--warn);
+}
+
+.certificado-requisito__icono--ok {
+  background: color-mix(in oklab, var(--ok) 13%, transparent);
+  color: var(--ok);
+}
+
+.certificado-requisito__texto {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.certificado-requisito__texto strong {
+  font-size: 0.85rem;
+}
+
+.certificado-requisito__texto small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.certificado-requisito .srs-badge {
+  flex-shrink: 0;
+}
+
+.certificado-observacion {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 0.5px solid var(--glass-border);
+}
+
+.certificado-observacion p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.certificado-lateral {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.certificado-motivo {
+  margin: 0.9rem 0;
+}
+
+.certificado-decisiones {
+  margin-top: 0.2rem;
+}
+
+.certificado-emitir {
+  margin-top: 0.9rem;
+}
+
+.certificado-motivo-final {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 0.5px solid var(--glass-border);
+}
+
+.certificado-motivo-final p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.certificado-correo {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.certificado-boton-correo {
+  width: 100%;
+  justify-content: center;
+}
+
+.certificado-correo__nota {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.certificado-documento {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid color-mix(in oklab, var(--glass-border) 90%, transparent);
+  border-radius: var(--ca-radius-lg);
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 40%),
+    color-mix(in oklab, var(--glass-surface) 65%, #fff);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.06);
+  display: grid;
+  gap: 1rem;
+}
+
+.certificado-documento__marca {
+  margin: 0;
+  color: var(--color-accent-2);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.certificado-documento h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  letter-spacing: -0.04em;
+  text-align: center;
+}
+
+.certificado-documento__intro {
+  max-width: 36rem;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.certificado-documento__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+  margin: 0.5rem 0 0;
+  padding: 1rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--glass-border) 75%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--glass-border) 75%, transparent);
+}
+
+.certificado-documento__datos div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.certificado-documento__datos dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.certificado-documento__datos dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 620;
+}
+
+.certificado-documento__firma {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.certificado-documento__firma span {
+  width: min(16rem, 70%);
+  border-bottom: 1px solid var(--text-muted);
+}
+
+.certificado-documento__firma small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.certificado-documento__nota {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .certificado-hero {
+    align-items: flex-start;
+  }
+
+  .certificado-hero__avatar {
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 0.95rem;
+  }
+
+  .certificado-hero__accion {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .certificado-requisito {
+    flex-wrap: wrap;
+  }
+
+  .certificado-requisito .srs-badge {
+    margin-left: 2.3rem;
+  }
+}

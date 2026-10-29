@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.ciudadanos-filtros {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.ciudadanos-busqueda__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ciudadanos-busqueda__control ca-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.ciudadanos-busqueda__control input {
+  padding-left: 2.25rem;
+}
+
+.ciudadanos-tabla {
+  min-width: 72rem;
+}
+
+.ciudadanos-persona {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ciudadanos-persona__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0284c7, #10b981);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 750;
+  flex-shrink: 0;
+}
+
+.ciudadanos-ubicacion {
+  max-width: 13rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.ciudadanos-requisitos {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 6.5rem;
+}
+
+.ciudadanos-requisitos .srs-progreso {
+  height: 0.32rem;
+}

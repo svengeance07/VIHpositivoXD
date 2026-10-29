@@ -1,0 +1,249 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    [eyebrow]="'Certificados de salud · ' + datos.estadoNombre"
+    titulo="Bandeja de certificados"
+    descripcion="Revisa las solicitudes del estado, autoriza o descarta su creación y emite los certificados aprobados."
+  >
+    <span class="srs-badge srs-badge--warn">{{ conteos().solicitado }} pendientes</span>
+    <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
+      <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      <span>Buscar ciudadanos</span>
+    </a>
+  </app-srs-encabezado>
+
+  <section class="srs-metricas" aria-label="Resumen de certificados">
+    <article class="panel srs-metrica srs-metrica--alerta">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Pendientes de decisión</span>
+      <strong>{{ conteos().solicitado }}</strong>
+      <small>Esperan autorización o descarte de la subregión.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="feedback"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Autorizados</span>
+      <strong>{{ conteos().autorizado }}</strong>
+      <small>Listos para emitir el documento.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--ok">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Emitidos</span>
+      <strong>{{ conteos().emitido }}</strong>
+      <small>El envío por correo quedará para una fase posterior.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="warning"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Descartados</span>
+      <strong>{{ conteos().descartado }}</strong>
+      <small>No cumplieron los requisitos o fueron rechazados.</small>
+    </article>
+  </section>
+
+  <section class="panel" aria-label="Filtros de certificados">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Filtrar solicitudes</h2>
+        <p>Busca por código, nombre, cédula o correo del solicitante.</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">Limpiar</button>
+    </header>
+
+    <div class="certificados-filtros">
+      <label class="field certificados-busqueda">
+        <span class="field-label">Buscar certificado</span>
+        <span class="certificados-busqueda__control">
+          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <input
+            type="search"
+            placeholder="Ej. CERT-GUA-2026-001, Génesis o 26548971"
+            [value]="termino()"
+            (input)="termino.set(valor($event))"
+          />
+        </span>
+      </label>
+
+      <div class="srs-chips" role="group" aria-label="Filtrar por estado del certificado">
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'todas'"
+          [attr.aria-pressed]="filtro() === 'todas'"
+          (click)="filtro.set('todas')"
+        >
+          Todas <span class="srs-chip__conteo">{{ conteos().todas }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'solicitado'"
+          [attr.aria-pressed]="filtro() === 'solicitado'"
+          (click)="filtro.set('solicitado')"
+        >
+          Pendientes <span class="srs-chip__conteo">{{ conteos().solicitado }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'autorizado'"
+          [attr.aria-pressed]="filtro() === 'autorizado'"
+          (click)="filtro.set('autorizado')"
+        >
+          Autorizados <span class="srs-chip__conteo">{{ conteos().autorizado }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'emitido'"
+          [attr.aria-pressed]="filtro() === 'emitido'"
+          (click)="filtro.set('emitido')"
+        >
+          Emitidos <span class="srs-chip__conteo">{{ conteos().emitido }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'descartado'"
+          [attr.aria-pressed]="filtro() === 'descartado'"
+          (click)="filtro.set('descartado')"
+        >
+          Descartados <span class="srs-chip__conteo">{{ conteos().descartado }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Listado de certificados">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Solicitudes del estado</h2>
+        <p>{{ resultados().length }} de {{ conteos().todas }} solicitudes visibles.</p>
+      </div>
+      <span class="srs-badge srs-badge--info">Revisión de la subregión</span>
+    </header>
+
+    @if (resultados().length === 0) {
+      <div class="srs-vacio">
+        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <strong>No hay solicitudes con esos filtros</strong>
+        <p>Cambia el estado o limpia la búsqueda para ver otros trámites.</p>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+          Restablecer filtros
+        </button>
+      </div>
+    } @else {
+      <div class="srs-tabla-scroll">
+        <table class="srs-tabla certificados-tabla">
+          <thead>
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Ciudadano</th>
+              <th scope="col">Solicitud</th>
+              <th scope="col">Requisitos</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Revisión</th>
+              <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (solicitud of resultados(); track solicitud.id) {
+              <tr [class.certificados-fila--pendiente]="solicitud.estado === 'solicitado'">
+                <td>
+                  <a class="certificados-codigo" [routerLink]="['/SRS/certificados', solicitud.id]">
+                    {{ solicitud.codigo }}
+                  </a>
+                </td>
+                <td>
+                  <a
+                    class="certificados-persona srs-enlace-fila"
+                    [routerLink]="['/SRS/ciudadanos', solicitud.ciudadanoId]"
+                  >
+                    <span class="srs-tabla__principal">
+                      <strong>{{ solicitud.nombreCiudadano }}</strong>
+                      <span class="srs-tabla__secundario">C.I. {{ solicitud.cedula }}</span>
+                    </span>
+                  </a>
+                </td>
+                <td>
+                  <span class="srs-tabla__principal">
+                    <strong>{{ solicitud.fechaSolicitud | date: 'dd/MM/yyyy' }}</strong>
+                    <span class="srs-tabla__secundario">Por {{ solicitud.solicitadoPor }}</span>
+                  </span>
+                </td>
+                <td>
+                  <div class="certificados-requisitos">
+                    <span
+                      class="srs-badge"
+                      [class.srs-badge--ok]="solicitud.ficha.aptoCertificado"
+                      [class.srs-badge--warn]="!solicitud.ficha.aptoCertificado"
+                    >
+                      {{ solicitud.ficha.requisitosCumplidos }}/{{
+                        solicitud.ficha.requisitosTotales
+                      }}
+                    </span>
+                    <span
+                      class="srs-progreso"
+                      [class.srs-progreso--alerta]="!solicitud.ficha.aptoCertificado"
+                    >
+                      <span
+                        [style.width.%]="solicitud.ficha.porcentajeRequisitos"
+                        aria-hidden="true"
+                      ></span>
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="srs-badge"
+                    [class.srs-badge--warn]="solicitud.estado === 'solicitado'"
+                    [class.srs-badge--info]="solicitud.estado === 'autorizado'"
+                    [class.srs-badge--ok]="solicitud.estado === 'emitido'"
+                    [class.srs-badge--danger]="solicitud.estado === 'descartado'"
+                  >
+                    {{ datos.etiquetaEstadoCertificado(solicitud.estado) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="srs-tabla__principal">
+                    <strong>{{ solicitud.revisadoPor }}</strong>
+                    <span class="srs-tabla__secundario">
+                      {{
+                        solicitud.fechaRevision
+                          ? (solicitud.fechaRevision | date: 'dd/MM/yyyy')
+                          : 'Sin revisar'
+                      }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <a
+                    class="btn btn-sm"
+                    [class.btn-primary]="solicitud.estado === 'solicitado'"
+                    [class.btn-ghost]="solicitud.estado !== 'solicitado'"
+                    [routerLink]="['/SRS/certificados', solicitud.id]"
+                  >
+                    {{ solicitud.estado === 'solicitado' ? 'Revisar' : 'Ver detalle' }}
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="srs-aviso certificados-aviso">
+      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+      <span>
+        La emisión del certificado está disponible en este prototipo. El envío automático por correo
+        electrónico se incorporará cuando exista el servicio de notificaciones.
+      </span>
+    </div>
+  </section>
+</div>

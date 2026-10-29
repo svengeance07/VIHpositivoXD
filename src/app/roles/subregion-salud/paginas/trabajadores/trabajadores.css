@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.trabajadores-filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 0.9rem;
+  align-items: end;
+}
+
+.trabajadores-busqueda__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.trabajadores-busqueda__control ca-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.trabajadores-busqueda__control input {
+  padding-left: 2.25rem;
+}
+
+.trabajadores-rol .srs-chips {
+  padding-top: 0.3rem;
+}
+
+.trabajadores-tabla {
+  min-width: 64rem;
+}
+
+.trabajadores-persona {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.trabajadores-persona__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0284c7, #10b981);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 750;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .trabajadores-filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trabajadores-busqueda {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .trabajadores-filtros {
+    grid-template-columns: 1fr;
+  }
+}

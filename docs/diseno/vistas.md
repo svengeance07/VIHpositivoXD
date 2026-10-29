@@ -141,18 +141,26 @@ Observaciones:
 | `/master/movimientos`          | Registro de movimientos (logs)                       | 1       | `diagrama-autoridades`, sidebar           | implementado (mock) |
 | `/master/busquedas`            | Auditoría de búsquedas de usuarios                   | 1       | `diagrama-autoridades`                    | implementado (mock) |
 | `/PS`                          | Centro de control                                    | 2       | —                                         | implementado (mock) |
-| `/SRS`                         | Centro de control                                    | 3       | —                                         | placeholder         |
-| `/SRS/personal`                | Administración de personal (layout propio)           | 3       | —                                         | pendiente de diseño |
+| `/SRS`                         | Centro de control                                    | 3       | —                                         | implementado (mock) |
+| `/SRS/trabajadores`            | Consulta del personal tipo 2 del estado              | 3       | —                                         | implementado (mock) |
+| `/SRS/trabajadores/:id`        | Ficha del trabajador                                 | 3       | —                                         | implementado (mock) |
+| `/SRS/ciudadanos`              | Búsqueda de ciudadanos del estado                    | 3       | —                                         | implementado (mock) |
+| `/SRS/ciudadanos/:id`          | Ficha ciudadana con vacunas, exámenes y requisitos   | 3       | —                                         | implementado (mock) |
+| `/SRS/certificados`            | Bandeja de certificados                              | 3       | —                                         | implementado (mock) |
+| `/SRS/certificados/:id`        | Revisión, autorización y emisión de certificados     | 3       | —                                         | implementado (mock) |
+| `/SRS/notificaciones`          | Notificaciones del estado                            | 3       | —                                         | implementado (mock) |
 
 Las rutas de detalle del master (`/master/personal/subregiones/:id`, `/master/personal/centros/:id` y
 `/master/personal/empleados/:id`) también están implementadas con datos mock, igual que los formularios de alta
 simulados de subregiones, centros y empleados.
 
-`/SRS` y `/consulta` siguen existiendo con una página provisional (ver secciones 6.3 y 9). El master y `/PS` ya no son
-placeholders: sus pantallas consumen `DatosMasterService` y `DatosPersonalSaludService` con los mocks de
-`nucleo/datos/master.ts` y `nucleo/datos/personal-salud.ts`. Las rutas todavía sin boceto (ver
-[sección 8](#8-inventario-de-pantallas)): usuarios activos, centros y stock de la subregión, métricas de jefes,
-formularios reales de alta y la vista de certificado.
+`/consulta` sigue existiendo con una página provisional (ver secciones 6.2 y 9). El master, `/PS` y `/SRS` ya no son
+placeholders: sus pantallas consumen `DatosMasterService`, `DatosPersonalSaludService` y `DatosSubregionSaludService` con
+los mocks de `nucleo/datos/master.ts`, `nucleo/datos/personal-salud.ts` y `nucleo/datos/subregion-salud.ts`. La
+subregión incluye consulta de personal, ficha ciudadana, bandeja de certificados y notificaciones; la emisión es
+simulada y el envío por correo queda deshabilitado. Las rutas todavía sin boceto (ver
+[sección 8](#8-inventario-de-pantallas)): usuarios activos, stock y movimientos de la subregión, métricas de jefes,
+formularios reales de alta y la descarga/entrega real del certificado.
 
 Los segmentos `PS` y `SRS` van en mayúsculas literales, tanto en `path` como en `routerLink`.
 
@@ -222,8 +230,7 @@ Flujo en tres pasos:
 - No valida contra backend: usa las cuentas de prueba de `docs/diseno/credenciales-demo.md` y `SesionService`.
 - El formulario pide **correo y contraseña** (decisión 16). El esquema ya incluye `master.nombre_usuario`, pero el
   login actual sigue usando el correo; el nombre de usuario queda como alternativa para el backend.
-- Al entrar, cada rol navega a su prefijo (`/master`, `/PS`, `/SRS`); `/master` y `/PS` ya tienen sus vistas y `/SRS`
-  sigue mostrando una página provisional.
+- Al entrar, cada rol navega a su prefijo (`/master`, `/PS`, `/SRS`); los tres roles ya tienen sus vistas mock.
 - En desarrollo, el propio login muestra un panel con las credenciales de prueba.
 
 > **Esquema real parcial:** `cuentas_entidad` es una **propuesta** y no está en el script. Conserva el login de dos
@@ -378,15 +385,42 @@ administración de personal, con otro layout, todavía sin boceto.
   consultas de usuarios que hacen los roles internos (decisión 7).
 - **Centro de control del personal de salud**: métricas del centro y de cada trabajador (jefe) vs. tareas operativas
   (personal). Sin dibujo.
-- **Centro de control de la subregión**: stock entregado, centros del estado, certificados emitidos. Sin dibujo.
+- **Centro de control de la subregión**: implementado con mock (personal, ciudadanos, certificados y notificaciones).
+  Stock entregado y movimientos siguen pendientes.
 - **Formularios de alta**: subregión, centro, empleado, usuario. Solo se dibuja el botón "Agregar…".
 - **Detalle de subregión, de centro y de empleado**: se dibuja la transición, no el contenido.
-- **Vista del certificado de salud**: se menciona en tres diagramas, no se dibuja.
-- **Autorización de certificados** (rol 3): bandeja de solicitudes para autorizar o descartar la emisión. Sin boceto.
+- **Vista del certificado de salud**: implementada como vista previa simulada; no genera PDF firmado ni lo envía por
+  correo.
+- **Autorización de certificados** (rol 3): implementada con mock (bandeja, autorización, descarte y emisión).
 
 Las pantallas de **movimientos, búsquedas, certificados, autorización e incidencias** dependen de tablas que todavía
 no están en el esquema parcial. No conviene cerrar sus columnas ni filtros hasta recibirlas; el detalle de lo que
 falta está en [`modelo-datos.md`](./modelo-datos.md) §7.
+
+### 6.10 Subregión de salud `/SRS`
+
+Implementación mock posterior a los bocetos, con el mismo lenguaje visual y flujo del master y `/PS`. Todo el rol está
+acotado al estado **Guárico** (`srs-guarico`) y consume `DatosSubregionSaludService`.
+
+- **Shell** (`shell/`): sidebar colapsable y móvil, badges de certificados pendientes y notificaciones sin leer,
+  cabecera de sesión y cierre de sesión.
+- **`/SRS`**: panel con métricas del estado, solicitudes por atender, notificaciones recientes, centros y flujo del
+  certificado.
+- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: consulta de solo lectura del personal tipo 2 de los centros
+  del estado, con búsqueda, filtros por centro/rol y ficha de adscripción.
+- **`/SRS/ciudadanos`** y **`/SRS/ciudadanos/:id`**: búsqueda de fichas del estado; la ficha muestra todas las vacunas
+  y exámenes (vigentes y vencidos), los requisitos del certificado, una línea de tiempo de hasta ocho hitos y el
+  historial de solicitudes.
+- **`/SRS/certificados`** y **`/SRS/certificados/:id`**: bandeja filtrable por estado; el detalle evalúa requisitos y
+  permite **autorizar**, **descartar** (con motivo obligatorio) y **emitir** un certificado autorizado. La acción de
+  envío por correo aparece deshabilitada con la etiqueta "Próximamente".
+- **`/SRS/notificaciones`**: bandeja filtrable por lectura y tipo, con marcado individual o masivo y enlaces al
+  expediente o certificado relacionado.
+
+La subregión puede registrar una solicitud desde la ficha ciudadana porque todavía no existe el portal del rol 0. Los
+estados del certificado son `solicitado` → `autorizado` / `descartado`, y `autorizado` → `emitido`. La evaluación de
+requisitos combina las vacunas obligatorias del catálogo con la vigencia provisional de VIH/VDRL
+(`VIGENCIA_EXAMENES_MESES`); es una regla de prototipo hasta recibir las tablas y reglas reales.
 
 ## 7. Patrones de UI recurrentes
 
@@ -457,11 +491,11 @@ esas tablas. El detalle por vista está en [`modelo-datos.md`](./modelo-datos.md
 - **Datos**: las vistas consumen servicios con `signal`; los arrays mock viven en `nucleo/datos` y nadie los importa
   directo. Los tipos de `nucleo/modelos` siguen siendo provisionales hasta que exista la capa de datos.
 - **Sesión simulada**: `nucleo/modelos/cuenta-acceso.ts`, `nucleo/datos/cuentas-acceso.ts` y
-  `nucleo/servicios/sesion.service.ts`. La landing, el login, las vistas del master y de `/PS`, y la página
-  provisional de `/SRS` ya navegan con ese servicio; el array de cuentas replica el futuro `cuentas_entidad` +
-  `personal`. Reemplazarlo por la API no debe cambiar las plantillas ni los tres pasos del login.
+  `nucleo/servicios/sesion.service.ts`. La landing, el login y las vistas del master, `/PS` y `/SRS` ya navegan con
+  ese servicio; el array de cuentas replica el futuro `cuentas_entidad` + `personal`. Reemplazarlo por la API no debe
+  cambiar las plantillas ni los tres pasos del login.
 - **Páginas provisionales**: `compartido/ui/pagina-en-construccion/` muestra el nombre y la entidad de la sesión y
-  permite cerrarla. Es el destino temporal de `/SRS` y `/consulta`; `/master` y `/PS` ya están implementados.
+  permite cerrarla. Es el destino temporal de `/consulta`; `/master`, `/PS` y `/SRS` ya están implementados.
 - **Riesgo principal**: tipar `CentroSalud`, `Lote` o `Ciudadano` demasiado pronto y reescribir medio proyecto cuando
   se implemente la base de datos. Mitigación: los servicios exponen vistas de datos mínimas (lo que la pantalla
   necesita) y el mapeo desde la entidad real se hace en una sola capa. El esquema todavía es parcial.

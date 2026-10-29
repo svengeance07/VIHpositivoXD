@@ -1,0 +1,169 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    eyebrow="Expediente de personal"
+    [titulo]="trabajador()?.personal?.nombre ?? 'Registro no encontrado'"
+    [descripcion]="
+      trabajador()
+        ? 'Consulta la adscripción, los datos de contacto y el equipo del centro.'
+        : 'El identificador no corresponde a un trabajador de esta subregión.'
+    "
+  >
+    <a class="btn btn-ghost" routerLink="/SRS/trabajadores">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span>Volver al personal</span>
+    </a>
+  </app-srs-encabezado>
+
+  @if (trabajador(); as persona) {
+    <section class="panel trabajador-hero">
+      <span class="trabajador-hero__avatar" aria-hidden="true">{{ persona.iniciales }}</span>
+      <div class="trabajador-hero__texto">
+        <div class="trabajador-hero__titulo">
+          <h2>{{ persona.personal.nombre }}</h2>
+          <span class="srs-badge" [class.srs-badge--info]="persona.esJefe">
+            {{ persona.esJefe ? 'Jefe de centro' : 'Trabajador' }}
+          </span>
+          <span
+            class="srs-badge"
+            [class.srs-badge--ok]="persona.personal.activo"
+            [class.srs-badge--danger]="!persona.personal.activo"
+          >
+            {{ persona.personal.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+        <p>{{ persona.profesion }} · {{ persona.centro.nombre }}</p>
+        <small>
+          {{ persona.aniosServicio }} año(s) de servicio · Cédula {{ persona.personal.cedula }}
+        </small>
+      </div>
+    </section>
+
+    <section class="srs-grid srs-grid--dos">
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Datos de contacto</h2>
+            <p>Información de referencia del expediente.</p>
+          </div>
+        </header>
+
+        <dl class="trabajador-datos">
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Cédula de identidad</dt>
+            <dd class="srs-dato__valor">{{ persona.personal.cedula }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Correo electrónico</dt>
+            <dd class="srs-dato__valor">{{ persona.personal.correo }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Teléfono</dt>
+            <dd class="srs-dato__valor">{{ persona.personal.telefono }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Código profesional</dt>
+            <dd class="srs-dato__valor">{{ persona.personal.idProfesional }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Profesión</dt>
+            <dd class="srs-dato__valor">{{ persona.profesion }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Fecha de ingreso</dt>
+            <dd class="srs-dato__valor">{{ persona.personal.ingreso | date: 'dd/MM/yyyy' }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Adscripción</h2>
+            <p>Centro y ubicación donde presta servicio.</p>
+          </div>
+          <span class="srs-badge srs-badge--suave">{{ persona.centro.codigo }}</span>
+        </header>
+
+        <dl class="trabajador-datos">
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Centro de salud</dt>
+            <dd class="srs-dato__valor">{{ persona.centro.nombre }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Estado</dt>
+            <dd class="srs-dato__valor">{{ persona.estadoNombre }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Municipio</dt>
+            <dd class="srs-dato__valor">{{ persona.municipioNombre }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Parroquia</dt>
+            <dd class="srs-dato__valor">{{ persona.parroquiaNombre }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Jefe del centro</dt>
+            <dd class="srs-dato__valor">{{ centro()?.jefe?.nombre ?? 'Sin asignar' }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Equipo del centro</dt>
+            <dd class="srs-dato__valor">{{ centro()?.trabajadores ?? 0 }} personas</dd>
+          </div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <h2>Equipo del centro</h2>
+          <p>Otros registros tipo 2 adscritos a {{ persona.centro.nombre }}.</p>
+        </div>
+      </header>
+
+      @if (companeros().length === 0) {
+        <div class="srs-vacio">
+          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+          <strong>No hay otros registros en este centro</strong>
+        </div>
+      } @else {
+        <div class="trabajador-equipo">
+          @for (companero of companeros(); track companero.personal.id) {
+            <a
+              class="trabajador-equipo__item"
+              [routerLink]="['/SRS/trabajadores', companero.personal.id]"
+            >
+              <span class="trabajador-equipo__avatar" aria-hidden="true">
+                {{ companero.iniciales }}
+              </span>
+              <span class="srs-tabla__principal">
+                <strong>{{ companero.personal.nombre }}</strong>
+                <span class="srs-tabla__secundario">
+                  {{ companero.profesion }} · {{ companero.esJefe ? 'Jefe' : 'Trabajador' }}
+                </span>
+              </span>
+              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+            </a>
+          }
+        </div>
+      }
+    </section>
+
+    <div class="srs-aviso">
+      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+      <span>
+        Este registro es de solo consulta. Las altas, actualizaciones y desactivaciones del personal
+        se gestionan desde el panel del master.
+      </span>
+    </div>
+  } @else {
+    <section class="panel">
+      <div class="srs-vacio">
+        <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+        <strong>Trabajador no encontrado</strong>
+        <p>No existe un registro tipo 2 con ese identificador en la subregión.</p>
+        <a class="btn btn-primary" routerLink="/SRS/trabajadores">Volver a la lista</a>
+      </div>
+    </section>
+  }
+</div>

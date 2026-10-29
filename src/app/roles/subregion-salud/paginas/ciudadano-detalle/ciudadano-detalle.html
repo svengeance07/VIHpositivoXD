@@ -1,0 +1,425 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    eyebrow="Ficha ciudadana"
+    [titulo]="ficha()?.nombre ?? 'Ficha no encontrada'"
+    [descripcion]="
+      ficha()
+        ? 'Consulta el expediente completo, los requisitos del certificado y la trazabilidad de sus datos.'
+        : 'El identificador no corresponde a una ficha de esta subregión.'
+    "
+  >
+    <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span>Volver a ciudadanos</span>
+    </a>
+  </app-srs-encabezado>
+
+  @if (ficha(); as persona) {
+    <section class="panel ciudadano-hero">
+      <span class="ciudadano-hero__avatar" aria-hidden="true">{{ persona.iniciales }}</span>
+      <div class="ciudadano-hero__texto">
+        <div class="ciudadano-hero__titulo">
+          <h2>{{ persona.nombre }}</h2>
+          <span
+            class="srs-badge"
+            [class.srs-badge--ok]="persona.aptoCertificado"
+            [class.srs-badge--warn]="!persona.aptoCertificado"
+          >
+            {{ persona.aptoCertificado ? 'Apto para certificado' : 'Requiere revisión' }}
+          </span>
+        </div>
+        <p>
+          Cédula {{ persona.ciudadano.cedula }} · {{ persona.edad }} años · {{ persona.sexo }} ·
+          {{ persona.ubicacion }}
+        </p>
+        <small>
+          {{ persona.correo }} · {{ persona.telefono }} · Expediente creado el
+          {{ persona.ciudadano.creadoEn | date: 'dd/MM/yyyy' }}
+        </small>
+      </div>
+    </section>
+
+    <section class="srs-metricas" aria-label="Resumen del expediente">
+      <article class="panel srs-metrica">
+        <span class="srs-metrica__icono" aria-hidden="true">
+          <ca-icon name="check"></ca-icon>
+        </span>
+        <span class="srs-metrica__etiqueta">Vacunas aplicadas</span>
+        <strong>{{ persona.vacunas.length }}</strong>
+        <small
+          >{{ persona.vacunasVencidas }} dosis vencida(s) según la vigencia del catálogo.</small
+        >
+      </article>
+      <article class="panel srs-metrica">
+        <span class="srs-metrica__icono" aria-hidden="true">
+          <ca-icon name="clipboard"></ca-icon>
+        </span>
+        <span class="srs-metrica__etiqueta">Exámenes registrados</span>
+        <strong>{{ persona.examenes.length }}</strong>
+        <small>{{ persona.examenesVencidos }} fuera del período de vigencia.</small>
+      </article>
+      <article class="panel srs-metrica">
+        <span class="srs-metrica__icono" aria-hidden="true">
+          <ca-icon name="check"></ca-icon>
+        </span>
+        <span class="srs-metrica__etiqueta">Requisitos cumplidos</span>
+        <strong>{{ persona.requisitosCumplidos }}/{{ persona.requisitosTotales }}</strong>
+        <small>{{ persona.porcentajeRequisitos }}% de avance para el certificado.</small>
+      </article>
+      <article class="panel srs-metrica">
+        <span class="srs-metrica__icono" aria-hidden="true">
+          <ca-icon name="feedback"></ca-icon>
+        </span>
+        <span class="srs-metrica__etiqueta">Solicitudes registradas</span>
+        <strong>{{ solicitudes().length }}</strong>
+        <small>{{ solicitudActiva() ? 'Con un trámite activo.' : 'Sin trámite activo.' }}</small>
+      </article>
+    </section>
+
+    <section class="srs-grid srs-grid--dos ciudadano-grid">
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <p class="ca-section-eyebrow">
+              <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+              Certificado de salud
+            </p>
+            <h2>Estado del trámite</h2>
+            <p>
+              La subregión autoriza, descarta o emite el certificado después de revisar los
+              requisitos.
+            </p>
+          </div>
+        </header>
+
+        @if (solicitudActiva(); as solicitud) {
+          <div class="ciudadano-tramite">
+            <div class="ciudadano-tramite__cabecera">
+              <span class="srs-badge srs-badge--warn">
+                {{ datos.etiquetaEstadoCertificado(solicitud.estado) }}
+              </span>
+              <span class="srs-tabla__secundario">{{ solicitud.codigo }}</span>
+            </div>
+            <p>
+              Solicitud registrada el {{ solicitud.fechaSolicitud | date: 'dd/MM/yyyy' }} y
+              pendiente de decisión de la subregión.
+            </p>
+            <div
+              class="srs-progreso"
+              [class.srs-progreso--alerta]="!solicitud.ficha.aptoCertificado"
+            >
+              <span
+                [style.width.%]="solicitud.ficha.porcentajeRequisitos"
+                aria-hidden="true"
+              ></span>
+            </div>
+            <a class="btn btn-primary" [routerLink]="['/SRS/certificados', solicitud.id]">
+              <ca-icon name="check" aria-hidden="true"></ca-icon>
+              <span>Abrir solicitud</span>
+            </a>
+          </div>
+        } @else {
+          <div class="ciudadano-tramite">
+            @if (persona.aptoCertificado) {
+              <div class="srs-aviso">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span>
+                  El expediente cumple los requisitos evaluados. Puedes registrar la solicitud para
+                  que la subregión la revise y emita el certificado.
+                </span>
+              </div>
+            } @else {
+              <div class="srs-aviso srs-aviso--warn">
+                <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                <span>
+                  Faltan requisitos o hay datos vencidos. Puedes registrar la solicitud, pero la
+                  subregión podría descartarla hasta que el ciudadano actualice su esquema.
+                </span>
+              </div>
+            }
+            <button type="button" class="btn btn-primary" (click)="solicitarCertificado()">
+              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span>{{
+                persona.aptoCertificado ? 'Solicitar certificado' : 'Solicitar evaluación'
+              }}</span>
+            </button>
+          </div>
+        }
+
+        @if (solicitudesRecientes().length > 0) {
+          <div class="ciudadano-historial">
+            <h3>Historial reciente</h3>
+            @for (solicitud of solicitudesRecientes(); track solicitud.id) {
+              <a
+                class="ciudadano-historial__item"
+                [routerLink]="['/SRS/certificados', solicitud.id]"
+              >
+                <span class="ciudadano-historial__codigo">{{ solicitud.codigo }}</span>
+                <span class="srs-tabla__secundario">
+                  {{ solicitud.fechaSolicitud | date: 'dd/MM/yyyy' }}
+                </span>
+                <span
+                  class="srs-badge"
+                  [class.srs-badge--ok]="solicitud.estado === 'emitido'"
+                  [class.srs-badge--info]="solicitud.estado === 'autorizado'"
+                  [class.srs-badge--warn]="solicitud.estado === 'solicitado'"
+                  [class.srs-badge--danger]="solicitud.estado === 'descartado'"
+                >
+                  {{ datos.etiquetaEstadoCertificado(solicitud.estado) }}
+                </span>
+              </a>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Requisitos del certificado</h2>
+            <p>Regla provisional del prototipo: vacunas obligatorias y serología vigente.</p>
+          </div>
+          <span class="srs-badge" [class.srs-badge--ok]="persona.aptoCertificado">
+            {{ persona.requisitosCumplidos }}/{{ persona.requisitosTotales }}
+          </span>
+        </header>
+
+        <div class="ciudadano-progreso">
+          <div class="ciudadano-progreso__cabecera">
+            <span>Avance del expediente</span>
+            <strong>{{ persona.porcentajeRequisitos }}%</strong>
+          </div>
+          <div class="srs-progreso" [class.srs-progreso--alerta]="!persona.aptoCertificado">
+            <span [style.width.%]="persona.porcentajeRequisitos" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <ul class="ciudadano-requisitos">
+          @for (requisito of persona.requisitos; track requisito.id) {
+            <li class="ciudadano-requisito">
+              <span
+                class="ciudadano-requisito__icono"
+                [class.ciudadano-requisito__icono--ok]="requisito.cumplido"
+                [class.ciudadano-requisito__icono--warn]="!requisito.cumplido"
+                aria-hidden="true"
+              >
+                <ca-icon [name]="requisito.cumplido ? 'check' : 'warning'"></ca-icon>
+              </span>
+              <span class="ciudadano-requisito__texto">
+                <strong>{{ requisito.etiqueta }}</strong>
+                <small>{{ requisito.detalle }}</small>
+              </span>
+              <span
+                class="srs-badge"
+                [class.srs-badge--ok]="requisito.estado === 'vigente'"
+                [class.srs-badge--danger]="requisito.estado === 'vencido'"
+                [class.srs-badge--warn]="requisito.estado === 'incompleto'"
+                [class.srs-badge--suave]="requisito.estado === 'ausente'"
+              >
+                {{ datos.etiquetaRequisito(requisito.estado) }}
+              </span>
+            </li>
+          }
+        </ul>
+      </article>
+    </section>
+
+    <section class="srs-grid srs-grid--dos ciudadano-grid">
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Línea de tiempo de requisitos</h2>
+            <p>Hitos más recientes de vacunas, exámenes y trámites del expediente.</p>
+          </div>
+          <span class="srs-badge srs-badge--suave">Últimos 8 hitos</span>
+        </header>
+
+        <ol class="ciudadano-timeline">
+          @for (hito of persona.lineaTiempo; track hito.id) {
+            <li class="ciudadano-timeline__item">
+              <span
+                class="ciudadano-timeline__punto"
+                [class.ciudadano-timeline__punto--ok]="hito.tono === 'ok'"
+                [class.ciudadano-timeline__punto--warn]="hito.tono === 'warn'"
+                [class.ciudadano-timeline__punto--info]="hito.tono === 'info'"
+                aria-hidden="true"
+              >
+                <ca-icon [name]="iconoHito(hito.tipo)"></ca-icon>
+              </span>
+              <span class="ciudadano-timeline__texto">
+                <span class="ciudadano-timeline__fecha">
+                  {{ hito.fecha | date: 'dd/MM/yyyy' }}
+                </span>
+                <strong>{{ hito.titulo }}</strong>
+                <small>{{ hito.detalle }}</small>
+              </span>
+            </li>
+          }
+        </ol>
+      </article>
+
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Datos de contacto</h2>
+            <p>Información de referencia para la revisión del certificado.</p>
+          </div>
+        </header>
+
+        <dl class="ciudadano-contacto">
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Correo electrónico</dt>
+            <dd class="srs-dato__valor">{{ persona.correo }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Teléfono</dt>
+            <dd class="srs-dato__valor">{{ persona.telefono }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Estado</dt>
+            <dd class="srs-dato__valor">{{ datos.estadoNombre }}</dd>
+          </div>
+          <div class="srs-dato">
+            <dt class="srs-dato__etiqueta">Ubicación</dt>
+            <dd class="srs-dato__valor">{{ persona.ubicacion }}</dd>
+          </div>
+        </dl>
+
+        <div class="srs-aviso srs-aviso--warn ciudadano-privacidad">
+          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          <span>
+            Los resultados de VIH y VDRL son datos sensibles. En la etapa de backend se deben
+            registrar auditorías de acceso antes de habilitar esta ficha.
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <h2>Vacunas aplicadas</h2>
+          <p>Todas las dosis registradas, vigentes y vencidas.</p>
+        </div>
+        <span class="srs-badge srs-badge--suave">{{ persona.vacunas.length }} registros</span>
+      </header>
+
+      @if (persona.vacunas.length === 0) {
+        <div class="srs-vacio">
+          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <strong>Sin vacunas registradas</strong>
+        </div>
+      } @else {
+        <div class="srs-tabla-scroll">
+          <table class="srs-tabla ciudadano-tabla-vacunas">
+            <thead>
+              <tr>
+                <th scope="col">Vacuna</th>
+                <th scope="col">Dosis</th>
+                <th scope="col">Fecha de aplicación</th>
+                <th scope="col">Lote</th>
+                <th scope="col">Centro</th>
+                <th scope="col">Vence</th>
+                <th scope="col">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (vacuna of persona.vacunas; track vacuna.id) {
+                <tr>
+                  <td>
+                    <strong>{{ vacuna.nombre }}</strong>
+                  </td>
+                  <td>{{ vacuna.dosis }} / {{ vacuna.dosisRequeridas }}</td>
+                  <td>{{ vacuna.fecha | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ vacuna.lote }}</td>
+                  <td>{{ vacuna.centroNombre }}</td>
+                  <td>
+                    {{
+                      vacuna.vencimiento ? (vacuna.vencimiento | date: 'dd/MM/yyyy') : 'Permanente'
+                    }}
+                  </td>
+                  <td>
+                    <span
+                      class="srs-badge"
+                      [class.srs-badge--ok]="vacuna.estado === 'vigente'"
+                      [class.srs-badge--danger]="vacuna.estado === 'vencido'"
+                    >
+                      {{ datos.etiquetaVigencia(vacuna.estado) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <section class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <h2>Exámenes registrados</h2>
+          <p>Resultados de laboratorio y vigencia estimada para el certificado.</p>
+        </div>
+        <span class="srs-badge srs-badge--suave">{{ persona.examenes.length }} registros</span>
+      </header>
+
+      @if (persona.examenes.length === 0) {
+        <div class="srs-vacio">
+          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+          <strong>Sin exámenes registrados</strong>
+        </div>
+      } @else {
+        <div class="srs-tabla-scroll">
+          <table class="srs-tabla ciudadano-tabla-examenes">
+            <thead>
+              <tr>
+                <th scope="col">Examen</th>
+                <th scope="col">Resultado</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Vigente hasta</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Dato sensible</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (examen of persona.examenes; track examen.id) {
+                <tr>
+                  <td>
+                    <strong>{{ examen.nombre }}</strong>
+                  </td>
+                  <td>{{ examen.resultado }}</td>
+                  <td>{{ examen.fecha | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ examen.vencimiento | date: 'dd/MM/yyyy' }}</td>
+                  <td>
+                    <span
+                      class="srs-badge"
+                      [class.srs-badge--ok]="examen.estado === 'vigente'"
+                      [class.srs-badge--danger]="examen.estado === 'vencido'"
+                    >
+                      {{ datos.etiquetaVigencia(examen.estado) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="srs-badge" [class.srs-badge--warn]="examen.sensible">
+                      {{ examen.sensible ? 'Sí' : 'No' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="panel">
+      <div class="srs-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <strong>Ficha no encontrada</strong>
+        <p>No existe un ciudadano con ese identificador dentro del estado de la subregión.</p>
+        <a class="btn btn-primary" routerLink="/SRS/ciudadanos">Volver a la búsqueda</a>
+      </div>
+    </section>
+  }
+</div>

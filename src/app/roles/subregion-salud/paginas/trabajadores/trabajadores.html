@@ -1,0 +1,209 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    [eyebrow]="'Personal de salud · ' + datos.estadoNombre"
+    titulo="Trabajadores tipo 2"
+    descripcion="Consulta los registros del personal de salud asignado a los centros de la subregión, incluidos jefes y trabajadores."
+  >
+    <span class="srs-badge srs-badge--suave">{{ datos.trabajadores().length }} registros</span>
+    <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
+      <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      <span>Buscar ciudadanos</span>
+    </a>
+  </app-srs-encabezado>
+
+  <section class="srs-metricas" aria-label="Resumen del personal">
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="clipboard"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Total en el estado</span>
+      <strong>{{ datos.trabajadores().length }}</strong>
+      <small>Personal tipo 2 registrado en Guárico.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--ok">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Jefes de centro</span>
+      <strong>{{ conteoJefes() }}</strong>
+      <small>Responsables de la coordinación local.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="feedback"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Trabajadores</span>
+      <strong>{{ conteoTrabajadores() }}</strong>
+      <small>Equipo operativo de los centros del estado.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Centros con personal</span>
+      <strong>{{ datos.centros().length }}</strong>
+      <small>Hospital Central y Ambulatorio Rural.</small>
+    </article>
+  </section>
+
+  <section class="panel" aria-label="Filtros de personal">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Filtrar registros</h2>
+        <p>Busca por nombre, cédula, profesión, correo o código profesional.</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+        Limpiar filtros
+      </button>
+    </header>
+
+    <div class="trabajadores-filtros">
+      <label class="field trabajadores-busqueda">
+        <span class="field-label">Buscar personal</span>
+        <span class="trabajadores-busqueda__control">
+          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <input
+            type="search"
+            placeholder="Ej. María, 28456710 o enfermería"
+            [value]="termino()"
+            (input)="termino.set(valor($event))"
+          />
+        </span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Centro de salud</span>
+        <select [value]="centroId()" (change)="centroId.set(valor($event))">
+          <option value="">Todos los centros</option>
+          @for (centro of datos.centros(); track centro.centro.id) {
+            <option [value]="centro.centro.id">{{ centro.centro.nombre }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="field trabajadores-rol">
+        <span class="field-label">Rol en el centro</span>
+        <div class="srs-chips" role="group" aria-label="Filtrar por rol">
+          <button
+            type="button"
+            class="srs-chip"
+            [class.is-active]="rol() === 'todos'"
+            [attr.aria-pressed]="rol() === 'todos'"
+            (click)="rol.set('todos')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="srs-chip"
+            [class.is-active]="rol() === 'jefe'"
+            [attr.aria-pressed]="rol() === 'jefe'"
+            (click)="rol.set('jefe')"
+          >
+            Jefes
+          </button>
+          <button
+            type="button"
+            class="srs-chip"
+            [class.is-active]="rol() === 'trabajador'"
+            [attr.aria-pressed]="rol() === 'trabajador'"
+            (click)="rol.set('trabajador')"
+          >
+            Trabajadores
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Registros de personal">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Registros encontrados</h2>
+        <p>{{ resultados().length }} de {{ datos.trabajadores().length }} registros visibles.</p>
+      </div>
+      <span class="srs-badge srs-badge--info">Solo consulta</span>
+    </header>
+
+    @if (resultados().length === 0) {
+      <div class="srs-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <strong>No hay registros con esos filtros</strong>
+        <p>Prueba con otro nombre, centro o rol.</p>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+          Restablecer filtros
+        </button>
+      </div>
+    } @else {
+      <div class="srs-tabla-scroll">
+        <table class="srs-tabla trabajadores-tabla">
+          <thead>
+            <tr>
+              <th scope="col">Profesional</th>
+              <th scope="col">Cédula</th>
+              <th scope="col">Profesión</th>
+              <th scope="col">Centro</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Ingreso</th>
+              <th scope="col">Estado</th>
+              <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (trabajador of resultados(); track trabajador.personal.id) {
+              <tr>
+                <td>
+                  <a
+                    class="trabajadores-persona srs-enlace-fila"
+                    [routerLink]="['/SRS/trabajadores', trabajador.personal.id]"
+                  >
+                    <span class="trabajadores-persona__avatar" aria-hidden="true">
+                      {{ trabajador.iniciales }}
+                    </span>
+                    <span class="srs-tabla__principal">
+                      <strong>{{ trabajador.personal.nombre }}</strong>
+                      <span class="srs-tabla__secundario">{{ trabajador.personal.correo }}</span>
+                    </span>
+                  </a>
+                </td>
+                <td>{{ trabajador.personal.cedula }}</td>
+                <td>{{ trabajador.profesion }}</td>
+                <td>
+                  <span class="srs-tabla__principal">
+                    <strong>{{ trabajador.centro.nombre }}</strong>
+                    <span class="srs-tabla__secundario">
+                      {{ trabajador.municipioNombre }} · {{ trabajador.parroquiaNombre }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <span class="srs-badge" [class.srs-badge--info]="trabajador.esJefe">
+                    {{ trabajador.esJefe ? 'Jefe' : 'Trabajador' }}
+                  </span>
+                </td>
+                <td>{{ trabajador.personal.ingreso | date: 'dd/MM/yyyy' }}</td>
+                <td>
+                  <span
+                    class="srs-badge"
+                    [class.srs-badge--ok]="trabajador.personal.activo"
+                    [class.srs-badge--danger]="!trabajador.personal.activo"
+                  >
+                    {{ trabajador.personal.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-sm"
+                    [routerLink]="['/SRS/trabajadores', trabajador.personal.id]"
+                  >
+                    Ver ficha
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

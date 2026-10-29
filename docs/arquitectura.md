@@ -1,6 +1,6 @@
 # Arquitectura y decisiones
 
-Última actualización: 2026-10-26
+Última actualización: 2026-10-29
 
 ## Alcance actual
 
@@ -12,8 +12,9 @@
   de esos servicios; las vistas que dependen de datos todavía ausentes (lotes, certificados, vigencia) se ajustarán
   cuando llegue el esquema completo.
 - Ya están construidos la landing (`/`), el login en tres pasos (`/login`), el placeholder de consulta (`/consulta`),
-  las vistas del master (`/master` y sus rutas hijas) y las del personal de salud (`/PS` y sus rutas hijas) con datos
-  mock. Las páginas de `/SRS` siguen siendo provisionales.
+  las vistas del master (`/master` y sus rutas hijas), las del personal de salud (`/PS` y sus rutas hijas) y las de la
+  subregión de salud (`/SRS` y sus rutas hijas) con datos mock. El certificado de la subregión se emite como vista
+  simulada; el envío por correo electrónico queda pendiente.
 
 ## Roles
 
@@ -55,6 +56,11 @@
 - `src/app/nucleo/datos/catalogos.ts`: catálogos temporales (vacunas, exámenes, profesiones, grados de instrucción, grupos étnicos, tipos de establecimiento, tipos de sangre), expuestos por `CatalogosService`. Cuando exista backend se reemplazan por las tablas `vacunas`, `profesiones`, `etnias`, `tipoSangre` y las que falten. El catálogo de tipos de establecimiento no tendrá columna: sirve solo para sugerir el nombre del centro.
 - `src/app/nucleo/datos/cuentas-acceso.ts`: cuentas de prueba con sus perfiles jefe/trabajador; replica el futuro
   `cuentas_entidad` + `personal` y las valida `SesionService`.
+- `src/app/nucleo/datos/subregion-salud.ts`: ámbito de la subregión de Guárico, solicitudes de certificado y
+  notificaciones propias del rol 3. Los ciudadanos y el personal tipo 2 se reutilizan de `master.ts`.
+- `src/app/nucleo/servicios/datos-subregion-salud.service.ts`: consolida las fichas ciudadanas (vacunas, exámenes,
+  requisitos y línea de tiempo), acota los datos al estado de la sesión y orquesta las solicitudes, decisiones,
+  emisiones y notificaciones con `signal`.
 - `src/app/nucleo/servicios/`: servicios con `signal` que leen y mutan los mocks.
 - Las vistas consumen servicios; nunca importan los arrays mock directamente.
 - El esquema real parcial está en `docs/referencias/db_schema.sql` y su lectura en `docs/diseno/modelo-datos.md`. **No se ha implementado**: los mocks siguen siendo la fuente de datos de la app.
@@ -67,7 +73,10 @@
 - **Login**: `master` para el rol 1; `cuentas_entidad` (propuesta) para el primer nivel de los roles 2 y 3, y `personal` para el perfil, validando `tipo_cuenta` y el `tipo` del centro. La subregión es una sede de `centros_salud`, no una tabla aparte.
 - **Dashboard master**: implementado con mocks; el top 10 semanal por estado se podrá calcular con `usuario_vacunas` + `centros_salud.estado_id`, mientras que los lotes y los movimientos esperan sus tablas. El mapa usa la jerarquía `estado → mcpo → parroquia`.
 - **Personal de salud**: centro de la sesión, trabajadores del centro y vacunaciones por centro. Los exámenes no están asociados a un centro.
-- **Subregión**: centros de su estado y vacunaciones agregadas; stock y certificados quedan bloqueados hasta recibir esas tablas.
+- **Subregión**: implementado con mocks para consultar personal tipo 2, fichas ciudadanas del estado, certificados y
+  notificaciones. La evaluación de requisitos usa la vigencia del catálogo de vacunas y una vigencia provisional de
+  exámenes; las tablas reales de certificados, stock, movimientos e incidencias siguen pendientes. El envío por correo
+  está deshabilitado a propósito.
 
 ## Documentación de diseño
 
@@ -125,7 +134,7 @@ src/app/
 - **Login**: se conserva el flujo de dos niveles; `cuentas_entidad` (propuesta) resuelve el primero y `personal` el segundo. Falta que el equipo de BD confirme la tabla y su nombre.
 - Decisiones que siguen abiertas en `docs/diseno/vistas.md` §10: vigencia de exámenes y vacunas, credenciales reales y geodatos del mapa.
 - Permisos por rol: el alcance funcional está descrito, falta la implementación (incluidos guards de ruta y persistencia de sesión).
-- Bocetos de `/SRS`: todavía no existen; sus páginas actuales son placeholders. Las vistas del master y de `/PS` ya
-  están implementadas con mocks en `roles/master/` y `roles/personal-salud/`, con `DatosMasterService` y
-  `DatosPersonalSaludService`.
+- Bocetos originales de `/SRS`: no existen. Las vistas se diseñaron a partir del alcance del rol y ya están implementadas
+  con mocks en `roles/subregion-salud/`; el master, `/PS` y `/SRS` usan `DatosMasterService`,
+  `DatosPersonalSaludService` y `DatosSubregionSaludService`.
 - `docs/diseno/` creció a ~4.5 MB de imágenes dentro del repo. Decidir si se versionan o se mueven a almacenamiento externo.

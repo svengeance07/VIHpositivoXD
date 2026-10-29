@@ -1,0 +1,264 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    [eyebrow]="'Subregión de Salud · ' + datos.estadoNombre"
+    [titulo]="'Bienvenido/a, ' + nombre()"
+    descripcion="Coordina el personal de los centros del estado, revisa las fichas ciudadanas y autoriza o descarta los certificados de salud."
+  >
+    <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
+      <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      <span>Buscar ciudadanos</span>
+    </a>
+    <a class="btn btn-primary" routerLink="/SRS/certificados">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span>Revisar certificados</span>
+    </a>
+  </app-srs-encabezado>
+
+  <section class="srs-metricas" aria-label="Indicadores de la subregión">
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="clipboard"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Personal tipo 2</span>
+      <strong>{{ datos.resumen().trabajadores }}</strong>
+      <small
+        >{{ datos.resumen().jefes }} jefes de centro en
+        {{ datos.resumen().centros }} centros.</small
+      >
+    </article>
+
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="filter"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Ciudadanos del estado</span>
+      <strong>{{ datos.resumen().ciudadanos }}</strong>
+      <small>{{ datos.resumen().aptos }} con los requisitos completos.</small>
+    </article>
+
+    <article class="panel srs-metrica srs-metrica--alerta">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Certificados pendientes</span>
+      <strong>{{ datos.resumen().solicitudesPendientes }}</strong>
+      <small>{{ datos.resumen().certificadosEmitidos }} emitidos en el período de prueba.</small>
+    </article>
+
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="warning"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Alertas sin leer</span>
+      <strong>{{ datos.resumen().noLeidas }}</strong>
+      <small>Notificaciones de personas del estado asignado.</small>
+    </article>
+  </section>
+
+  <section class="srs-grid srs-grid--dos">
+    <article class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Bandeja de revisión
+          </p>
+          <h2>Solicitudes por atender</h2>
+          <p>Verifica la vigencia de vacunas y exámenes antes de decidir.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" routerLink="/SRS/certificados">Ver todas</a>
+      </header>
+
+      @if (solicitudesPendientes().length === 0) {
+        <div class="srs-vacio">
+          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <strong>No hay solicitudes pendientes</strong>
+          <p>La bandeja está al día. Las nuevas solicitudes aparecerán aquí.</p>
+        </div>
+      } @else {
+        <div class="inicio-solicitudes">
+          @for (solicitud of solicitudesPendientes(); track solicitud.id) {
+            <a class="inicio-solicitud" [routerLink]="['/SRS/certificados', solicitud.id]">
+              <span class="inicio-solicitud__avatar" aria-hidden="true">
+                {{ solicitud.ficha.iniciales }}
+              </span>
+              <span class="inicio-solicitud__texto">
+                <strong>{{ solicitud.nombreCiudadano }}</strong>
+                <small>
+                  {{ solicitud.codigo }} · solicitada el
+                  {{ solicitud.fechaSolicitud | date: 'dd/MM/yyyy' }}
+                </small>
+              </span>
+              <span class="inicio-solicitud__progreso">
+                <span
+                  class="srs-badge"
+                  [class.srs-badge--ok]="solicitud.ficha.aptoCertificado"
+                  [class.srs-badge--warn]="!solicitud.ficha.aptoCertificado"
+                >
+                  {{ solicitud.ficha.requisitosCumplidos }}/{{ solicitud.ficha.requisitosTotales }}
+                  requisitos
+                </span>
+                <span
+                  class="srs-progreso"
+                  [class.srs-progreso--alerta]="!solicitud.ficha.aptoCertificado"
+                >
+                  <span
+                    [style.width.%]="solicitud.ficha.porcentajeRequisitos"
+                    aria-hidden="true"
+                  ></span>
+                </span>
+              </span>
+              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+            </a>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Vigilancia
+          </p>
+          <h2>Notificaciones recientes</h2>
+          <p>Eventos de salud y trámites de la subregión.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" routerLink="/SRS/notificaciones">Abrir bandeja</a>
+      </header>
+
+      <div class="inicio-notificaciones">
+        @for (notificacion of notificaciones(); track notificacion.id) {
+          @if (notificacion.enlace) {
+            <a
+              class="inicio-notificacion"
+              [class.is-no-leida]="!notificacion.leida"
+              [routerLink]="notificacion.enlace"
+              (click)="marcarLeida(notificacion)"
+            >
+              <span
+                class="inicio-notificacion__icono"
+                [class.inicio-notificacion__icono--alta]="notificacion.prioridad === 'alta'"
+                aria-hidden="true"
+              >
+                <ca-icon [name]="notificacion.tipo === 'esavi' ? 'warning' : 'feedback'"></ca-icon>
+              </span>
+              <span class="inicio-notificacion__texto">
+                <strong>{{ notificacion.titulo }}</strong>
+                <small>{{ notificacion.mensaje }}</small>
+                <span class="srs-tabla__secundario">
+                  {{ notificacion.fecha | date: 'dd/MM/yyyy · HH:mm' }}
+                </span>
+              </span>
+            </a>
+          } @else {
+            <div class="inicio-notificacion" [class.is-no-leida]="!notificacion.leida">
+              <span class="inicio-notificacion__icono" aria-hidden="true">
+                <ca-icon name="feedback"></ca-icon>
+              </span>
+              <span class="inicio-notificacion__texto">
+                <strong>{{ notificacion.titulo }}</strong>
+                <small>{{ notificacion.mensaje }}</small>
+              </span>
+            </div>
+          }
+        }
+      </div>
+    </article>
+  </section>
+
+  <section class="srs-grid srs-grid--dos">
+    <article class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Cobertura territorial
+          </p>
+          <h2>Centros del estado</h2>
+          <p>Personal tipo 2 distribuido en la red de Guárico.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" routerLink="/SRS/trabajadores">Ver personal</a>
+      </header>
+
+      <div class="inicio-centros">
+        @for (centro of datos.centros(); track centro.centro.id) {
+          <div class="inicio-centro">
+            <span class="inicio-centro__icono" aria-hidden="true">
+              <ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon>
+            </span>
+            <div class="inicio-centro__texto">
+              <strong>{{ centro.centro.nombre }}</strong>
+              <small>{{ centro.municipioNombre }} · {{ centro.parroquiaNombre }}</small>
+              <small>
+                Jefe: {{ centro.jefe?.nombre ?? 'Sin asignar' }} ·
+                {{ centro.trabajadores }} trabajador(es)
+              </small>
+            </div>
+            <span class="srs-badge srs-badge--ok">{{ centro.centro.codigo }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel">
+      <header class="srs-panel-cabecera">
+        <div>
+          <p class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Flujo de certificados
+          </p>
+          <h2>De la solicitud al correo</h2>
+          <p>Ruta prevista para la emisión del certificado de salud.</p>
+        </div>
+        <span class="srs-badge srs-badge--suave">Correo: próxima fase</span>
+      </header>
+
+      <ol class="inicio-flujo">
+        <li>
+          <span class="inicio-flujo__numero">1</span>
+          <div>
+            <strong>Solicitud recibida</strong>
+            <p>La subregión registra o recibe la solicitud desde la ficha ciudadana.</p>
+          </div>
+        </li>
+        <li>
+          <span class="inicio-flujo__numero">2</span>
+          <div>
+            <strong>Revisión de requisitos</strong>
+            <p>Se validan vacunas vigentes y serología reciente.</p>
+          </div>
+        </li>
+        <li>
+          <span class="inicio-flujo__numero">3</span>
+          <div>
+            <strong>Autorización o descarte</strong>
+            <p>La decisión queda registrada con su motivo y responsable.</p>
+          </div>
+        </li>
+        <li>
+          <span class="inicio-flujo__numero">4</span>
+          <div>
+            <strong>Emisión y envío</strong>
+            <p>El certificado se emite; el envío por correo se habilitará después.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="inicio-cobertura">
+        <div class="inicio-cobertura__cabecera">
+          <span>Cobertura de requisitos del estado</span>
+          <strong>{{ promedioRequisitos() }}%</strong>
+        </div>
+        <div class="srs-progreso" [class.srs-progreso--alerta]="promedioRequisitos() < 70">
+          <span [style.width.%]="promedioRequisitos()" aria-hidden="true"></span>
+        </div>
+        <small>
+          {{ datos.resumen().vacunasVencidas }} dosis vencidas identificadas en las fichas del
+          estado.
+        </small>
+      </div>
+    </article>
+  </section>
+</div>

@@ -1,0 +1,147 @@
+<div class="srs-shell">
+  <button
+    type="button"
+    class="velo"
+    [class.is-visible]="menuMovil()"
+    (click)="cerrarTodo()"
+    aria-label="Cerrar menú de navegación"
+  ></button>
+
+  <aside
+    id="barra-srs"
+    class="barra"
+    [class.is-expandida]="expandido()"
+    (mouseenter)="abrirHover()"
+    (mouseleave)="cerrarHover()"
+    (focusin)="abrirHover()"
+    (focusout)="cerrarEnfoque($event)"
+  >
+    <div class="barra__cabecera">
+      <a
+        class="marca"
+        routerLink="/SRS"
+        (click)="alNavegar()"
+        aria-label="Ir al panel de la subregión"
+      >
+        <span class="marca__logo" aria-hidden="true">SR</span>
+        <span class="barra__marca-texto">
+          <strong>Sistema V</strong>
+          <small>Subregión de Salud</small>
+        </span>
+      </a>
+
+      <button
+        type="button"
+        class="barra__pin"
+        (click)="alternarFijado()"
+        [attr.aria-pressed]="fijado()"
+        [attr.aria-label]="fijado() ? 'Soltar menú' : 'Fijar menú'"
+        [attr.title]="fijado() ? 'Soltar menú' : 'Fijar menú'"
+      >
+        <ca-icon [name]="fijado() ? 'chevron-left' : 'chevron-right'" aria-hidden="true"></ca-icon>
+      </button>
+
+      <button type="button" class="barra__cerrar" (click)="cerrarMenu()" aria-label="Cerrar menú">
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </div>
+
+    <nav class="barra__nav" aria-label="Navegación de la subregión">
+      @for (item of navegacion(); track item.ruta) {
+        <a
+          class="barra__item"
+          [routerLink]="item.ruta"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
+          [attr.title]="item.etiqueta"
+          (click)="alNavegar()"
+        >
+          <span class="barra__icono" aria-hidden="true">
+            <ca-icon [name]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></ca-icon>
+          </span>
+          <span class="barra__item-etiqueta">{{ item.etiqueta }}</span>
+          @if (item.badge) {
+            <span class="barra__item-badge">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="barra__pie">
+      <div class="usuario-pill">
+        <span class="usuario-pill__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="usuario-pill__datos">
+          <strong class="usuario-pill__nombre">{{ nombreUsuario() }}</strong>
+          <small class="usuario-pill__rol">{{ cargoUsuario() }} · {{ estadoNombre }}</small>
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-ghost barra__logout"
+        (click)="cerrarSesion()"
+        aria-label="Cerrar sesión"
+        title="Cerrar sesión"
+      >
+        <ca-icon name="log-out" aria-hidden="true"></ca-icon>
+        <span class="barra__item-etiqueta">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="srs-shell__cuerpo">
+    <header class="barra-superior" aria-label="Cabecera móvil">
+      <button
+        type="button"
+        class="barra-superior__hamburguesa"
+        (click)="abrirMenu()"
+        aria-label="Abrir menú de navegación"
+        aria-controls="barra-srs"
+        [attr.aria-expanded]="menuMovil()"
+      >
+        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+      </button>
+
+      <span class="barra-superior__titulo">
+        <strong>
+          <span class="barra-superior__nombre-completo">{{ nombreSubregion }}</span>
+          <span class="barra-superior__nombre-corto">{{ estadoNombre }}</span>
+        </strong>
+        <span class="barra-superior__badge" [class.barra-superior__badge--jefe]="esJefe()">
+          {{ esJefe() ? 'Jefe' : 'Analista' }}
+        </span>
+      </span>
+
+      <div class="barra-superior__acciones">
+        <a
+          class="btn btn-sm btn-ghost"
+          routerLink="/SRS/notificaciones"
+          [attr.title]="
+            datos.notificacionesNoLeidas() > 0
+              ? datos.notificacionesNoLeidas() + ' notificaciones sin leer'
+              : 'Notificaciones'
+          "
+          aria-label="Abrir notificaciones"
+        >
+          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          @if (datos.notificacionesNoLeidas() > 0) {
+            <span class="barra-superior__contador">{{ datos.notificacionesNoLeidas() }}</span>
+          }
+        </a>
+        <button
+          type="button"
+          class="btn btn-sm btn-ghost"
+          (click)="cerrarSesion()"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <ca-icon name="log-out" aria-hidden="true"></ca-icon>
+        </button>
+      </div>
+    </header>
+
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>

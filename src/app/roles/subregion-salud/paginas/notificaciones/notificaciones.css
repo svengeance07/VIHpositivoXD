@@ -1,0 +1,140 @@
+:host {
+  display: block;
+}
+
+.notificaciones-filtros {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.notificaciones-lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.notificacion {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+
+.notificacion.is-no-leida::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #0ea5e9, #10b981);
+}
+
+.notificacion.is-no-leida {
+  background: color-mix(in oklab, var(--color-accent) 4%, var(--glass-surface));
+}
+
+.notificacion__icono {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--info) 12%, transparent);
+  color: var(--info);
+}
+
+.notificacion__icono--alta {
+  background: color-mix(in oklab, var(--danger) 13%, transparent);
+  color: var(--danger);
+}
+
+.notificacion__icono--ok {
+  background: color-mix(in oklab, var(--ok) 13%, transparent);
+  color: var(--ok);
+}
+
+.notificacion__contenido {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.notificacion__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.notificacion__fecha {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.notificacion__no-leida {
+  color: var(--color-accent-2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.notificacion h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.notificacion p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.notificacion__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding-top: 0.45rem;
+  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 55%, transparent);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.notificacion__pie strong {
+  color: var(--text);
+  font-weight: 620;
+}
+
+.notificacion__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+@media (max-width: 560px) {
+  .notificacion {
+    gap: 0.65rem;
+  }
+
+  .notificacion__icono {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .notificacion__pie {
+    align-items: flex-start;
+  }
+
+  .notificacion__acciones {
+    width: 100%;
+    margin-left: 0;
+  }
+}

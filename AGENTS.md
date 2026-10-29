@@ -9,7 +9,7 @@
 
 ## Project structure and stage
 
-- Current stage: views and navigation only. Landing, login, the master role and `/PS` are implemented with mock data; `/SRS` and `/consulta` are placeholders. No backend, no real auth, no guards or permission enforcement yet.
+- Current stage: views and navigation only. Landing, login, the master role, `/PS` and `/SRS` are implemented with mock data; `/consulta` is a placeholder. SRS certificate email delivery is deliberately deferred. No backend, no real auth, no guards or permission enforcement yet.
 - The database schema is **reference only and partial**: `docs/referencias/db_schema.sql` (received 2026-10-25) and `docs/diseno/modelo-datos.md`. Do not create migrations, ORM models, connections, or seeders yet.
 - Each role owns its folder under `src/app/roles/`: `master` (`/master`), `personal-salud` (`/PS`), `subregion-salud` (`/SRS`), each with `shell/` and `paginas/`.
 - Shared code lives in `src/app/nucleo` (models, mock data, services) and `src/app/compartido` (reusable UI); `src/app/publico` holds landing, login and consulta.

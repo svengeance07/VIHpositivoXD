@@ -1,0 +1,330 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    eyebrow="Revisión de certificado"
+    [titulo]="'Solicitud ' + (solicitud()?.codigo ?? 'no encontrada')"
+    [descripcion]="
+      solicitud()
+        ? 'Revisa el expediente y registra la decisión de la subregión.'
+        : 'El identificador no corresponde a una solicitud de esta subregión.'
+    "
+  >
+    <a class="btn btn-ghost" routerLink="/SRS/certificados">
+      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span>Volver a certificados</span>
+    </a>
+  </app-srs-encabezado>
+
+  @if (solicitud(); as tramite) {
+    @if (exito()) {
+      <div class="srs-aviso certificado-alerta">
+        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span>{{ exito() }}</span>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="srs-aviso srs-aviso--warn certificado-alerta">
+        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <section class="panel certificado-hero">
+      <span class="certificado-hero__avatar" aria-hidden="true">{{ tramite.ficha.iniciales }}</span>
+      <div class="certificado-hero__texto">
+        <div class="certificado-hero__titulo">
+          <h2>{{ tramite.nombreCiudadano }}</h2>
+          <span
+            class="srs-badge"
+            [class.srs-badge--warn]="tramite.estado === 'solicitado'"
+            [class.srs-badge--info]="tramite.estado === 'autorizado'"
+            [class.srs-badge--ok]="tramite.estado === 'emitido'"
+            [class.srs-badge--danger]="tramite.estado === 'descartado'"
+          >
+            {{ datos.etiquetaEstadoCertificado(tramite.estado) }}
+          </span>
+          <span
+            class="srs-badge"
+            [class.srs-badge--ok]="tramite.ficha.aptoCertificado"
+            [class.srs-badge--warn]="!tramite.ficha.aptoCertificado"
+          >
+            {{ tramite.ficha.requisitosCumplidos }}/{{ tramite.ficha.requisitosTotales }}
+            requisitos
+          </span>
+        </div>
+        <p>
+          Cédula {{ tramite.cedula }} · {{ tramite.ficha.edad }} años · {{ tramite.ficha.sexo }} ·
+          {{ tramite.ficha.ubicacion }}
+        </p>
+        <small>
+          Solicitado el {{ tramite.fechaSolicitud | date: 'dd/MM/yyyy' }} por
+          {{ tramite.solicitadoPor }} · {{ tramite.correo }}
+        </small>
+      </div>
+      <a
+        class="btn btn-ghost certificado-hero__accion"
+        [routerLink]="['/SRS/ciudadanos', tramite.ciudadanoId]"
+      >
+        Ver ficha ciudadana
+      </a>
+    </section>
+
+    <section class="srs-grid srs-grid--dos">
+      <article class="panel">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Requisitos evaluados</h2>
+            <p>Vacunas obligatorias y serología vigente al momento de la revisión.</p>
+          </div>
+          <span class="srs-badge" [class.srs-badge--ok]="tramite.ficha.aptoCertificado">
+            {{ tramite.ficha.porcentajeRequisitos }}%
+          </span>
+        </header>
+
+        <div class="certificado-progreso">
+          <div class="srs-progreso" [class.srs-progreso--alerta]="!tramite.ficha.aptoCertificado">
+            <span [style.width.%]="tramite.ficha.porcentajeRequisitos" aria-hidden="true"></span>
+          </div>
+          <small>
+            {{ tramite.ficha.requisitosCumplidos }} de {{ tramite.ficha.requisitosTotales }}
+            requisitos cumplidos.
+          </small>
+        </div>
+
+        <ul class="certificado-requisitos">
+          @for (requisito of tramite.ficha.requisitos; track requisito.id) {
+            <li class="certificado-requisito">
+              <span
+                class="certificado-requisito__icono"
+                [class.certificado-requisito__icono--ok]="requisito.cumplido"
+                aria-hidden="true"
+              >
+                <ca-icon [name]="requisito.cumplido ? 'check' : 'warning'"></ca-icon>
+              </span>
+              <span class="certificado-requisito__texto">
+                <strong>{{ requisito.etiqueta }}</strong>
+                <small>{{ requisito.detalle }}</small>
+              </span>
+              <span
+                class="srs-badge"
+                [class.srs-badge--ok]="requisito.estado === 'vigente'"
+                [class.srs-badge--danger]="requisito.estado === 'vencido'"
+                [class.srs-badge--warn]="requisito.estado === 'incompleto'"
+                [class.srs-badge--suave]="requisito.estado === 'ausente'"
+              >
+                {{ datos.etiquetaRequisito(requisito.estado) }}
+              </span>
+            </li>
+          }
+        </ul>
+
+        <div class="certificado-observacion">
+          <span class="srs-dato__etiqueta">Observaciones de la solicitud</span>
+          <p>{{ tramite.observaciones }}</p>
+        </div>
+      </article>
+
+      <div class="certificado-lateral">
+        <article class="panel">
+          <header class="srs-panel-cabecera">
+            <div>
+              <h2>Decisión de la subregión</h2>
+              <p>La autorización habilita la emisión del certificado.</p>
+            </div>
+          </header>
+
+          @switch (tramite.estado) {
+            @case ('solicitado') {
+              @if (!tramite.ficha.aptoCertificado) {
+                <div class="srs-aviso srs-aviso--warn">
+                  <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                  <span>
+                    El expediente no cumple todos los requisitos. Si autorizas, quedará registrada
+                    una excepción bajo tu responsabilidad.
+                  </span>
+                </div>
+              }
+
+              <label class="field certificado-motivo">
+                <span class="field-label">Motivo u observaciones de la decisión</span>
+                <textarea
+                  rows="4"
+                  placeholder="Ej. Cumple con el esquema de vacunación y la serología exigida."
+                  [value]="motivo()"
+                  (input)="motivo.set(valor($event))"
+                ></textarea>
+                <span class="field-hint">
+                  El motivo es obligatorio para descartar la solicitud.
+                </span>
+              </label>
+
+              <div class="srs-acciones certificado-decisiones">
+                <button type="button" class="btn btn-primary" (click)="autorizar()">
+                  <ca-icon name="check" aria-hidden="true"></ca-icon>
+                  <span>Autorizar certificado</span>
+                </button>
+                <button type="button" class="btn btn-danger" (click)="descartar()">
+                  <ca-icon name="close" aria-hidden="true"></ca-icon>
+                  <span>Descartar solicitud</span>
+                </button>
+              </div>
+            }
+            @case ('autorizado') {
+              <div class="srs-aviso">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span>
+                  Solicitud autorizada por {{ tramite.revisadoPor }} el
+                  {{ tramite.fechaRevision | date: 'dd/MM/yyyy' }}. El certificado está listo para
+                  emitirse.
+                </span>
+              </div>
+              <button type="button" class="btn btn-primary certificado-emitir" (click)="emitir()">
+                <ca-icon name="download" aria-hidden="true"></ca-icon>
+                <span>Emitir certificado</span>
+              </button>
+            }
+            @case ('emitido') {
+              <div class="srs-aviso">
+                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span>
+                  Certificado emitido el {{ tramite.fechaEmision | date: 'dd/MM/yyyy' }}. La entrega
+                  por correo electrónico se habilitará en una fase posterior.
+                </span>
+              </div>
+            }
+            @case ('descartado') {
+              <div class="srs-aviso srs-aviso--warn">
+                <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                <span>
+                  Solicitud descartada por {{ tramite.revisadoPor }} el
+                  {{ tramite.fechaRevision | date: 'dd/MM/yyyy' }}.
+                </span>
+              </div>
+              <div class="certificado-motivo-final">
+                <span class="srs-dato__etiqueta">Motivo del descarte</span>
+                <p>{{ tramite.motivo }}</p>
+              </div>
+              <a class="btn btn-ghost" [routerLink]="['/SRS/ciudadanos', tramite.ciudadanoId]">
+                Revisar ficha y nueva solicitud
+              </a>
+            }
+          }
+
+          @if (tramite.motivo && tramite.estado !== 'descartado') {
+            <div class="certificado-motivo-final">
+              <span class="srs-dato__etiqueta">Motivo registrado</span>
+              <p>{{ tramite.motivo }}</p>
+            </div>
+          }
+        </article>
+
+        <article class="panel certificado-correo">
+          <header class="srs-panel-cabecera">
+            <div>
+              <h2>Envío por correo</h2>
+              <p>Destino registrado en el expediente.</p>
+            </div>
+            <span class="srs-badge srs-badge--suave">Próximamente</span>
+          </header>
+
+          <div class="srs-dato">
+            <span class="srs-dato__etiqueta">Correo del solicitante</span>
+            <span class="srs-dato__valor">{{ tramite.correo }}</span>
+          </div>
+
+          <button
+            type="button"
+            class="btn certificado-boton-correo"
+            disabled
+            title="El envío por correo se implementará en una fase posterior"
+          >
+            <ca-icon name="send" aria-hidden="true"></ca-icon>
+            <span>Enviar certificado por correo</span>
+          </button>
+
+          <small class="certificado-correo__nota">
+            La acción está deshabilitada a propósito. Primero se emitirá el documento y después se
+            integrará el servicio de correo.
+          </small>
+        </article>
+      </div>
+    </section>
+
+    @if (tramite.estado === 'autorizado' || tramite.estado === 'emitido') {
+      <section class="panel certificado-vista-previa">
+        <header class="srs-panel-cabecera">
+          <div>
+            <h2>Vista previa del certificado</h2>
+            <p>Representación de prototipo; todavía no genera un PDF firmado.</p>
+          </div>
+          <span class="srs-badge srs-badge--ok">{{
+            datos.etiquetaEstadoCertificado(tramite.estado)
+          }}</span>
+        </header>
+
+        <article class="certificado-documento">
+          <p class="certificado-documento__marca">Sistema V · Subregión de Salud Guárico</p>
+          <h2>Certificado de Salud</h2>
+          <p class="certificado-documento__intro">
+            Se hace constar que la persona identificada a continuación cumple con los requisitos
+            sanitarios evaluados por la Subregión de Salud del estado Guárico.
+          </p>
+
+          <dl class="certificado-documento__datos">
+            <div>
+              <dt>Nombre y apellido</dt>
+              <dd>{{ tramite.nombreCiudadano }}</dd>
+            </div>
+            <div>
+              <dt>Cédula de identidad</dt>
+              <dd>{{ tramite.cedula }}</dd>
+            </div>
+            <div>
+              <dt>Código del certificado</dt>
+              <dd>{{ tramite.codigo }}</dd>
+            </div>
+            <div>
+              <dt>Fecha de emisión</dt>
+              <dd>
+                {{
+                  tramite.fechaEmision
+                    ? (tramite.fechaEmision | date: 'dd/MM/yyyy')
+                    : 'Pendiente de emisión'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Requisitos validados</dt>
+              <dd>
+                {{ tramite.ficha.requisitosCumplidos }} de {{ tramite.ficha.requisitosTotales }}
+              </dd>
+            </div>
+            <div>
+              <dt>Revisado por</dt>
+              <dd>{{ tramite.revisadoPor }}</dd>
+            </div>
+          </dl>
+
+          <div class="certificado-documento__firma">
+            <span></span>
+            <small>Firma de la autoridad sanitaria</small>
+          </div>
+
+          <p class="certificado-documento__nota">
+            Documento simulado sin validez legal. El envío por correo electrónico aún no está
+            implementado.
+          </p>
+        </article>
+      </section>
+    }
+  } @else {
+    <section class="panel">
+      <div class="srs-vacio">
+        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <strong>Solicitud no encontrada</strong>
+        <p>No existe un certificado con ese identificador en la subregión.</p>
+        <a class="btn btn-primary" routerLink="/SRS/certificados">Volver a la bandeja</a>
+      </div>
+    </section>
+  }
+</div>

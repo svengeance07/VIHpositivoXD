@@ -1,0 +1,228 @@
+<div class="srs-pagina">
+  <app-srs-encabezado
+    [eyebrow]="'Ciudadanos · ' + datos.estadoNombre"
+    titulo="Búsqueda de ciudadanos"
+    descripcion="Localiza una ficha del estado, revisa todas sus vacunas y exámenes, y evalúa si cumple los requisitos del certificado de salud."
+  >
+    <span class="srs-badge srs-badge--suave">{{ datos.ciudadanos().length }} fichas</span>
+    <a class="btn btn-primary" routerLink="/SRS/certificados">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span>Ver certificados</span>
+    </a>
+  </app-srs-encabezado>
+
+  <section class="srs-metricas" aria-label="Resumen de ciudadanos">
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="filter"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Fichas del estado</span>
+      <strong>{{ conteos().todos }}</strong>
+      <small>Ciudadanos registrados en Guárico.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--ok">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="check"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Aptos para certificado</span>
+      <strong>{{ conteos().aptos }}</strong>
+      <small>Cumplen todos los requisitos evaluados.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--alerta">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="warning"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Con requisitos vencidos</span>
+      <strong>{{ conteos().vencidos }}</strong>
+      <small>Tienen vacunas o exámenes fuera de vigencia.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="clipboard"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Faltan requisitos</span>
+      <strong>{{ conteos().incompletos }}</strong>
+      <small>Sin vencimientos, pero con esquema o serología pendiente.</small>
+    </article>
+  </section>
+
+  <section class="panel" aria-label="Filtros de ciudadanos">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Buscar en las fichas del estado</h2>
+        <p>Escribe un nombre, cédula, correo o ubicación para acotar los resultados.</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">Limpiar</button>
+    </header>
+
+    <div class="ciudadanos-filtros">
+      <label class="field ciudadanos-busqueda">
+        <span class="field-label">Buscar ciudadano</span>
+        <span class="ciudadanos-busqueda__control">
+          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <input
+            type="search"
+            placeholder="Ej. Génesis, 26548971 o San Juan"
+            [value]="termino()"
+            (input)="termino.set(valor($event))"
+          />
+        </span>
+      </label>
+
+      <div class="srs-chips" role="group" aria-label="Filtrar por estado de requisitos">
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'todos'"
+          [attr.aria-pressed]="filtro() === 'todos'"
+          (click)="filtro.set('todos')"
+        >
+          Todos <span class="srs-chip__conteo">{{ conteos().todos }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'aptos'"
+          [attr.aria-pressed]="filtro() === 'aptos'"
+          (click)="filtro.set('aptos')"
+        >
+          Aptos <span class="srs-chip__conteo">{{ conteos().aptos }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'vencidos'"
+          [attr.aria-pressed]="filtro() === 'vencidos'"
+          (click)="filtro.set('vencidos')"
+        >
+          Vencidos <span class="srs-chip__conteo">{{ conteos().vencidos }}</span>
+        </button>
+        <button
+          type="button"
+          class="srs-chip"
+          [class.is-active]="filtro() === 'incompletos'"
+          [attr.aria-pressed]="filtro() === 'incompletos'"
+          (click)="filtro.set('incompletos')"
+        >
+          Incompletos <span class="srs-chip__conteo">{{ conteos().incompletos }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Resultados de ciudadanos">
+    <header class="srs-panel-cabecera">
+      <div>
+        <h2>Fichas encontradas</h2>
+        <p>{{ resultados().length }} de {{ conteos().todos }} fichas visibles en el estado.</p>
+      </div>
+      <span class="srs-badge srs-badge--info">Datos del prototipo</span>
+    </header>
+
+    @if (resultados().length === 0) {
+      <div class="srs-vacio">
+        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <strong>No hay fichas con esos filtros</strong>
+        <p>Prueba con otro nombre, cédula o criterio de requisitos.</p>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
+          Restablecer búsqueda
+        </button>
+      </div>
+    } @else {
+      <div class="srs-tabla-scroll">
+        <table class="srs-tabla ciudadanos-tabla">
+          <thead>
+            <tr>
+              <th scope="col">Ciudadano</th>
+              <th scope="col">Cédula</th>
+              <th scope="col">Edad / sexo</th>
+              <th scope="col">Ubicación</th>
+              <th scope="col">Vacunas</th>
+              <th scope="col">Exámenes</th>
+              <th scope="col">Requisitos</th>
+              <th scope="col">Certificado</th>
+              <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.ficha.ciudadano.id) {
+              <tr>
+                <td>
+                  <a
+                    class="ciudadanos-persona srs-enlace-fila"
+                    [routerLink]="['/SRS/ciudadanos', fila.ficha.ciudadano.id]"
+                  >
+                    <span class="ciudadanos-persona__avatar" aria-hidden="true">
+                      {{ fila.ficha.iniciales }}
+                    </span>
+                    <span class="srs-tabla__principal">
+                      <strong>{{ fila.ficha.nombre }}</strong>
+                      <span class="srs-tabla__secundario">{{ fila.ficha.correo }}</span>
+                    </span>
+                  </a>
+                </td>
+                <td>{{ fila.ficha.ciudadano.cedula }}</td>
+                <td>{{ fila.ficha.edad }} años · {{ fila.ficha.sexo }}</td>
+                <td class="ciudadanos-ubicacion">{{ fila.ficha.ubicacion }}</td>
+                <td>
+                  <span class="srs-tabla__principal">
+                    <strong>{{ fila.ficha.vacunas.length }} aplicadas</strong>
+                    <span class="srs-tabla__secundario">
+                      {{ fila.ficha.vacunasVencidas }} vencida(s)
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <span class="srs-tabla__principal">
+                    <strong>{{ fila.ficha.examenes.length }} registrados</strong>
+                    <span class="srs-tabla__secundario">
+                      {{ fila.ficha.examenesVencidos }} vencido(s)
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <div class="ciudadanos-requisitos">
+                    <span class="srs-badge" [class.srs-badge--ok]="fila.ficha.aptoCertificado">
+                      {{ fila.ficha.requisitosCumplidos }}/{{ fila.ficha.requisitosTotales }}
+                    </span>
+                    <span
+                      class="srs-progreso"
+                      [class.srs-progreso--alerta]="!fila.ficha.aptoCertificado"
+                    >
+                      <span
+                        [style.width.%]="fila.ficha.porcentajeRequisitos"
+                        aria-hidden="true"
+                      ></span>
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  @if (fila.solicitud; as solicitud) {
+                    <span
+                      class="srs-badge"
+                      [class.srs-badge--ok]="solicitud.estado === 'emitido'"
+                      [class.srs-badge--info]="solicitud.estado === 'autorizado'"
+                      [class.srs-badge--warn]="solicitud.estado === 'solicitado'"
+                    >
+                      {{ datos.etiquetaEstadoCertificado(solicitud.estado) }}
+                    </span>
+                  } @else {
+                    <span class="srs-badge srs-badge--suave">Sin solicitud</span>
+                  }
+                </td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-sm"
+                    [routerLink]="['/SRS/ciudadanos', fila.ficha.ciudadano.id]"
+                  >
+                    Ver ficha
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
