@@ -187,8 +187,8 @@
               <div class="srs-aviso">
                 <ca-icon name="check" aria-hidden="true"></ca-icon>
                 <span>
-                  Certificado emitido el {{ tramite.fechaEmision | date: 'dd/MM/yyyy' }}. La entrega
-                  por correo electrónico se habilitará en una fase posterior.
+                  Certificado emitido el {{ tramite.fechaEmision | date: 'dd/MM/yyyy' }}. El
+                  ciudadano puede solicitar el envío desde la consulta pública.
                 </span>
               </div>
             }
@@ -224,7 +224,11 @@
               <h2>Envío por correo</h2>
               <p>Destino registrado en el expediente.</p>
             </div>
-            <span class="srs-badge srs-badge--suave">Próximamente</span>
+            @if (tramite.correoEnviado) {
+              <span class="srs-badge srs-badge--ok">Envío solicitado</span>
+            } @else {
+              <span class="srs-badge srs-badge--suave">Envío ciudadano</span>
+            }
           </header>
 
           <div class="srs-dato">
@@ -236,15 +240,20 @@
             type="button"
             class="btn certificado-boton-correo"
             disabled
-            title="El envío por correo se implementará en una fase posterior"
+            title="El envío se solicita desde la consulta pública ciudadana"
           >
             <ca-icon name="send" aria-hidden="true"></ca-icon>
-            <span>Enviar certificado por correo</span>
+            <span>Envío desde la consulta pública</span>
           </button>
 
           <small class="certificado-correo__nota">
-            La acción está deshabilitada a propósito. Primero se emitirá el documento y después se
-            integrará el servicio de correo.
+            @if (tramite.correoEnviado) {
+              El ciudadano ya solicitó el envío desde <strong>/consulta</strong>. El correo es
+              simulado y no se pide código de verificación.
+            } @else {
+              El ciudadano solicita el envío desde <strong>/consulta</strong>. En este prototipo el
+              correo no se envía realmente y no se pide código de verificación.
+            }
           </small>
         </article>
       </div>
@@ -311,8 +320,8 @@
           </div>
 
           <p class="certificado-documento__nota">
-            Documento simulado sin validez legal. El envío por correo electrónico aún no está
-            implementado.
+            Documento simulado sin validez legal. El envío se solicita desde la consulta pública y
+            tampoco genera un correo real en este prototipo.
           </p>
         </article>
       </section>

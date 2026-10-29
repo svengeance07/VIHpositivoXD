@@ -1,59 +1,71 @@
 # Modelo de datos
 
-Última actualización: 2026-10-25
-Estado: **esquema real parcial**. Documento de diseño; **no implementado**.
+Última actualización: 2026-10-29
+Estado: **esquema de trabajo, todavía no implementado**.
 
-> Fuente única: [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql), recibido el
-> 2026-10-25. Si este documento y el SQL difieren, manda el SQL.
+> Fuente de verdad: [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql). Ese archivo
+> parte de las **16 tablas recibidas el 2026-10-25** y agrega, al final, las extensiones
+> propuestas por el prototipo. La copia fiel del script recibido se conserva en
+> [`db_schema_original_2026-10-25.sql`](../referencias/db_schema_original_2026-10-25.sql).
 >
-> El script es **parcial**: faltan tablas que las vistas ya necesitan. Las ausencias se
-> registran como pendientes de recibir, no como decisiones de producto.
+> No hay backend, migraciones, ORM, conexión a base de datos ni datos reales. Este documento
+> describe el diseño objetivo y la correspondencia con los mocks; no se ejecuta nada todavía.
 >
-> No hay backend, migraciones, ORM ni conexión a base de datos. Este documento sirve para
-> alinear el diseño de vistas y preparar la futura capa de servicios; no se implementa nada
-> todavía.
+> Las tablas de lotes/stock, movimientos e incidencias siguen sin recibirse. No se inventan
+> sus columnas definitivas.
 
 ## 1. Resumen
 
-- Motor probable: MySQL o MariaDB (`AUTO_INCREMENT`, `JSON`, `TEXT`).
-- **16 tablas recibidas** de ciudadanía, personal, centros, geografía y catálogos clínicos,
-  más **1 tabla propuesta** (`cuentas_entidad`) para el login de entidad. La propuesta no está
-  en el script recibido.
+- Motor probable: MySQL o MariaDB (`AUTO_INCREMENT`, `JSON`, `TEXT`, `ENUM`).
+- **16 tablas recibidas** de ciudadanía, personal, centros, geografía y catálogos clínicos.
+- **5 tablas propuestas** para completar los flujos de esta etapa: `cuentas_entidad`,
+  `certificados_salud`, `notificaciones_srs`, `certificado_envios` y `consultas_publicas`.
 - **`usuarios` es la tabla de ciudadanos**, no la de cuentas. Las cuentas internas están en
-  `personal` (roles 2 y 3), `master` (rol 1) y la cuenta de entidad propuesta.
-- **No existe una tabla `ciudadano`**: el ciudadano se arma con `usuarios` +
-  `usuario_telefonos` + `usuario_residencias` + catálogos.
-- **No existe una tabla `subregion`**: la sede de subregión será una fila de
-  `centros_salud` con un campo `tipo` que hay que agregar. Habrá una por estado.
-- `personal.centro_id` apunta siempre a un centro o a una sede de subregión. El campo
-  `personal.tipo_cuenta` (2 o 3) debe coincidir con el tipo de centro y con el login elegido.
-- **Pendiente de recibir**: lotes/stock, certificados, movimientos, búsquedas e incidencias.
-- No hay marcas de tiempo, `activo`, índices explícitos ni restricciones `UNIQUE` en el script. Son
-  requisitos de implementación, no campos que ya existan, salvo las columnas acordadas en la
-  tabla siguiente.
+  `personal` (roles 2 y 3), `master` (rol 1) y `cuentas_entidad`.
+- **No existe una tabla `ciudadano`**: la ficha se arma con `usuarios` + `usuario_telefonos` +
+  `usuario_residencias` + catálogos clínicos.
+- **No existe una tabla `subregion`**: la sede de subregión es una fila de `centros_salud` con
+  `tipo = 3`. Hay una por estado.
+- `personal.tipo_cuenta` (2 o 3) debe coincidir con `centros_salud.tipo` y con el login elegido.
+- La bandeja de la subregión solo recibe notificaciones de **solicitudes de certificado que ya
+  cumplen todos los requisitos**. No hay avisos por vacunas o exámenes vencidos, ni por ESAVI,
+  ni notificaciones de sistema.
+- La consulta pública no pide sesión ni código de verificación en esta etapa. Los datos clínicos
+  son de **solo lectura**; el envío del certificado al correo es una simulación.
+- Siguen pendientes de recibir: lotes/stock, movimientos, búsquedas históricas del master e
+  incidencias.
 
 ### Decisiones confirmadas el 2026-10-25
 
 | Tema                    | Decisión                                                                                                                               |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Alcance del script      | Es **parcial**. Faltan tablas que se agregarán después.                                                                                |
-| Subregión               | Es una sede dentro de `centros_salud` con un campo `tipo` (a agregar); una por estado.                                                 |
+| Subregión               | Es una sede dentro de `centros_salud` con `tipo = 3`; una por estado.                                                                  |
 | Tipo de centro          | `centros_salud.tipo` solo vale **2 (centro)** o **3 (sede de subregión)**. No se modela hospital/ambulatorio/CDI: el nombre lo indica. |
 | Personal de subregión   | Es `personal` con `tipo_cuenta = 3` y `centro_id` apuntando a la sede de subregión.                                                    |
 | Validación del login    | El tipo de cuenta elegido debe coincidir con `personal.tipo_cuenta`; el master se valida aparte.                                       |
-| Login de entidad        | Se conserva el flujo de dos niveles con una tabla propuesta `cuentas_entidad`: credenciales de la entidad, `centro_id` y `jefe_id`.    |
-| Jefe del centro         | Hay **un solo jefe por centro o sede**. Se deriva de `centros_salud.encargado_id`; no hay `tipo_empleado`.                             |
-| Sexo del ciudadano      | Se agregará a `usuarios`.                                                                                                              |
-| Fecha de registro       | Se agregará `usuarios.creado_en` para el filtro del master.                                                                            |
-| Profesión del ciudadano | Se pide en el alta. Si no tiene, se selecciona la profesión **"Desempleado"**; `profesion_id` sigue siendo obligatorio.                |
+| Login de entidad        | Dos niveles: `cuentas_entidad` (credenciales de la entidad) y el perfil de `personal` elegido.                                         |
+| Jefe del centro         | Hay **un solo jefe por centro o sede**. Se deriva de `centros_salud.encargado_id`.                                                     |
+| Sexo del ciudadano      | Se agrega a `usuarios` como `ENUM('F','M','otro')`.                                                                                    |
+| Fecha de registro       | Se agrega `usuarios.creado_en` para el filtro del master.                                                                              |
+| Profesión del ciudadano | Se pide en el alta. Si no tiene, se selecciona **"Desempleado"**; `profesion_id` sigue siendo obligatorio.                             |
 | Saludo del master       | El dashboard saluda con `master.nombre_usuario`; no se agrega `master.nombre`.                                                         |
+
+### Decisiones confirmadas el 2026-10-29
+
+| Tema                           | Decisión                                                                                                                                            |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Notificaciones de la subregión | Solo se crean cuando una solicitud de certificado reúne todos los requisitos y queda lista para revisión.                                           |
+| Avisos clínicos                | Los vencimientos de vacunas/exámenes y los ESAVI **no** generan notificaciones en esta etapa.                                                       |
+| Correo del certificado         | La consulta pública permite simular el envío solo si el certificado está `autorizado` o `emitido`. No se implementa código de verificación todavía. |
+| Consulta pública               | Busca por cédula en `usuarios`, muestra datos personales y el estado del certificado. El detalle clínico sensible no se expone.                     |
+| Esquema                        | Las extensiones se agregan al final de `db_schema.sql`; el archivo original recibido se conserva intacto y fechado.                                 |
 
 ## 2. Diagrama del esquema y la propuesta
 
-Solo se dibujan las claves foráneas declaradas, salvo `cuentas_entidad`, que es una **propuesta**
-para resolver el login y todavía no está en el script. La relación `centros_salud.encargado_id →
-personal.id` también es lógica: **el script no la declara** y además crea una dependencia circular
-(centro necesita encargado, personal necesita centro).
+Solo se dibujan las relaciones declaradas por el SQL de trabajo. La relación
+`centros_salud.encargado_id → personal.id` sigue siendo lógica: el script no la declara y crea una
+dependencia circular (el centro necesita encargado y el personal necesita centro).
 
 ```mermaid
 erDiagram
@@ -85,9 +97,18 @@ erDiagram
     usuarios ||--o{ usuario_vacunas : recibe
     vacunas ||--o{ usuario_vacunas : aplica
     centros_salud ||--o{ usuario_vacunas : registra
+    personal ||--o{ usuario_vacunas : aplica
 
     usuarios ||--o{ usuario_examenes : posee
     examenes ||--o{ usuario_examenes : realiza
+    personal ||--o{ usuario_examenes : registra
+
+    usuarios ||--o{ certificados_salud : solicita
+    personal ||--o{ certificados_salud : revisa
+    certificados_salud ||--o{ notificaciones_srs : avisa
+    centros_salud ||--o{ notificaciones_srs : recibe
+    certificados_salud ||--o{ certificado_envios : envia
+    usuarios ||--o{ consultas_publicas : consulta
 ```
 
 ## 3. Tablas
@@ -96,33 +117,28 @@ erDiagram
 
 #### `usuarios`
 
-| Campo          | Tipo         | Nulo | Relación / nota                                       |
-| -------------- | ------------ | ---- | ----------------------------------------------------- |
-| `id`           | INT UNSIGNED | NO   | PK autoincremental                                    |
-| `nombre1`      | VARCHAR(255) | NO   | Primer nombre                                         |
-| `nombre2`      | VARCHAR(255) | NO   | Segundo nombre; la ficha lo trata como opcional       |
-| `apellido1`    | VARCHAR(255) | NO   | Primer apellido                                       |
-| `apellido2`    | VARCHAR(255) | NO   | Segundo apellido; la ficha lo trata como opcional     |
-| `cedula`       | BIGINT       | NO   | Identificador público; **sin `UNIQUE`**               |
-| `nacimiento`   | DATE         | NO   | Habilita el filtro por rango de edad                  |
-| `sangre_id`    | INT          | NO   | FK `tipoSangre.id`                                    |
-| `estatura`     | INT          | NO   | Unidad por confirmar; asumir centímetros              |
-| `etnia_id`     | INT          | SÍ   | FK `etnias.id`; nulo si no pertenece a un pueblo      |
-| `correo`       | VARCHAR(255) | NO   | Destino del código de verificación; **sin `UNIQUE`**  |
-| `profesion_id` | INT          | NO   | FK `profesiones.id`; **la ficha pública no la pedía** |
+| Campo          | Tipo                 | Nulo | Relación / nota                                              |
+| -------------- | -------------------- | ---- | ------------------------------------------------------------ |
+| `id`           | INT UNSIGNED         | NO   | PK autoincremental                                           |
+| `nombre1`      | VARCHAR(255)         | NO   | Primer nombre                                                |
+| `nombre2`      | VARCHAR(255)         | NO   | Segundo nombre; la ficha lo trata como opcional              |
+| `apellido1`    | VARCHAR(255)         | NO   | Primer apellido                                              |
+| `apellido2`    | VARCHAR(255)         | NO   | Segundo apellido; la ficha lo trata como opcional            |
+| `cedula`       | BIGINT               | NO   | Identificador público; **UNIQUE** en el esquema de trabajo   |
+| `nacimiento`   | DATE                 | NO   | Habilita el filtro por rango de edad                         |
+| `sangre_id`    | INT                  | NO   | FK `tipoSangre.id`                                           |
+| `estatura`     | INT                  | NO   | Unidad por confirmar; asumir centímetros                     |
+| `etnia_id`     | INT                  | SÍ   | FK `etnias.id`; nulo si no pertenece a un pueblo             |
+| `correo`       | VARCHAR(255)         | NO   | Destino del certificado; **UNIQUE** en el esquema de trabajo |
+| `profesion_id` | INT                  | NO   | FK `profesiones.id`                                          |
+| `sexo`         | ENUM('F','M','otro') | NO   | Agregado; filtro de búsqueda y regla clínica                 |
+| `creado_en`    | DATETIME             | NO   | Agregado; fecha de registro                                  |
+| `activo`       | TINYINT(1)           | NO   | Agregado; baja lógica                                        |
 
-Observaciones:
-
-- **Falta `sexo`**: se agregará (decisión del 2026-10-25). Es filtro de búsqueda y condición
-  del Papanicolau. Falta definir el tipo (`ENUM`, `CHAR(1)` o catálogo).
-- **Falta `creado_en` o `fecha_registro`**: se agregará `creado_en` para el filtro "fecha de
-  registro" de `/master/busqueda`.
-- **Falta `activo`** si el master debe listar "usuarios activos".
-- `nombre2`, `apellido2`, `estatura`, `sangre_id` y `profesion_id` son obligatorios en SQL.
-  El alta de ciudadano pedirá todos; para quien no tenga profesión, el catálogo `profesiones`
-  debe incluir **"Desempleado"** y el formulario la selecciona por defecto. No se hace nullable.
-- `cedula` es numérica: normalizar la entrada y agregar índice único. No confundir con el
-  formato visual `V-12345678`.
+- `nombre2`, `apellido2`, `estatura`, `sangre_id` y `profesion_id` son obligatorios en SQL. El
+  alta pide todos; para quien no tenga profesión se usa la fila **"Desempleado"** del catálogo.
+- `cedula` se normaliza a dígitos. No confundir con el formato visual `V-12345678`.
+- El correo es obligatorio y único porque es el destino del certificado simulado.
 
 #### `usuario_telefonos`
 
@@ -132,22 +148,24 @@ Observaciones:
 | `telefono`   | VARCHAR(255) | NO   | Teléfono                               |
 | `usuario_id` | INT          | SÍ   | FK `usuarios.id`; **debería ser `NO`** |
 
-Un ciudadano puede tener varios teléfonos. La ficha debe mostrar la lista completa.
+Un ciudadano puede tener varios teléfonos. La ficha muestra el primero como contacto principal y
+reserva la lista completa para una vista de detalle. El índice por `usuario_id` ya está propuesto.
 
 #### `usuario_residencias`
 
-| Campo          | Tipo         | Nulo | Relación / nota          |
-| -------------- | ------------ | ---- | ------------------------ |
-| `id`           | INT UNSIGNED | NO   | PK                       |
-| `estado_id`    | INT          | NO   | FK `estado.id`           |
-| `mcpo_id`      | INT          | NO   | FK `mcpo.id` (municipio) |
-| `parroquia_id` | INT          | NO   | FK `parroquia.id`        |
-| `direccion`    | VARCHAR(255) | NO   | Dirección exacta         |
-| `usuario_id`   | INT          | NO   | FK `usuarios.id`         |
+| Campo          | Tipo         | Nulo | Relación / nota             |
+| -------------- | ------------ | ---- | --------------------------- |
+| `id`           | INT UNSIGNED | NO   | PK                          |
+| `estado_id`    | INT          | NO   | FK `estado.id`              |
+| `mcpo_id`      | INT          | NO   | FK `mcpo.id` (municipio)    |
+| `parroquia_id` | INT          | NO   | FK `parroquia.id`           |
+| `direccion`    | VARCHAR(255) | NO   | Dirección exacta            |
+| `usuario_id`   | INT          | NO   | FK `usuarios.id`            |
+| `es_principal` | TINYINT(1)   | NO   | Agregado; residencia actual |
 
-No hay marca de residencia actual ni historial. Si un ciudadano cambia de dirección, hay que
-decidir si se toma la última fila, si se agrega `activa`/`principal` o si se conserva el
-historial. Afecta a la ficha pública y al filtro por ubicación.
+`es_principal` resuelve provisionalmente la duda de residencia actual. El esquema todavía no
+impone una sola fila principal por usuario; esa regla queda para la aplicación o para una
+restricción parcial cuando se elija el motor definitivo.
 
 #### `usuario_vacunas`
 
@@ -160,16 +178,10 @@ historial. Afecta a la ficha pública y al filtro por ubicación.
 | `fecha_aplicacion` | DATE         | NO   | Insumo del top 10 semanal                      |
 | `lote`             | VARCHAR(255) | NO   | **Texto libre**, no es FK a una tabla de lotes |
 | `centro_id`        | INT          | NO   | FK `centros_salud.id`                          |
+| `personal_id`      | INT UNSIGNED | SÍ   | Agregado; quién aplicó o registró              |
 
-Observaciones:
-
-- No guarda **quién** aplicó la vacuna (`personal_id`). El boceto habla de "registrar
-  vacunaciones"; para auditar hará falta.
-- No hay vigencia ni dosis requeridas: eso no está en `vacunas` ni aquí.
-- El campo `lote` no permite reconstruir stock, estado ni destino de un cargamento. La vista
-  `/master/vacunas` necesita una tabla de lotes aparte.
-- En la ficha pública no se debe mostrar el lote ni el centro si se decide que son datos
-  internos (decisión 11 de `vistas.md`).
+El campo `lote` no permite reconstruir stock, estado ni destino de un cargamento. La vista
+`/master/vacunas` sigue necesitando una tabla de lotes aparte.
 
 #### `usuario_examenes`
 
@@ -181,33 +193,30 @@ Observaciones:
 | `fecha_realizacion`     | DATE         | NO   | Insumo de "vigente"                        |
 | `resultado_cualitativo` | TEXT         | SÍ   | Texto libre                                |
 | `resultado_json`        | JSON         | NO   | Resultado estructurado; contrato pendiente |
+| `personal_id`           | INT UNSIGNED | SÍ   | Agregado; quién registró                   |
+| `laboratorio`           | VARCHAR(255) | SÍ   | Agregado                                   |
+| `adjunto_url`           | VARCHAR(512) | SÍ   | Agregado; referencia al documento          |
 
-Observaciones:
-
-- No hay `laboratorio`, `adjunto`, `personal_id` que registró, `sensible` ni regla de
-  vigencia.
-- `resultado_json` es obligatorio, pero no está definido su contenido. Hay que acordar un
-  contrato antes de mapearlo a TypeScript.
-- La sensibilidad de VIH/VDRL no está en el esquema. Debe resolverse con una columna en
-  `examenes`, una tabla de configuración o una regla de aplicación; el público no puede ver
-  el detalle (decisión 11).
+`resultado_json` es obligatorio, pero su contenido sigue sin contrato. La marca de examen
+sensible vive en `examenes.sensible`, no en cada fila del ciudadano.
 
 ### 3.2 Catálogos clínicos
 
-| Tabla         | Campos                        | Observaciones                                                         |
-| ------------- | ----------------------------- | --------------------------------------------------------------------- |
-| `tipoSangre`  | `id`, `tipo`                  | Catálogo ABO/Rh; nombre en camelCase, a estandarizar                  |
-| `etnias`      | `id`, `nombre`                | Catálogo de pueblos indígenas; fuente definitiva pendiente            |
-| `vacunas`     | `id`, `nombre`, `descripcion` | Faltan dosis requeridas, vigencia y obligatoriedad de certificado     |
-| `examenes`    | `id`, `nombre`, `categoria`   | Categoría y prueba en una sola tabla (opción 1 del modelo preliminar) |
-| `profesiones` | `id`, `nombre`                | Se usa en ciudadanos y personal; debe incluir **"Desempleado"**       |
+| Tabla         | Campos propuestos                                                                              | Observaciones                                        |
+| ------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `tipoSangre`  | `id`, `tipo`                                                                                   | Catálogo ABO/Rh; nombre en camelCase, a estandarizar |
+| `etnias`      | `id`, `nombre`                                                                                 | Fuente definitiva pendiente                          |
+| `vacunas`     | `id`, `nombre`, `descripcion`, `dosis_requeridas`, `vigencia_meses`, `obligatoria_certificado` | Reglas provisionales del certificado                 |
+| `examenes`    | `id`, `nombre`, `categoria`, `vigencia_meses`, `sensible`, `obligatorio_certificado`           | Categoría y prueba en una sola tabla                 |
+| `profesiones` | `id`, `nombre`                                                                                 | Debe incluir **"Desempleado"**                       |
 
-- `vacunas` y `examenes` son catálogos administrables, no listas fijas en código.
-- La categoría de `examenes` es texto libre; conviene acotarla a un catálogo o `ENUM`.
-- Los IDs reales son enteros; los mocks actuales usan strings (`'td'`, `'a+'`). El mapeo
-  futuro tendrá que convertir ambos sentidos.
-- `profesiones` necesita una fila **"Desempleado"** para el alta de ciudadanos que no tienen
-  profesión. No es un valor nullable: `usuarios.profesion_id` sigue siendo obligatorio.
+- `vacunas.vigencia_meses` acepta `NULL` para una vacuna de vigencia permanente.
+- `examenes.vigencia_meses` tiene valor por defecto 12; es una regla de prototipo que debe
+  validar el equipo de salud.
+- `obligatoria_certificado` y `obligatorio_certificado` permiten calcular los requisitos sin una
+  tabla puente. La app mantiene además las listas de `nucleo/datos/subregion-salud.ts`.
+- Los IDs reales son enteros; los mocks usan strings (`'td'`, `'a+'`). El mapeo futuro convierte
+  ambos sentidos.
 
 ### 3.3 Geografía
 
@@ -217,39 +226,33 @@ Observaciones:
 | `mcpo`      | `id`, `nombre`, `estado_id` | Municipio; `estado_id` obligatorio            |
 | `parroquia` | `id`, `nombre`, `mcpo_id`   | `mcpo_id` **nullable**; conviene hacerlo `NO` |
 
-La jerarquía `estado → municipio → parroquia` es única para todo el sistema. Debe venir de
-una fuente oficial y cargarse una sola vez; no repetir listas por pantalla. `mcpo` es una
-abreviatura de municipio y el nombre de tabla no es ideal, pero se mantiene hasta que el
-equipo de BD decida renombrarlo.
+La jerarquía `estado → municipio → parroquia` es única para todo el sistema. Debe venir de una
+fuente oficial y cargarse una sola vez.
 
 ### 3.4 Centros, personal y cuentas
 
 #### `centros_salud`
 
-| Campo          | Tipo         | Nulo | Relación / nota                                 |
-| -------------- | ------------ | ---- | ----------------------------------------------- |
-| `id`           | INT UNSIGNED | NO   | PK                                              |
-| `estado_id`    | INT          | NO   | FK `estado.id`                                  |
-| `mcpo_id`      | INT          | SÍ   | FK `mcpo.id`                                    |
-| `parroquia_id` | INT          | SÍ   | FK `parroquia.id`                               |
-| `nombre`       | VARCHAR(255) | NO   | Nombre del centro o de la sede de subregión     |
-| `codigo`       | VARCHAR(255) | NO   | Código visible; **sin `UNIQUE`**                |
-| `encargado_id` | INT          | NO   | **Sin FK declarada**; lógicamente `personal.id` |
+| Campo          | Tipo             | Nulo | Relación / nota                                     |
+| -------------- | ---------------- | ---- | --------------------------------------------------- |
+| `id`           | INT UNSIGNED     | NO   | PK                                                  |
+| `estado_id`    | INT              | NO   | FK `estado.id`                                      |
+| `mcpo_id`      | INT              | SÍ   | FK `mcpo.id`                                        |
+| `parroquia_id` | INT              | SÍ   | FK `parroquia.id`                                   |
+| `nombre`       | VARCHAR(255)     | NO   | Nombre del centro o de la sede de subregión         |
+| `codigo`       | VARCHAR(255)     | NO   | Código visible; **UNIQUE** en el esquema de trabajo |
+| `encargado_id` | INT              | NO   | **Sin FK declarada**; lógicamente `personal.id`     |
+| `tipo`         | TINYINT UNSIGNED | NO   | Agregado; 2 = centro, 3 = sede de subregión         |
+| `telefono`     | VARCHAR(255)     | SÍ   | Agregado                                            |
+| `direccion`    | VARCHAR(255)     | SÍ   | Agregado                                            |
+| `activo`       | TINYINT(1)       | NO   | Agregado; baja lógica                               |
 
-Observaciones:
-
-- **Falta `tipo`**: se agregará para distinguir una sede de subregión de un centro de salud.
-  Valores confirmados: `2 = centro`, `3 = sede de subregión`, alineado con
-  `personal.tipo_cuenta`. **No** se modela el tipo de establecimiento (hospital, ambulatorio,
-  CDI…): eso se expresa en el nombre del centro.
-- Una subregión por estado: si se mantiene la propuesta, agregar una restricción única que
-  impida dos sedes de subregión para el mismo estado.
-- `encargado_id` es el jefe del centro o de la sede. **Hay un solo jefe por centro.** La FK no
-  está declarada y crea una dependencia circular con `personal`; al implementar, permitir nulo
-  temporal o usar una FK diferida.
-- No hay `activo`, teléfono ni dirección exacta.
-- `mcpo_id` y `parroquia_id` son nulos; para una sede de subregión podría bastar el estado,
-  pero para un centro de salud la ubicación completa debería ser obligatoria.
+- El tipo de establecimiento (hospital, ambulatorio, CDI…) se expresa en el nombre, no en una
+  columna.
+- Hay una subregión por estado. El esquema no impone todavía una restricción única
+  `(estado_id, tipo = 3)`; se valida en la aplicación.
+- `encargado_id` es el jefe del centro o de la sede. La FK no está declarada por la dependencia
+  circular con `personal`.
 
 #### `personal`
 
@@ -258,8 +261,8 @@ Observaciones:
 | `id`             | INT UNSIGNED | NO   | PK                                                |
 | `tipo_cuenta`    | INT          | NO   | 2 = centro, 3 = subregión                         |
 | `centro_id`      | INT          | NO   | FK `centros_salud.id`                             |
-| `cedula`         | BIGINT       | NO   | **Sin `UNIQUE`**                                  |
-| `correo`         | VARCHAR(255) | NO   | Login; **sin `UNIQUE`**                           |
+| `cedula`         | BIGINT       | NO   | **UNIQUE** en el esquema de trabajo               |
+| `correo`         | VARCHAR(255) | NO   | Login; **UNIQUE** en el esquema de trabajo        |
 | `nombre1`        | VARCHAR(255) | NO   |                                                   |
 | `nombre2`        | VARCHAR(255) | NO   | La ficha lo trata como opcional                   |
 | `apellido1`      | VARCHAR(255) | NO   |                                                   |
@@ -268,85 +271,185 @@ Observaciones:
 | `profesion_id`   | INT          | NO   | FK `profesiones.id`                               |
 | `id_profesional` | VARCHAR(255) | NO   | Número profesional, no una FK                     |
 | `password`       | VARCHAR(255) | NO   | **Texto plano en el script**; debe guardarse hash |
+| `telefono`       | VARCHAR(255) | SÍ   | Agregado                                          |
+| `direccion`      | VARCHAR(255) | SÍ   | Agregado                                          |
+| `activo`         | TINYINT(1)   | NO   | Agregado; baja lógica                             |
 
-Observaciones:
-
-- `tipo_cuenta` es el campo que la conversación llama `tipo_usuario`. Valores confirmados:
-  2 = centro, 3 = subregión. Queda abierto si se renombra a `tipo_usuario`.
-- `centro_id` puede apuntar a un centro normal (tipo 2) o a una sede de subregión (tipo 3).
-  La combinación debe ser coherente: un usuario tipo 3 no debería pertenecer a un centro
-  normal, ni uno tipo 2 a una sede de subregión.
-- **Jefe/trabajador**: no hay campo `tipo_empleado`. **Hay un solo jefe por centro**, así que
-  basta con `centros_salud.encargado_id`: si `personal.id = centro.encargado_id`, es jefe; si
-  no, trabajador. No hace falta una tabla de perfiles.
-- **Faltan** teléfono, dirección, grado de instrucción, servicio, años de servicio y
-  `activo`; el boceto los dibujaba. El script es parcial, así que pueden llegar después.
-- No hay vínculo con `usuarios`: si un trabajador de salud también es ciudadano, sus datos
-  se duplican. Decidir si se enlazan o se mantienen separados.
-- `password` en claro es solo un borrador de esquema. Antes de implementar: hash, `UNIQUE`
-  en correo, política de bloqueo y recuperación.
+- **Jefe/trabajador**: no hay campo `tipo_empleado`. Hay un solo jefe por centro, derivado de
+  `centros_salud.encargado_id`: si `personal.id = centro.encargado_id`, es jefe.
+- Siguen faltando grado de instrucción, servicio y años de servicio.
+- No hay vínculo con `usuarios`: si un trabajador también es ciudadano, sus datos se duplican.
+- `password` en claro es solo un borrador. Antes de implementar: hash, política de bloqueo y
+  recuperación.
 
 #### `master`
 
 | Campo            | Tipo         | Nulo | Observación                      |
 | ---------------- | ------------ | ---- | -------------------------------- |
 | `id`             | INT UNSIGNED | NO   | PK                               |
-| `nombre_usuario` | VARCHAR(255) | NO   | Login alternativo; sin `UNIQUE`  |
-| `correo`         | VARCHAR(255) | NO   | Login; sin `UNIQUE`              |
+| `nombre_usuario` | VARCHAR(255) | NO   | Login alternativo; **UNIQUE**    |
+| `correo`         | VARCHAR(255) | NO   | Login; **UNIQUE**                |
 | `password`       | VARCHAR(255) | NO   | Texto plano; debe guardarse hash |
+| `activo`         | TINYINT(1)   | NO   | Agregado; baja lógica            |
+| `creado_en`      | DATETIME     | NO   | Agregado                         |
 
-No tiene nombre visible, cédula, `activo` ni marcas de tiempo. El master es una cuenta separada, no una ficha de
-personal. El dashboard saludará con `nombre_usuario`; **no se agrega `nombre`**. Si más adelante se quiere mostrar el
-nombre de la persona, será una columna nueva y un cambio de decisión.
+No tiene nombre visible ni cédula. El dashboard saluda con `nombre_usuario`; no se agrega
+`master.nombre`.
 
-#### `cuentas_entidad` (propuesta, no está en el script)
+#### `cuentas_entidad` (propuesta)
 
-| Campo       | Tipo         | Nulo | Relación / nota                                      |
-| ----------- | ------------ | ---- | ---------------------------------------------------- |
-| `id`        | INT UNSIGNED | NO   | PK                                                   |
-| `centro_id` | INT          | NO   | FK `centros_salud.id`; **`UNIQUE`**: una por entidad |
-| `correo`    | VARCHAR(255) | NO   | Login de la entidad; **`UNIQUE`**                    |
-| `password`  | VARCHAR(255) | NO   | Hash, nunca texto plano                              |
-| `jefe_id`   | INT          | NO   | FK `personal.id`; distingue al jefe de los demás     |
+| Campo       | Tipo         | Nulo | Relación / nota                                    |
+| ----------- | ------------ | ---- | -------------------------------------------------- |
+| `id`        | INT UNSIGNED | NO   | PK                                                 |
+| `centro_id` | INT UNSIGNED | NO   | FK `centros_salud.id`; **UNIQUE**: una por entidad |
+| `correo`    | VARCHAR(255) | NO   | Login de la entidad; **UNIQUE**                    |
+| `password`  | VARCHAR(255) | NO   | Hash, nunca texto plano                            |
+| `jefe_id`   | INT UNSIGNED | NO   | FK `personal.id`; distingue al jefe de los demás   |
+| `activo`    | TINYINT(1)   | NO   | Baja lógica                                        |
+| `creado_en` | DATETIME     | NO   | Fecha de creación                                  |
 
 Resuelve el primer nivel del login de los roles 2 y 3 sin convertir al centro en una cuenta de
-persona. Reglas:
+persona:
 
 - Una fila por centro o sede de subregión. El rol no se guarda: se deriva de
   `centros_salud.tipo` (2 o 3) y debe coincidir con `personal.tipo_cuenta`.
-- **No duplica la lista de perfiles**: los trabajadores relacionados son las filas de
-  `personal` con el mismo `centro_id`. La tabla solo guarda referencias (`centro_id`, `jefe_id`)
-  y las credenciales de la entidad; no copia nombres, correos ni contraseñas de los perfiles.
-  Si más adelante se necesita una membresía explícita (por ejemplo, personal que trabaja en
-  varios centros), se agrega una tabla puente; no se guardan listas en JSON.
-- `jefe_id` debe apuntar al mismo perfil que `centros_salud.encargado_id`. Para evitar dos
-  fuentes de verdad, `encargado_id` manda y la aplicación/trigger valida la coincidencia.
-- El segundo nivel valida el correo y la contraseña de la fila de `personal` elegida. El jefe
-  se marca comparando con `jefe_id` (o con `encargado_id`).
-- No tiene `activo`, recuperación ni último acceso; se agregan antes de implementar, igual que
-  el hash y el bloqueo por intentos.
+- **No duplica la lista de perfiles**: los trabajadores son las filas de `personal` con el mismo
+  `centro_id`.
+- `jefe_id` debe coincidir con `centros_salud.encargado_id`; la aplicación o un trigger valida
+  la coincidencia.
+- El segundo nivel valida el correo y la contraseña de la fila de `personal` elegida. El jefe se
+  marca comparando con `jefe_id` o `encargado_id`.
+- Siguen pendientes recuperación, último acceso y bloqueo por intentos.
+
+### 3.5 Certificados, notificaciones y consulta pública
+
+#### `certificados_salud`
+
+| Campo                        | Tipo                                                   | Nulo | Relación / nota                              |
+| ---------------------------- | ------------------------------------------------------ | ---- | -------------------------------------------- |
+| `id`                         | INT UNSIGNED                                           | NO   | PK                                           |
+| `codigo`                     | VARCHAR(64)                                            | NO   | **UNIQUE**; código visible del certificado   |
+| `usuario_id`                 | INT UNSIGNED                                           | NO   | FK `usuarios.id`                             |
+| `estado`                     | ENUM('solicitado','autorizado','descartado','emitido') | NO   | Estado del trámite                           |
+| `canal_solicitud`            | ENUM('subregion','consulta_publica')                   | NO   | Origen de la solicitud                       |
+| `solicitado_por_personal_id` | INT UNSIGNED                                           | SÍ   | FK `personal.id`; ventanilla de la subregión |
+| `revisado_por_personal_id`   | INT UNSIGNED                                           | SÍ   | FK `personal.id`; autorizador                |
+| `fecha_solicitud`            | DATETIME                                               | NO   | Fecha de recepción                           |
+| `fecha_revision`             | DATETIME                                               | SÍ   | Fecha de decisión                            |
+| `fecha_emision`              | DATETIME                                               | SÍ   | Fecha de emisión                             |
+| `motivo`                     | TEXT                                                   | SÍ   | Motivo de descarte                           |
+| `observaciones`              | TEXT                                                   | SÍ   | Notas internas                               |
+| `creado_en`                  | DATETIME                                               | NO   | Auditoría mínima                             |
+| `actualizado_en`             | DATETIME                                               | NO   | Auditoría mínima                             |
+
+Reglas de transición del prototipo:
+
+```text
+solicitado → autorizado → emitido
+solicitado → descartado
+```
+
+- Una solicitud activa por ciudadano: `solicitado` o `autorizado`. `emitido` y `descartado`
+  liberan al ciudadano para una nueva solicitud. El esquema no puede imponer una restricción
+  parcial de forma portable; la regla vive en el servicio.
+- `motivo` es obligatorio cuando el estado pasa a `descartado`.
+- El certificado no guarda un snapshot de los requisitos. La evaluación se calcula desde las
+  vacunas y exámenes vigentes. Antes de emitir documentos legales hay que decidir si se
+  congelan los datos evaluados.
+- No hay firma electrónica, PDF ni validez legal. La vista de certificado es una simulación.
+
+#### `notificaciones_srs`
+
+| Campo                 | Tipo                          | Nulo | Relación / nota                                 |
+| --------------------- | ----------------------------- | ---- | ----------------------------------------------- |
+| `id`                  | INT UNSIGNED                  | NO   | PK                                              |
+| `centro_subregion_id` | INT UNSIGNED                  | NO   | FK `centros_salud.id`; sede que recibe el aviso |
+| `certificado_id`      | INT UNSIGNED                  | NO   | FK `certificados_salud.id`                      |
+| `usuario_id`          | INT UNSIGNED                  | NO   | FK `usuarios.id`; ciudadano solicitante         |
+| `tipo`                | ENUM('solicitud_certificado') | NO   | Único tipo permitido                            |
+| `titulo`              | VARCHAR(255)                  | NO   | Texto visible                                   |
+| `mensaje`             | TEXT                          | NO   | Texto visible                                   |
+| `prioridad`           | ENUM('alta','media','baja')   | NO   | Orden de la bandeja                             |
+| `leida`               | TINYINT(1)                    | NO   | Estado de lectura                               |
+| `creada_en`           | DATETIME                      | NO   | Fecha de creación                               |
+| `leida_en`            | DATETIME                      | SÍ   | Fecha de lectura                                |
+
+- La clave única `(certificado_id, tipo)` evita duplicar el aviso de una misma solicitud.
+- Solo se inserta una fila cuando la solicitud **cumple todos los requisitos**. Si la solicitud
+  se crea incompleta, no se notifica.
+- Revisar, autorizar, descartar o emitir **no crean notificaciones adicionales**. La bandeja es
+  una cola de trabajo, no un historial de cambios.
+- No hay notificaciones de vacunas/exámenes vencidos ni de ESAVI.
+- El estado de la subregión se deriva del `centro_subregion_id`; la app puede filtrar por
+  `estado_id` sin duplicar esa columna en cada notificación.
+
+#### `certificado_envios`
+
+| Campo            | Tipo                                 | Nulo | Relación / nota                        |
+| ---------------- | ------------------------------------ | ---- | -------------------------------------- |
+| `id`             | INT UNSIGNED                         | NO   | PK                                     |
+| `certificado_id` | INT UNSIGNED                         | NO   | FK `certificados_salud.id`             |
+| `correo_destino` | VARCHAR(255)                         | NO   | Correo registrado al momento del envío |
+| `estado`         | ENUM('simulado','enviado','fallido') | NO   | `simulado` en esta etapa               |
+| `enviado_en`     | DATETIME                             | NO   | Fecha del intento                      |
+| `error`          | TEXT                                 | SÍ   | Detalle si falla                       |
+
+- El botón público solo aparece para certificados `autorizado` o `emitido`.
+- No se guarda ni se valida código de verificación: esa función está fuera del alcance actual.
+- La app actual usa el booleano de vista `correoEnviado`; el esquema normaliza el envío como
+  fila de `certificado_envios`. Un certificado puede tener más de un intento; la política de
+  reenvío queda abierta.
+- En esta etapa no se envía un correo real. La fila documenta la simulación.
+
+#### `consultas_publicas`
+
+| Campo               | Tipo         | Nulo | Relación / nota                          |
+| ------------------- | ------------ | ---- | ---------------------------------------- |
+| `id`                | INT UNSIGNED | NO   | PK                                       |
+| `usuario_id`        | INT UNSIGNED | SÍ   | FK `usuarios.id`; nulo si no se encontró |
+| `cedula_consultada` | BIGINT       | NO   | Cédula normalizada                       |
+| `encontrada`        | TINYINT(1)   | NO   | Resultado de la búsqueda                 |
+| `origen`            | VARCHAR(64)  | NO   | `consulta_publica` por defecto           |
+| `creado_en`         | DATETIME     | NO   | Fecha de la consulta                     |
+
+- La app todavía no escribe esta auditoría; queda propuesta para cuando exista backend.
+- No guarda el detalle clínico devuelto, solo el hecho de la consulta y si hubo coincidencia.
+- La consulta pública no requiere sesión ni código en esta etapa.
+
+### 3.6 Tablas que siguen faltando
+
+| Tabla / dominio      | Para qué se necesita                                      | Estado      |
+| -------------------- | --------------------------------------------------------- | ----------- |
+| Lotes / stock        | Dashboard del master, recepción y distribución de vacunas | No recibida |
+| Movimientos          | Auditoría de stock y trazabilidad                         | No recibida |
+| Búsquedas del master | Historial de búsquedas y filtros usados                   | No recibida |
+| Incidencias / ESAVI  | Reacciones adversas y problemas de lote                   | No recibida |
+
+No se inventan columnas definitivas para estas tablas. Las vistas usan mocks y lo indican.
 
 ## 4. Correspondencia con el código y las vistas
 
-| Concepto actual en la app          | Tabla(s) / campos reales                                                                           | Estado                                  |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `Ciudadano`                        | `usuarios` + `usuario_telefonos` + `usuario_residencias` + `tipoSangre` + `etnias` + `profesiones` | Acordado: agregar `sexo` y `creado_en`  |
-| `Personal`                         | `personal` + `centros_salud` + `profesiones`                                                       | Parcial: faltan contactos               |
-| `Master`                           | `master`                                                                                           | Resuelto: saluda con `nombre_usuario`   |
-| `CentroSalud`                      | `centros_salud` + geografía + `personal` del encargado                                             | Acordado: falta agregar `tipo` (2/3)    |
-| `Subregión`                        | `centros_salud` con `tipo = 3` + `estado` + `personal` del encargado                               | Acordado: falta agregar `tipo`          |
-| Cuenta de entidad (roles 2 y 3)    | `cuentas_entidad` + `centros_salud` + `personal`                                                   | **Propuesta**, no está en el script     |
-| Rol 2 / Rol 3                      | `personal.tipo_cuenta` + `centros_salud.tipo` + `cuentas_entidad`                                  | Confirmado; falta implementar           |
-| Perfil jefe / trabajador           | Derivado de `centros_salud.encargado_id`; un solo jefe por centro                                  | Confirmado                              |
-| `Catálogos`                        | `tipoSangre`, `etnias`, `vacunas`, `examenes`, `profesiones`                                       | Disponibles; IDs enteros                |
-| `VacunaCatalogo`                   | `vacunas`                                                                                          | Faltan dosis, vigencia y obligatoriedad |
-| `Lote`                             | No hay tabla; `usuario_vacunas.lote` es solo un texto                                              | Bloqueado                               |
-| `Certificado`                      | No hay tabla                                                                                       | Bloqueado                               |
-| `Movimiento` / `Busqueda`          | No hay tablas                                                                                      | Bloqueado                               |
-| `Incidencia`                       | No hay tabla                                                                                       | Bloqueado                               |
-| `Sexo`                             | No existe; se agregará a `usuarios`                                                                | Acordado; falta definir el tipo         |
-| `TipoEmpleado`                     | No existe como columna; se deriva del encargado                                                    | Confirmado                              |
-| `EstadoLote` / `EstadoCertificado` | No hay tablas todavía                                                                              | En espera                               |
+| Concepto actual en la app          | Tabla(s) / campos reales                                                                           | Estado                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `Ciudadano`                        | `usuarios` + `usuario_telefonos` + `usuario_residencias` + `tipoSangre` + `etnias` + `profesiones` | Acordado: `sexo`, `creado_en`, `activo`     |
+| `FichaCiudadano`                   | Lo anterior + `usuario_vacunas` + `usuario_examenes` + reglas de `vacunas`/`examenes`              | Parcial: requiere contrato de vigencia      |
+| `Personal`                         | `personal` + `centros_salud` + `profesiones`                                                       | Parcial: contactos y baja lógica agregados  |
+| `Master`                           | `master`                                                                                           | Resuelto: saluda con `nombre_usuario`       |
+| `CentroSalud`                      | `centros_salud` + geografía + `personal` del encargado                                             | Resuelto: `tipo` 2/3                        |
+| `Subregión`                        | `centros_salud` con `tipo = 3` + `estado` + `personal` del encargado                               | Resuelto                                    |
+| Cuenta de entidad (roles 2 y 3)    | `cuentas_entidad` + `centros_salud` + `personal`                                                   | Propuesta                                   |
+| Rol 2 / Rol 3                      | `personal.tipo_cuenta` + `centros_salud.tipo` + `cuentas_entidad`                                  | Confirmado; falta implementar               |
+| Perfil jefe / trabajador           | Derivado de `centros_salud.encargado_id`; un solo jefe por centro                                  | Confirmado                                  |
+| `Catálogos`                        | `tipoSangre`, `etnias`, `vacunas`, `examenes`, `profesiones`                                       | Disponibles; IDs enteros                    |
+| `VacunaCatalogo`                   | `vacunas`                                                                                          | Resuelto: dosis, vigencia y obligatoriedad  |
+| `SolicitudCertificado`             | `certificados_salud`                                                                               | Propuesta                                   |
+| `NotificacionSrs`                  | `notificaciones_srs`                                                                               | Propuesta; solo solicitudes completas       |
+| `correoEnviado`                    | `certificado_envios`                                                                               | Propuesta; envío simulado                   |
+| Consulta pública                   | `usuarios` + `certificados_salud` + `certificado_envios`; auditoría en `consultas_publicas`        | Implementada con mocks; auditoría pendiente |
+| `Lote`                             | No hay tabla; `usuario_vacunas.lote` es solo un texto                                              | Bloqueado                                   |
+| `Movimiento` / `Busqueda`          | No hay tablas                                                                                      | Bloqueado                                   |
+| `Incidencia`                       | No hay tabla                                                                                       | Bloqueado                                   |
+| `EstadoLote` / `EstadoCertificado` | `EstadoCertificado` ya se refleja en `certificados_salud.estado`; `EstadoLote` no tiene tabla      | Parcial                                     |
 
 ## 5. Flujos de datos
 
@@ -368,71 +471,70 @@ flowchart TD
     K -->|Sí| L["Sesión: personal + centro + esJefe"]
 ```
 
-- **Master**: se busca en `master` por correo (o `nombre_usuario`) y contraseña. No debe
-  poder entrar por el login de centro/subregión.
-- **Primer nivel (roles 2 y 3)**: se busca la fila de `cuentas_entidad` por correo y contraseña,
-  y se comprueba que `centro_id` apunte a un `centros_salud.tipo` coherente: centro normal
-  para 2, sede de subregión para 3. La tabla es una **propuesta** y no está en el script.
-- **Segundo nivel**: se listan las filas de `personal` con ese `centro_id`. El jefe es la que
-  coincide con `cuentas_entidad.jefe_id` (y con `centros_salud.encargado_id`); el resto son
-  trabajadores. Se validan el correo y la contraseña de la fila elegida.
-- **Jefe/trabajador**: hay un solo jefe por centro, así que se deriva del encargado. No hay
-  `tipo_empleado` ni una tabla de perfiles: el segundo nivel usa las credenciales de `personal`.
-- **Login actual**: la simulación ya usa dos niveles (cuenta de entidad y perfil), así que la
-  UI se mantiene. Al conectar backend, `SesionService` cambia el array mock por
-  `cuentas_entidad` + `personal`; no hay que rediseñar los pasos.
-- **Seguridad pendiente**: hash de contraseñas, `UNIQUE` en correo, `activo`, bloqueo por
-  intentos, recuperación y registro de último acceso, tanto en `cuentas_entidad` como en
-  `personal` y `master`.
+- **Master**: se busca en `master` por correo (o `nombre_usuario`) y contraseña. No puede entrar
+  por el login de centro/subregión.
+- **Primer nivel (roles 2 y 3)**: se busca la fila de `cuentas_entidad` por correo y contraseña, y
+  se comprueba que `centro_id` apunte a un `centros_salud.tipo` coherente: centro normal para 2,
+  sede de subregión para 3.
+- **Segundo nivel**: se listan las filas de `personal` con ese `centro_id`. El jefe coincide con
+  `cuentas_entidad.jefe_id` (y con `centros_salud.encargado_id`); el resto son trabajadores. Se
+  validan el correo y la contraseña de la fila elegida.
+- **Seguridad pendiente**: hash, bloqueo por intentos, recuperación y registro de último acceso.
 
 ### 5.2 Consulta pública
 
-1. El ciudadano escribe la cédula. Se busca en `usuarios.cedula` (BIGINT normalizado).
-2. Se usa `usuarios.correo` para enviar el código de verificación (simulado por ahora).
-3. Con el código validado, la ficha se arma con:
+La vista `/consulta` está implementada con mocks, no modifica datos clínicos y solo simula el envío del certificado.
+
+1. El ciudadano escribe la cédula. Se normaliza a dígitos y se busca en `usuarios.cedula`
+   (`UNIQUE` en el esquema de trabajo).
+2. **Esta etapa no pide código de verificación.** La búsqueda devuelve la ficha directamente,
+   tal como se acordó para el prototipo.
+3. La ficha pública se arma con:
    - `usuarios` + `tipoSangre` + `etnias` + `profesiones`;
    - `usuario_telefonos`;
    - `usuario_residencias` + `estado` + `mcpo` + `parroquia`;
-   - `usuario_vacunas` + `vacunas`;
-   - `usuario_examenes` + `examenes`.
-4. La ficha pública debe ocultar datos internos: lote y centro de vacunación si se decide
-   que son internos, y el detalle de exámenes sensibles (VIH/VDRL).
-5. **Vigencia**: el esquema no tiene regla de vigencia para vacunas ni exámenes. Hasta que
-   exista, la ficha debe mostrar "registrado" con su fecha, no afirmar "vigente". Sin esta
-   regla tampoco se puede decidir si un certificado es emitible.
-6. **Certificados**: no hay tabla; la solicitud/emisión queda bloqueada.
+   - conteos de `usuario_vacunas` y `usuario_examenes`.
+4. La vista no muestra lote, centro de vacunación ni detalle de exámenes sensibles. Solo muestra
+   conteos y el estado del certificado.
+5. Para el certificado se busca la última solicitud `autorizado` o `emitido`; si no existe, se
+   muestra la solicitud más reciente. Si no hay ninguna, se muestra un estado vacío.
+6. Si el certificado está aprobado o emitido, el ciudadano puede pulsar **Enviar certificado a mi
+   correo**. La acción marca el envío simulado en el mock y no envía un correo real; con backend
+   corresponderá a una fila de `certificado_envios`.
+7. La auditoría en `consultas_publicas` queda propuesta; la app todavía no la escribe.
+8. La vigencia de vacunas y exámenes es una regla provisional del prototipo y debe validarla el
+   equipo de salud.
 
 ### 5.3 Alta de ciudadano
 
 - Insertar primero `usuarios`; después `usuario_telefonos` y `usuario_residencias`.
-- Campos obligatorios del SQL: nombres y apellidos (incluidos `nombre2` y `apellido2`),
-  cédula, nacimiento, sangre, estatura, correo y profesión.
-- El alta **pedirá la profesión**. Si el ciudadano no tiene, se selecciona **"Desempleado"**,
-  que debe existir en el catálogo `profesiones`; `profesion_id` sigue siendo obligatorio.
-- La estatura estaba dibujada, pero sin unidad: confirmar que se guarda en centímetros.
-- `creado_en` se llena automáticamente al insertar; no se pide en el formulario.
-- `etnia_id` es opcional: responde al "¿pertenece a un pueblo indígena?" del boceto.
-- El correo es obligatorio porque es el canal del código de verificación; debe ser único.
+- Campos obligatorios del SQL: nombres y apellidos (incluidos `nombre2` y `apellido2`), cédula,
+  nacimiento, sangre, estatura, correo y profesión.
+- El alta pide la profesión. Si el ciudadano no tiene, se selecciona **"Desempleado"**, que debe
+  existir en el catálogo `profesiones`; `profesion_id` sigue siendo obligatorio.
+- La estatura está dibujada sin unidad: confirmar que se guarda en centímetros.
+- `creado_en` se llena automáticamente; no se pide en el formulario.
+- `etnia_id` es opcional.
+- El correo es obligatorio y único porque es el destino del certificado simulado.
 
 ### 5.4 Registro de vacunación
 
-- Insertar en `usuario_vacunas`: ciudadano, vacuna, número de dosis, fecha, lote (texto) y
-  centro.
-- No se guarda el profesional que aplicó; si se necesita auditoría, agregar `personal_id`.
-- No hay stock ni tabla de lotes: el control de cargamentos del master no se puede construir
-  con este script.
-- Sí se pueden calcular métricas por centro y por estado usando `usuario_vacunas.centro_id` →
+- Insertar en `usuario_vacunas`: ciudadano, vacuna, número de dosis, fecha, lote (texto), centro
+  y `personal_id`.
+- No hay stock ni tabla de lotes: el control de cargamentos del master no se puede construir con
+  este script.
+- Se pueden calcular métricas por centro y por estado usando `usuario_vacunas.centro_id` →
   `centros_salud.estado_id` y `fecha_aplicacion`.
+- La obligatoriedad y la vigencia para el certificado salen de `vacunas`.
 
 ### 5.5 Registro de exámenes
 
-- Insertar en `usuario_examenes`: ciudadano, examen, fecha, resultado cualitativo y JSON.
-- `examenes.categoria` + `examenes.nombre` sustituye la jerarquía de dos tablas que se había
-  propuesto; una fila de catálogo ya contiene categoría y prueba.
-- Definir el contrato de `resultado_json` antes de crear modelos TypeScript. Sin él, la
-  vista no puede renderizar resultados estructurados.
-- No hay adjunto, laboratorio, profesional ni marca de sensible. Si se necesitan, se agregan
-  antes de implementar.
+- Insertar en `usuario_examenes`: ciudadano, examen, fecha, resultado cualitativo, JSON,
+  `personal_id`, laboratorio y adjunto.
+- `examenes.categoria` + `examenes.nombre` sustituye la jerarquía de dos tablas propuesta.
+- Definir el contrato de `resultado_json` antes de crear modelos TypeScript.
+- La marca `examenes.sensible` evita exponer VIH/VDRL en la consulta pública; la vista solo
+  muestra conteos.
 
 ### 5.6 Dashboard del master
 
@@ -442,144 +544,131 @@ flowchart TD
 | 2. Top 10 estados por vacunaciones de la semana | **Sí**                           | Contar `usuario_vacunas` uniendo `centro_id` → `centros_salud.estado_id`, filtrando por `fecha_aplicacion` de la semana calendario. |
 | 3. Mapa estado → municipio → parroquia          | **Sí, con geodatos**             | Las tablas `estado`, `mcpo` y `parroquia` existen; falta cargar la fuente oficial y decidir el mapa.                                |
 
-- El saludo "Bienvenido, {nombre}" se resuelve con `master.nombre_usuario`. No se agrega un
-  campo `nombre`.
-- "Usuarios activos" no se puede calcular sin `activo`/`ultimo_acceso`.
+- El saludo "Bienvenido, {nombre}" se resuelve con `master.nombre_usuario`.
+- "Usuarios activos" ya puede usar `usuarios.activo`, pero falta definir la ventana de actividad.
 - "Movimientos" y "búsquedas" siguen bloqueados hasta recibir sus tablas.
 
 ### 5.7 Búsqueda global del master
 
-| Filtro dibujado     | Fuente real                                             | Estado                                |
-| ------------------- | ------------------------------------------------------- | ------------------------------------- |
-| Nombres / apellidos | `usuarios.nombre1`, `nombre2`, `apellido1`, `apellido2` | Disponible                            |
-| Cédula              | `usuarios.cedula`                                       | Disponible; normalizar                |
-| Vacunas             | `usuario_vacunas` + `vacunas`                           | Disponible                            |
-| Rango de edad       | `usuarios.nacimiento`                                   | Disponible                            |
-| Exámenes            | `usuario_examenes` + `examenes`                         | Disponible                            |
-| Fecha de registro   | `usuarios.creado_en`                                    | **Se agregará**                       |
-| Sexo                | No hay columna                                          | **Se agregará**                       |
-| Etnia               | `usuarios.etnia_id` + `etnias`                          | Disponible                            |
-| Ubicación           | `usuario_residencias` + geografía                       | Disponible; decidir residencia actual |
+| Filtro dibujado     | Fuente real                                             | Estado                          |
+| ------------------- | ------------------------------------------------------- | ------------------------------- |
+| Nombres / apellidos | `usuarios.nombre1`, `nombre2`, `apellido1`, `apellido2` | Disponible                      |
+| Cédula              | `usuarios.cedula`                                       | Disponible; normalizar          |
+| Vacunas             | `usuario_vacunas` + `vacunas`                           | Disponible                      |
+| Rango de edad       | `usuarios.nacimiento`                                   | Disponible                      |
+| Exámenes            | `usuario_examenes` + `examenes`                         | Disponible                      |
+| Fecha de registro   | `usuarios.creado_en`                                    | Disponible                      |
+| Sexo                | `usuarios.sexo`                                         | Disponible                      |
+| Etnia               | `usuarios.etnia_id` + `etnias`                          | Disponible                      |
+| Ubicación           | `usuario_residencias` + geografía                       | Disponible; usar `es_principal` |
 
-La regla de "al menos 2 filtros" es de interfaz y no cambia. La búsqueda es sobre ciudadanos,
-no sobre personal ni centros.
+La regla de "al menos 2 filtros" es de interfaz y no cambia. La búsqueda es sobre ciudadanos, no
+sobre personal ni centros.
 
 ### 5.8 Administración de personal del master
 
-- **Subregiones**: filas de `centros_salud` con `tipo = 3`, unidas a `estado` y a `personal`
-  por `encargado_id`. Columnas: nombre de la sede, estado y nombre del administrador.
-- **Centros**: filas de `centros_salud` con `tipo = 2`, unidas a geografía y al encargado
-  (`personal.nombre1` + `apellido1` + `cedula`).
-- **Empleados**: `personal` unido a `centros_salud`; la ubicación se deriva del centro. El
-  filtro jefe/trabajador se deriva de `encargado_id`; hay un solo jefe por centro. El tipo de
-  establecimiento (hospital, ambulatorio, CDI…) se expresa en el nombre del centro, no en una
-  columna.
-- **Formularios de alta**: no dibujados; dependen de cerrar los campos obligatorios y las
-  reglas de contraseña.
+- **Subregiones**: filas de `centros_salud` con `tipo = 3`, unidas a `estado` y a `personal` por
+  `encargado_id`. Columnas: nombre de la sede, estado y nombre del administrador.
+- **Centros**: filas de `centros_salud` con `tipo = 2`, unidas a geografía y al encargado.
+- **Empleados**: `personal` unido a `centros_salud`; la ubicación se deriva del centro. El filtro
+  jefe/trabajador se deriva de `encargado_id`; hay un solo jefe por centro. El tipo de
+  establecimiento se expresa en el nombre.
+- **Formularios de alta**: no dibujados; dependen de cerrar los campos obligatorios y las reglas
+  de contraseña.
 
 ### 5.9 Personal de salud y subregión
 
-- **Rol 2 (centro)**: el centro de la sesión es `personal.centro_id`. Las filas de `personal`
-  con ese `centro_id` son el equipo del centro; el jefe es el `encargado_id`. Las métricas de
-  vacunación se filtran por `usuario_vacunas.centro_id`. Los exámenes no están asociados a un
-  centro, así que no se pueden atribuir a un trabajador o centro concreto.
+- **Rol 2 (centro)**: el centro de la sesión es `personal.centro_id`. Las filas de `personal` con
+  ese `centro_id` son el equipo; el jefe es `encargado_id`. Las métricas de vacunación se filtran
+  por `usuario_vacunas.centro_id`.
 - **Rol 3 (subregión)**: la sede es el `centros_salud` tipo 3 de la sesión; su estado es
-  `estado_id`. Los centros del estado son las filas tipo 2 con ese `estado_id`; el personal
-  se obtiene por `centro_id`. Las vacunaciones se agregan por estado. Stock y certificados
-  siguen bloqueados.
+  `estado_id`. Los centros del estado son las filas tipo 2 con ese `estado_id`; el personal se
+  obtiene por `centro_id`.
+- Los certificados y las notificaciones ya tienen tablas propuestas; el stock sigue bloqueado.
+- La bandeja de notificaciones **no** incluye vencimientos: solo solicitudes completas listas
+  para revisión.
 
-### 5.10 Certificados, auditoría e incidencias
+### 5.10 Certificados, notificaciones y envío
 
-No hay tablas en esta entrega. El modelo preliminar ya había descrito las entidades
-esperadas; se mantienen como pendientes:
-
-- `certificado` con estado (solicitado/autorizado/descartado/emitido), snapshot de exámenes
-  y vacunas, autorizador y código de verificación.
-- `movimiento`/`busqueda` para logs y auditoría de consultas.
-- `lote` para stock, estados y destino.
-- `incidencia` para reacciones adversas y problemas de lote.
-
-No inventar columnas ni crear migraciones hasta recibir la parte faltante.
+1. La subregión crea una solicitud en `certificados_salud` (`estado = solicitado`).
+2. La evaluación de requisitos usa `vacunas`/`examenes` y los datos del ciudadano. Si el
+   expediente está completo, se inserta **una** fila en `notificaciones_srs` para la sede de la
+   subregión. Si está incompleto, no se notifica.
+3. La subregión revisa la solicitud. Autorizar o descartar cambia el estado y `fecha_revision`;
+   **no crea otra notificación**.
+4. Un certificado autorizado se emite (`estado = emitido`, `fecha_emision`). La emisión tampoco
+   crea notificaciones.
+5. En la consulta pública, el ciudadano ve el estado y, si está aprobado o emitido, puede pedir el
+   envío. La app marca `correoEnviado` en el mock; con backend, el intento se registrará en
+   `certificado_envios`.
+6. No hay correo real, enlace firmado, PDF legal ni código de verificación. La UI lo advierte.
+7. Incidencias/ESAVI y movimientos siguen fuera del alcance hasta recibir sus tablas.
 
 ## 6. Qué se puede construir ya
 
-| Vista                                 | Datos disponibles                                                             | Bloqueo principal                 |
-| ------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------- |
-| Landing `/`                           | No depende de BD                                                              | —                                 |
-| Login `/login`                        | `master`, `personal` y `cuentas_entidad` (propuesta); tipo de cuenta y centro | Diseño cerrado; falta implementar |
-| Consulta `/consulta`                  | `usuarios.cedula`, `usuarios.correo`                                          | —                                 |
-| Verificación `/consulta/verificacion` | Correo del ciudadano                                                          | Envío real de correo              |
-| Ficha `/consulta/:cedula`             | Datos personales, residencia, teléfonos, vacunas y exámenes                   | Sexo, vigencia y certificados     |
-| Dashboard master, card 2              | Vacunaciones por estado/semana                                                | —                                 |
-| Dashboard master, card 1              | —                                                                             | Tabla de lotes                    |
-| Dashboard master, card 3              | Geografía                                                                     | Geodatos oficiales                |
-| Búsqueda global                       | Casi todos los filtros                                                        | Sexo (tipo por definir)           |
-| Control de vacunas                    | Dosis aplicadas                                                               | Tabla de lotes/stock              |
-| Admin. subregiones                    | `centros_salud.tipo = 3` + encargado                                          | Agregar `tipo`                    |
-| Admin. centros                        | `centros_salud.tipo = 2` + encargado                                          | Agregar `tipo`                    |
-| Admin. empleados                      | `personal` + centro + encargado                                               | Contactos y grado de instrucción  |
-| Movimientos / búsquedas               | —                                                                             | Tablas de auditoría               |
-| Dashboard PS                          | Personal del centro y vacunaciones                                            | Exámenes sin centro               |
-| Dashboard SRS                         | Centros y vacunaciones del estado                                             | Stock y certificados              |
-| Certificados                          | —                                                                             | Tabla de certificados             |
+| Vista                    | Datos disponibles                                                         | Bloqueo principal                     |
+| ------------------------ | ------------------------------------------------------------------------- | ------------------------------------- |
+| Landing `/`              | No depende de BD                                                          | —                                     |
+| Login `/login`           | `master`, `personal` y `cuentas_entidad`; tipo de cuenta y centro         | Implementado con mocks; falta backend |
+| Consulta `/consulta`     | `usuarios`, residencia, contacto, conteos clínicos y `certificados_salud` | Implementada con mocks                |
+| Ficha del ciudadano      | Datos personales, residencia, teléfonos, vacunas y exámenes               | Contrato de `resultado_json`          |
+| Dashboard master, card 2 | Vacunaciones por estado/semana                                            | —                                     |
+| Dashboard master, card 1 | —                                                                         | Tabla de lotes                        |
+| Dashboard master, card 3 | Geografía                                                                 | Geodatos oficiales                    |
+| Búsqueda global          | Casi todos los filtros                                                    | —                                     |
+| Control de vacunas       | Dosis aplicadas                                                           | Tabla de lotes/stock                  |
+| Admin. subregiones       | `centros_salud.tipo = 3` + encargado                                      | —                                     |
+| Admin. centros           | `centros_salud.tipo = 2` + encargado                                      | —                                     |
+| Admin. empleados         | `personal` + centro + encargado                                           | Grado de instrucción y servicio       |
+| Movimientos / búsquedas  | —                                                                         | Tablas de auditoría                   |
+| Dashboard PS             | Personal del centro y vacunaciones                                        | Exámenes sin centro                   |
+| Dashboard SRS            | Centros, vacunaciones, certificados y notificaciones del estado           | Stock                                 |
+| Certificados             | `certificados_salud` + `notificaciones_srs` + `certificado_envios`        | Implementado con mocks                |
 
 ## 7. Cambios y huecos del esquema
 
-### 7.1 Acordados
+### 7.1 Aplicados en el esquema de trabajo
 
-- Agregar `usuarios.sexo` (tipo por definir: `ENUM`, `CHAR(1)` o catálogo).
-- Agregar `usuarios.creado_en` (`DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP`) para el filtro de
-  fecha de registro.
-- Agregar `centros_salud.tipo` (`TINYINT NOT NULL`) con solo dos valores: 2 = centro, 3 = sede de
-  subregión. El tipo de establecimiento (hospital, ambulatorio, CDI…) se expresa en `nombre`, no
-  en una columna.
-- Una subregión por estado; su personal es `personal.tipo_cuenta = 3` con `centro_id` en la
-  sede.
-- Un solo jefe por centro o sede; se deriva de `centros_salud.encargado_id`.
-- Validar el tipo de cuenta del login contra `personal.tipo_cuenta` y el tipo de centro.
-- Agregar la tabla propuesta `cuentas_entidad` para el primer nivel del login (credenciales de
-  la entidad, `centro_id` y `jefe_id`).
-- El alta de ciudadano pide profesión; si no tiene, se usa la fila **"Desempleado"** del
-  catálogo `profesiones`.
-- El dashboard del master saluda con `master.nombre_usuario`.
+- `usuarios`: `sexo`, `creado_en`, `activo`, `UNIQUE` en `cedula` y `correo`.
+- `usuario_residencias`: `es_principal`.
+- `usuario_vacunas`: `personal_id`.
+- `usuario_examenes`: `personal_id`, `laboratorio`, `adjunto_url`.
+- `vacunas`: `dosis_requeridas`, `vigencia_meses`, `obligatoria_certificado`.
+- `examenes`: `vigencia_meses`, `sensible`, `obligatorio_certificado`.
+- `centros_salud`: `tipo`, `telefono`, `direccion`, `activo`, `UNIQUE` en `codigo`.
+- `personal`: `telefono`, `direccion`, `activo`, `UNIQUE` en `cedula` y `correo`.
+- `master`: `activo`, `creado_en`, `UNIQUE` en `nombre_usuario` y `correo`.
+- `cuentas_entidad`: tabla propuesta con `centro_id`, `correo`, `password`, `jefe_id`, `activo` y
+  `creado_en`.
+- `certificados_salud`, `notificaciones_srs`, `certificado_envios` y `consultas_publicas`: tablas
+  propuestas.
+- Índices por cédula, correo, estado de certificado, bandeja de notificaciones, envíos, personal
+  y centro.
 
 ### 7.2 Pendientes de recibir o confirmar
 
 **Tablas**
 
-- Lotes/stock de vacunas, certificados, movimientos, búsquedas e incidencias.
+- Lotes/stock, movimientos, búsquedas históricas e incidencias/ESAVI.
+- Snapshot de requisitos del certificado si se decide congelar la evaluación.
+- Firma, PDF y verificación pública del certificado si se vuelve legal.
 
-**Columnas**
+**Columnas y restricciones**
 
-- `usuarios`: `activo`.
-- `master`: `activo`, marcas de tiempo. No se agrega `nombre`.
-- `personal`: `activo`, teléfono, dirección, grado de instrucción, servicio, años de servicio.
-- `centros_salud`: `activo`, contacto.
-- `cuentas_entidad`: `activo`, marcas de tiempo y último acceso.
-- `vacunas`: dosis requeridas, vigencia y obligatoriedad para el certificado.
-- `examenes`: marca de sensible, vigencia y categoría acotada.
-- `usuario_vacunas`: `personal_id` que aplicó; `lote_id` cuando exista tabla de lotes.
-- `usuario_examenes`: laboratorio, adjunto, `personal_id` y vigencia.
-- `usuario_residencias`: marca de residencia actual o historial.
-
-**Restricciones e índices**
-
-- `UNIQUE` en `usuarios.cedula`, `usuarios.correo`, `personal.cedula`, `personal.correo`,
-  `master.correo`, `master.nombre_usuario`, `centros_salud.codigo`,
-  `cuentas_entidad.centro_id` y `cuentas_entidad.correo`.
-- Índices por cédula, correo, fecha de aplicación/realización, `centro_id` y claves
-  geográficas.
-- FK de `centros_salud.encargado_id` a `personal.id` (con estrategia para la dependencia
-  circular) y de `cuentas_entidad.jefe_id` a `personal.id`.
-- Validar que `cuentas_entidad.jefe_id = centros_salud.encargado_id` para no tener dos
-  fuentes de verdad del jefe.
+- `centros_salud.encargado_id`: FK diferida o estrategia para la dependencia circular.
+- Una sola sede tipo 3 por estado; una sola residencia principal por usuario.
+- Una sola solicitud activa por ciudadano a nivel de base de datos (hoy se valida en el servicio).
 - `usuario_telefonos.usuario_id` debería ser `NOT NULL`.
-- Revisar `parroquia.mcpo_id` y la ubicación de centros: ¿pueden ser nulos en un centro real?
+- `personal`: grado de instrucción, servicio y años de servicio.
+- `cuentas_entidad`: recuperación, último acceso y bloqueo por intentos.
+- `examenes`: categoría acotada a catálogo o `ENUM`, y contrato de `resultado_json`.
+- `consultas_publicas`: política de retención y acceso a la auditoría.
 
 **Seguridad y operación**
 
-- Hash de contraseñas, nunca texto plano, en `master`, `personal` y `cuentas_entidad`.
+- Hash de contraseñas en `master`, `personal` y `cuentas_entidad`.
 - `activo`, bloqueo por intentos, recuperación y último acceso.
+- Correo real, código de verificación y plantilla del certificado.
 - Auditoría: decidir si se escribe desde la aplicación o con triggers.
 - Zona horaria y formato de fechas.
 
@@ -596,60 +685,64 @@ Ya respondidas:
 
 1. El script es parcial.
 2. La subregión es una sede de `centros_salud` con `tipo`, no una tabla aparte.
-3. Se agrega `sexo` a `usuarios`.
+3. Se agrega `sexo` a `usuarios` como `ENUM('F','M','otro')`.
 4. El login valida `personal.tipo_cuenta` contra el tipo elegido.
-5. `centros_salud.tipo` solo vale 2 (centro) o 3 (sede). El tipo de establecimiento se
-   expresa en el nombre.
-6. El login conserva dos niveles y agrega `cuentas_entidad` (propuesta) con credenciales,
-   `centro_id` y `jefe_id`.
+5. `centros_salud.tipo` solo vale 2 (centro) o 3 (sede).
+6. El login conserva dos niveles y agrega `cuentas_entidad`.
 7. Hay un solo jefe por centro; se deriva de `encargado_id`.
 8. El alta pide profesión; si no hay, se usa "Desempleado".
 9. El master saluda con `nombre_usuario`.
 10. Se agrega `usuarios.creado_en`.
+11. Solo se notifican solicitudes de certificado completas.
+12. El envío del certificado se simula en la consulta pública y no pide código todavía.
+13. La consulta pública muestra datos personales y el estado del certificado, sin detalle clínico
+    sensible.
 
-Siguen abiertas, por orden de impacto en las vistas:
+Siguen abiertas, por orden de impacto:
 
 1. **`tipo_cuenta`**: ¿se renombra a `tipo_usuario` para alinear SQL y conversación?
-2. **Sexo**: ¿`ENUM('F','M','otro')`, `CHAR(1)` o catálogo?
-3. **Residencia actual**: ¿se toma la última fila de `usuario_residencias`, se agrega
-   `activa` o se guarda historial?
-4. **Resultado de examen**: ¿qué estructura tendrá `resultado_json`? ¿`resultado_cualitativo`
-   es suficiente para la ficha? ¿Cómo se marca un examen como sensible?
-5. **Vigencia**: ¿se guarda calculada o se deriva de una regla por vacuna/examen? Sin esto
-   no hay certificado emitible.
-6. **Tablas faltantes**: ¿cuándo llegan lotes, certificados, movimientos, búsquedas e
-   incidencias?
-7. **Geografía**: ¿de qué fuente oficial se cargan estados, municipios y parroquias?
-8. **Personal y ciudadano**: ¿son entidades separadas aunque la misma persona aparezca en
-   ambas, o se enlazan?
-9. **Contactos del personal**: ¿teléfono y dirección se agregan a `personal` o se derivan del
-   centro?
-10. **Nombre de la tabla de entidad**: ¿`cuentas_entidad` es el nombre definitivo que usará
-    el equipo de BD?
+2. **Residencia principal**: ¿basta `es_principal` o se necesita historial completo?
+3. **Resultado de examen**: ¿qué estructura tendrá `resultado_json`? ¿Cómo se marca y filtra un
+   examen sensible además de `examenes.sensible`?
+4. **Vigencia**: ¿se guarda calculada o se deriva de las reglas por vacuna/examen? ¿Quién valida
+   los períodos reales?
+5. **Snapshot**: ¿el certificado congela los requisitos evaluados o los recalcula al mostrarse?
+6. **Reenvíos**: ¿se permite pedir el certificado varias veces? ¿Cuántos intentos se auditan?
+7. **Correo real y verificación**: ¿qué proveedor y qué flujo de código se usarán?
+8. **Auditoría pública**: ¿se registra cada consulta por cédula? ¿Cuánto tiempo se conserva?
+9. **Tablas faltantes**: ¿cuándo llegan lotes, movimientos, búsquedas e incidencias?
+10. **Geografía**: ¿de qué fuente oficial se cargan estados, municipios y parroquias?
+11. **Personal y ciudadano**: ¿son entidades separadas aunque la misma persona aparezca en ambas?
+12. **Nombre de la tabla de entidad**: ¿`cuentas_entidad` es el nombre definitivo?
 
 ## 9. Reglas para la implementación futura
 
 - No importar el SQL ni las tablas desde componentes. El mapeo vive en
   `src/app/nucleo/servicios/`.
-- Los servicios deben exponer modelos de **vista** (lo que la pantalla pinta), no filas
-  crudas. Así el esquema cambia en una sola capa.
-- Los IDs reales son enteros; los mocks actuales usan strings. Convertir en el mapeo, no en
-  las plantillas.
-- Mantener los mocks como están hasta que exista backend. No crear migraciones, ORM ni
-  conexiones todavía.
+- Los servicios exponen modelos de **vista** (lo que la pantalla pinta), no filas crudas.
+- Los IDs reales son enteros; los mocks usan strings. Convertir en el mapeo, no en las plantillas.
+- Mantener los mocks hasta que exista backend. No crear migraciones, ORM ni conexiones todavía.
 - Filtrar datos sensibles en la capa de servicio y en la vista pública, no solo en la UI.
 - Guardar contraseñas con hash y no reutilizar las credenciales de `credenciales-demo.md`.
-- La cuenta de entidad no reemplaza al perfil: `cuentas_entidad` solo abre el primer nivel;
-  la sesión y los permisos salen de la fila de `personal`.
-- No duplicar la lista de perfiles: se obtienen por `personal.centro_id`. `cuentas_entidad.jefe_id`
-  se mantiene sincronizado con `centros_salud.encargado_id`, que es la fuente de verdad.
-- No modificar `docs/referencias/db_schema.sql` a mano: los cambios se documentan aquí y se
-  aplican en la próxima versión que entregue el equipo de BD.
+- `cuentas_entidad` no reemplaza al perfil: abre el primer nivel; la sesión y los permisos salen
+  de `personal`.
+- No duplicar la lista de perfiles: se obtienen por `personal.centro_id`.
+- La bandeja de la subregión solo recibe una notificación por solicitud completa. Revisar o
+  emitir no genera avisos nuevos.
+- El envío del certificado es idempotente en el prototipo: no se repite si `correoEnviado` ya es
+  verdadero. La política real de reenvíos queda abierta.
+- `docs/referencias/db_schema.sql` es el esquema de trabajo. La copia original fechada no se
+  modifica. Cualquier cambio nuevo se documenta aquí y se agrega como extensión revisada, no como
+  migración ejecutada.
+- No inventar columnas para lotes, movimientos o incidencias hasta recibir esa parte.
 
 ## 10. Referencias
 
-- [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql): script recibido.
-- [`docs/referencias/README.md`](../referencias/README.md): procedencia y reglas de la
+- [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql): esquema de trabajo con las
+  extensiones del prototipo.
+- [`docs/referencias/db_schema_original_2026-10-25.sql`](../referencias/db_schema_original_2026-10-25.sql):
+  copia fiel del script recibido.
+- [`docs/referencias/README.md`](../referencias/README.md): procedencia, integridad y reglas de la
   carpeta.
 - [`docs/diseno/modelo-datos-preliminar.md`](./modelo-datos-preliminar.md): boceto histórico.
 - [`docs/diseno/vistas.md`](./vistas.md): navegación y comportamiento de las pantallas.

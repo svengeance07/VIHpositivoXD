@@ -36,11 +36,7 @@
     </article>
   </section>
 
-  <section
-    class="panel lote-card"
-    (mouseenter)="hoverLotes.set(true)"
-    (mouseleave)="hoverLotes.set(false)"
-  >
+  <section class="panel lote-card">
     <header class="bloque__cabecera">
       <div>
         <p class="ca-section-eyebrow">
@@ -48,22 +44,23 @@
           Trazabilidad
         </p>
         <h2>Últimos lotes de vacunas entregados</h2>
-        <p>Pasa el cursor sobre la tarjeta o fija el panel para ver el detalle.</p>
+        <p>Usa el botón para mostrar u ocultar el detalle de los lotes.</p>
       </div>
       <div class="master-acciones">
         <a class="btn btn-ghost" routerLink="/master/vacunas/buscar">Buscar lotes</a>
         <button
           type="button"
           class="lote-card__toggle"
-          [class.is-activo]="lotesVisibles()"
-          [attr.aria-expanded]="lotesVisibles()"
+          [class.is-activo]="lotesFijados()"
+          [attr.aria-expanded]="lotesFijados()"
+          aria-controls="detalle-lotes"
           (click)="alternarLotes()"
         >
           <ca-icon
-            [name]="lotesVisibles() ? 'chevron-down' : 'chevron-right'"
+            [name]="lotesFijados() ? 'chevron-down' : 'chevron-right'"
             aria-hidden="true"
           ></ca-icon>
-          {{ lotesVisibles() ? 'Ocultar detalle' : 'Ver detalle' }}
+          {{ lotesFijados() ? 'Ocultar detalle' : 'Ver detalle' }}
         </button>
       </div>
     </header>
@@ -86,8 +83,8 @@
       }
     </div>
 
-    @if (lotesVisibles()) {
-      <div class="lotes-detalle ca-animate-enter">
+    @if (lotesFijados()) {
+      <div id="detalle-lotes" class="lotes-detalle ca-animate-enter">
         <div class="master-tabla-scroll">
           <table class="master-tabla">
             <thead>

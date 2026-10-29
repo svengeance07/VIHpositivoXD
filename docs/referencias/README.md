@@ -5,41 +5,40 @@ importa desde la aplicación.**
 
 ## Contenido
 
-| Archivo                     | Qué es                                                                |
-| --------------------------- | --------------------------------------------------------------------- |
-| `db_schema.sql`             | Script recibido el **2026-10-25**. Esquema real, todavía **parcial**. |
-| `../diseno/modelo-datos.md` | Lectura del esquema, correspondencia con las vistas y huecos.         |
+| Archivo                             | Qué es                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------- |
+| `db_schema.sql`                     | **Esquema de trabajo** con las extensiones propuestas el 2026-10-29; sigue sin ejecutarse.   |
+| `db_schema_original_2026-10-25.sql` | Copia fiel e inmutable del script recibido. Se conserva para comparar y auditar los cambios. |
+| `../diseno/modelo-datos.md`         | Lectura del esquema, correspondencia con las vistas, flujos y huecos.                        |
 
 `../diseno/modelo-datos-preliminar.md` se conserva como documento histórico: fue el
 boceto que se usó antes de recibir el SQL. No debe usarse para implementar.
 
 ## Estado del esquema
 
-- **Parcial**: trae 16 tablas de ciudadanía, personal, centros, geografía y catálogos
-  clínicos. Todavía no trae lotes/stock, certificados, movimientos, búsquedas ni
-  incidencias. El login de dos niveles se resuelve con la tabla propuesta
-  `cuentas_entidad`, que **no está en este script**; su diseño vive en
-  `../diseno/modelo-datos.md`.
-- **Sin implementar**: no hay backend, migraciones, ORM, conexión a base de datos ni
-  datos reales. El proyecto sigue en etapa de vistas y navegación.
-- **Fuente de verdad**: si este documento y el SQL difieren, manda el SQL. Las
-  decisiones de producto y los cambios propuestos se registran en
-  `../diseno/modelo-datos.md`; el `.sql` de referencia no se edita a mano.
+- **Esquema de trabajo**: parte de las 16 tablas recibidas y agrega, como propuesta, las
+  columnas y tablas que necesitan el login de entidad, los certificados, las notificaciones
+  de la subregión y la consulta pública. Todavía no incluye lotes/stock, movimientos ni
+  incidencias.
+- **Sin implementar**: no hay backend, migraciones, ORM, conexión a base de datos ni datos
+  reales. El proyecto sigue en etapa de vistas y navegación.
+- **Fuente de verdad**: el SQL de trabajo. Las decisiones de producto, los cambios y las
+  dudas se registran en `../diseno/modelo-datos.md` antes de convertirlos en migraciones.
 
-## Integridad del archivo
+## Integridad del archivo original
 
-- Copiado sin modificar desde la descarga local del 2026-10-25.
+- `db_schema_original_2026-10-25.sql` se copió sin modificar desde la descarga local.
 - Tamaño: 6.338 bytes.
 - SHA-256: `456F43FD6FF32A64036AE737BBCBEC9FCE110348AAC282EE2E754FA6799D8F74`.
 
-Si se recibe una versión nueva, reemplazar el archivo, actualizar el checksum y la
-fecha en este README y revisar `../diseno/modelo-datos.md`.
+Si se recibe una versión nueva, guardar el original recibido en un archivo fechado,
+actualizar la referencia y revisar `../diseno/modelo-datos.md`.
 
 ## Reglas
 
-1. No ejecutar el script contra una base real desde el repositorio.
+1. No ejecutar los scripts contra una base real desde el repositorio.
 2. No agregar credenciales, datos personales ni volcados de producción.
-3. No modificar el SQL para reflejar decisiones de interfaz: esas diferencias se
-   documentan como cambios pendientes para la versión que prepare el equipo de BD.
+3. Mantener `db_schema_original_2026-10-25.sql` intacto. Los cambios del prototipo se
+   documentan en `db_schema.sql` y en `../diseno/modelo-datos.md`.
 4. No conectar las vistas directamente a estas tablas: el mapeo vivirá en
    `src/app/nucleo/servicios/` cuando exista backend.

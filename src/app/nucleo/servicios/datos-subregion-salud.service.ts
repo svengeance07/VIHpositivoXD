@@ -203,6 +203,27 @@ export class DatosSubregionSaludService {
     return this.fichasPorId().get(id) ?? null;
   }
 
+  /**
+   * Busca una ficha por cédula sin el filtro territorial del rol 3.
+   *
+   * La consulta pública todavía comparte los mocks de la subregión para poder
+   * probar el envío simulado del certificado. Cuando exista backend, este método
+   * se moverá a un servicio de consulta ciudadana y consultará todos los estados.
+   */
+  fichaPorCedula(cedula: string): FichaCiudadano | null {
+    const normalizada = this.normalizarCedula(cedula);
+
+    if (!normalizada) {
+      return null;
+    }
+
+    const ciudadano = this.datos
+      .ciudadanos()
+      .find((item) => this.normalizarCedula(item.cedula) === normalizada);
+
+    return ciudadano ? this.construirFicha(ciudadano) : null;
+  }
+
   solicitud(id: string): SolicitudCertificadoVista | null {
     return this.solicitudesPorId().get(id) ?? null;
   }
@@ -220,10 +241,52 @@ export class DatosSubregionSaludService {
   }
 
   /**
+   * Certificado que puede mostrarse en la consulta pública.
+   *
+   * Prioriza la última solicitud aprobada o emitida; si no hay ninguna, devuelve
+   * la solicitud más reciente para que el ciudadano conozca su estado.
+   */
+  certificadoPublicoDeCiudadano(ciudadanoId: string): SolicitudCertificadoVista | null {
+    const solicitudes = this.solicitudesDeCiudadano(ciudadanoId);
+
+    return (
+      solicitudes.find(
+        (solicitud) => solicitud.estado === 'autorizado' || solicitud.estado === 'emitido',
+      ) ??
+      solicitudes[0] ??
+      null
+    );
+  }
+
+  /**
+   * Simula el envío del certificado al correo registrado.
+   *
+   * No hay servidor de correo ni comprobación por código todavía. El método solo
+   * registra la intención y exige que la solicitud esté aprobada o emitida.
+   */
+  enviarCertificadoPorCorreo(id: string): boolean {
+    const solicitud = this.solicitud(id);
+
+    if (
+      !solicitud ||
+      solicitud.correoEnviado ||
+      (solicitud.estado !== 'autorizado' && solicitud.estado !== 'emitido')
+    ) {
+      return false;
+    }
+
+    this._solicitudes.update((solicitudes) =>
+      solicitudes.map((actual) => (actual.id === id ? { ...actual, correoEnviado: true } : actual)),
+    );
+
+    return true;
+  }
+
+  /**
    * Registra una solicitud de certificado desde la ficha ciudadana.
    *
-   * No hay portal ciudadano todavía: la subregión actúa como ventanilla de
-   * recepción para poder probar el flujo completo de revisión.
+   * La consulta pública es de solo lectura en este prototipo, así que la
+   * subregión actúa como ventanilla de recepción para probar el flujo completo.
    */
   crearSolicitudCertificado(ciudadanoId: string): SolicitudCertificadoVista | null {
     const ficha = this.ficha(ciudadanoId);
@@ -249,16 +312,21 @@ export class DatosSubregionSaludService {
     };
 
     this._solicitudes.update((solicitudes) => [solicitud, ...solicitudes]);
-    this.agregarNotificacion({
-      tipo: 'certificado',
-      titulo: 'Nueva solicitud de certificado',
-      mensaje: `Se registró una solicitud de certificado para ${ficha.nombre}.`,
-      personaNombre: ficha.nombre,
-      personaCedula: ficha.ciudadano.cedula,
-      centroNombre: ficha.vacunas[0]?.centroNombre ?? ficha.ubicacion,
-      prioridad: 'media',
-      enlace: `/SRS/certificados/${id}`,
-    });
+
+    // La subregión solo recibe un aviso cuando el expediente está completo y
+    // puede pasar a revisión. Los requisitos vencidos no generan notificación.
+    if (ficha.aptoCertificado) {
+      this.agregarNotificacion({
+        tipo: 'solicitud_certificado',
+        titulo: 'Certificado listo para revisión',
+        mensaje: `La solicitud de ${ficha.nombre} reúne todos los requisitos vigentes. Revisa el caso y decide si autorizas la emisión.`,
+        personaNombre: ficha.nombre,
+        personaCedula: ficha.ciudadano.cedula,
+        centroNombre: ficha.vacunas[0]?.centroNombre ?? ficha.ubicacion,
+        prioridad: 'alta',
+        enlace: `/SRS/certificados/${id}`,
+      });
+    }
 
     return this.solicitud(id);
   }
@@ -303,27 +371,16 @@ export class DatosSubregionSaludService {
       ),
     );
 
-    this.agregarNotificacion({
-      tipo: 'certificado',
-      titulo:
-        decision === 'autorizado'
-          ? 'Solicitud de certificado autorizada'
-          : 'Solicitud de certificado descartada',
-      mensaje:
-        decision === 'autorizado'
-          ? `La solicitud de ${solicitud.nombreCiudadano} fue autorizada y está lista para emitirse.`
-          : `La solicitud de ${solicitud.nombreCiudadano} fue descartada. Motivo: ${motivoFinal}`,
-      personaNombre: solicitud.nombreCiudadano,
-      personaCedula: solicitud.cedula,
-      centroNombre: solicitud.ficha.vacunas[0]?.centroNombre ?? solicitud.ficha.ubicacion,
-      prioridad: decision === 'descartado' ? 'alta' : 'media',
-      enlace: `/SRS/certificados/${id}`,
-    });
-
     return true;
   }
 
-  /** Emite un certificado previamente autorizado. El envío por correo aún no existe. */
+  /**
+   * Emite un certificado previamente autorizado.
+   *
+   * La emisión no crea notificaciones: la bandeja solo avisa de solicitudes
+   * listas para revisión. El envío al correo se simula luego desde la consulta
+   * pública.
+   */
   emitirSolicitud(id: string, revisor: string): boolean {
     const solicitud = this.solicitud(id);
 
@@ -345,17 +402,6 @@ export class DatosSubregionSaludService {
           : actual,
       ),
     );
-
-    this.agregarNotificacion({
-      tipo: 'certificado',
-      titulo: 'Certificado de salud emitido',
-      mensaje: `El certificado de ${solicitud.nombreCiudadano} fue emitido. El envío por correo quedará disponible en una fase posterior.`,
-      personaNombre: solicitud.nombreCiudadano,
-      personaCedula: solicitud.cedula,
-      centroNombre: solicitud.ficha.vacunas[0]?.centroNombre ?? solicitud.ficha.ubicacion,
-      prioridad: 'baja',
-      enlace: `/SRS/certificados/${id}`,
-    });
 
     return true;
   }
@@ -389,17 +435,8 @@ export class DatosSubregionSaludService {
     }
   }
 
-  etiquetaTipoNotificacion(tipo: TipoNotificacionSrs): string {
-    switch (tipo) {
-      case 'esavi':
-        return 'ESAVI';
-      case 'certificado':
-        return 'Certificado';
-      case 'expediente':
-        return 'Expediente';
-      case 'sistema':
-        return 'Sistema';
-    }
+  etiquetaTipoNotificacion(_tipo: TipoNotificacionSrs): string {
+    return 'Solicitud de certificado';
   }
 
   etiquetaPrioridad(prioridad: PrioridadNotificacionSrs): string {
@@ -693,6 +730,10 @@ export class DatosSubregionSaludService {
     ).length;
 
     return `${prefijo}${String(existentes + 1).padStart(3, '0')}`;
+  }
+
+  private normalizarCedula(cedula: string): string {
+    return cedula.replace(/\D/g, '');
   }
 
   private fechaHoy(): string {

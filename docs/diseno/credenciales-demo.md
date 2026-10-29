@@ -25,8 +25,8 @@ En desarrollo, el propio login muestra este listado dentro de un panel desplegab
 | ------------- | ------------------- | ----------- | ----------------- |
 | Ana Rodríguez | `master@vih.gob.ve` | `master123` | `master`          |
 
-Entra directo al panel provisional `/master`, sin segundo paso. El dashboard futuro saludará con
-`nombre_usuario` (`master`); "Ana Rodríguez" es solo el nombre visible de la demo y no se guarda como columna.
+Entra directo al panel `/master`, sin segundo paso. El dashboard saluda con `nombre_usuario` (`master`); "Ana
+Rodríguez" es solo el nombre visible de la demo y no se guarda como columna.
 
 ## Rol 2 · Centro de salud
 
@@ -92,4 +92,5 @@ Consecuencias:
 
 Cada rol navega a su prefijo (`/master`, `/PS` o `/SRS`). El master, `/PS` y `/SRS` abren sus paneles con navegación
 y vistas mock; la subregión incluye personal, ciudadanos, certificados y notificaciones. La consulta pública
-(`/consulta`) sigue siendo un placeholder y no pide credenciales.
+(`/consulta`) ya está implementada, no pide credenciales ni código de verificación en esta etapa y permite simular el
+envío del certificado aprobado o emitido.

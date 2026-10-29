@@ -19,8 +19,8 @@ import { SrsEncabezado } from '../../componentes/srs-encabezado/srs-encabezado';
  * Detalle de una solicitud de certificado.
  *
  * Permite revisar los requisitos, autorizar o descartar la creación del
- * certificado y, una vez autorizado, emitirlo. El envío por correo queda
- * visible como acción futura, deshabilitada.
+ * certificado y, una vez autorizado, emitirlo. El envío al correo se solicita
+ * desde la consulta pública y aquí solo se muestra como referencia.
  */
 @Component({
   selector: 'app-subregion-salud-certificado-detalle',
@@ -110,7 +110,7 @@ export class SubregionSaludCertificadoDetalle {
     }
 
     this.exito.set(
-      'El certificado fue emitido correctamente. El envío por correo sigue pendiente.',
+      'El certificado fue emitido. El ciudadano ya puede solicitar el envío desde la consulta pública.',
     );
   }
 }

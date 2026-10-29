@@ -28,9 +28,7 @@ export class MasterInicio {
   private readonly catalogos = inject(CatalogosService);
   protected readonly datos = inject(DatosMasterService);
 
-  protected readonly hoverLotes = signal(false);
   protected readonly lotesFijados = signal(false);
-  protected readonly lotesVisibles = computed(() => this.hoverLotes() || this.lotesFijados());
 
   protected readonly nombre = computed(
     () => this.sesion.sesion()?.nombreUsuario ?? this.sesion.sesion()?.nombre ?? 'master',

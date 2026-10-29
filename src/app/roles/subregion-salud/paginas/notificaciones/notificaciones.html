@@ -2,7 +2,7 @@
   <app-srs-encabezado
     [eyebrow]="'Notificaciones · ' + datos.estadoNombre"
     titulo="Bandeja de notificaciones"
-    descripcion="Eventos de personas, centros y trámites del estado asignado a esta subregión."
+    descripcion="Solicitudes de certificado que ya reúnen todos los requisitos y esperan la revisión de la subregión."
   >
     <span class="srs-badge srs-badge--warn">{{ conteos().noLeidas }} sin leer</span>
     <button
@@ -19,35 +19,35 @@
   <section class="srs-metricas" aria-label="Resumen de notificaciones">
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="feedback"></ca-icon>
+        <ca-icon name="clipboard"></ca-icon>
       </span>
       <span class="srs-metrica__etiqueta">Notificaciones totales</span>
       <strong>{{ conteos().total }}</strong>
-      <small>Eventos disponibles en la bandeja del estado.</small>
+      <small>Solicitudes listas para revisión en el estado.</small>
     </article>
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="warning"></ca-icon>
+        <ca-icon name="feedback"></ca-icon>
       </span>
       <span class="srs-metrica__etiqueta">Sin leer</span>
       <strong>{{ conteos().noLeidas }}</strong>
       <small>Requieren atención de la subregión.</small>
     </article>
-    <article class="panel srs-metrica">
-      <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="clipboard"></ca-icon>
-      </span>
-      <span class="srs-metrica__etiqueta">Eventos ESAVI</span>
-      <strong>{{ conteos().esavi }}</strong>
-      <small>Reportes de reacciones adversas a vacunas.</small>
-    </article>
     <article class="panel srs-metrica srs-metrica--ok">
       <span class="srs-metrica__icono" aria-hidden="true">
         <ca-icon name="check"></ca-icon>
       </span>
-      <span class="srs-metrica__etiqueta">Trámites de certificado</span>
-      <strong>{{ conteos().certificado }}</strong>
-      <small>Solicitudes, decisiones y emisiones.</small>
+      <span class="srs-metrica__etiqueta">Leídas</span>
+      <strong>{{ conteos().leidas }}</strong>
+      <small>Notificaciones que ya se consultaron.</small>
+    </article>
+    <article class="panel srs-metrica srs-metrica--alerta">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="warning"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Prioridad alta</span>
+      <strong>{{ conteos().alta }}</strong>
+      <small>Casos que conviene revisar primero.</small>
     </article>
   </section>
 
@@ -55,7 +55,7 @@
     <header class="srs-panel-cabecera">
       <div>
         <h2>Filtrar la bandeja</h2>
-        <p>Combina el estado de lectura con el tipo de evento.</p>
+        <p>Consulta todas las solicitudes notificadas o solo las que siguen sin leer.</p>
       </div>
       @if (hayFiltros()) {
         <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
@@ -64,75 +64,25 @@
       }
     </header>
 
-    <div class="notificaciones-filtros">
-      <div class="srs-chips" role="group" aria-label="Estado de lectura">
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="lectura() === 'todas'"
-          [attr.aria-pressed]="lectura() === 'todas'"
-          (click)="lectura.set('todas')"
-        >
-          Todas <span class="srs-chip__conteo">{{ conteos().total }}</span>
-        </button>
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="lectura() === 'no_leidas'"
-          [attr.aria-pressed]="lectura() === 'no_leidas'"
-          (click)="lectura.set('no_leidas')"
-        >
-          Sin leer <span class="srs-chip__conteo">{{ conteos().noLeidas }}</span>
-        </button>
-      </div>
-
-      <div class="srs-chips" role="group" aria-label="Tipo de notificación">
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="tipo() === 'todos'"
-          [attr.aria-pressed]="tipo() === 'todos'"
-          (click)="tipo.set('todos')"
-        >
-          Todos los tipos
-        </button>
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="tipo() === 'esavi'"
-          [attr.aria-pressed]="tipo() === 'esavi'"
-          (click)="tipo.set('esavi')"
-        >
-          ESAVI <span class="srs-chip__conteo">{{ conteos().esavi }}</span>
-        </button>
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="tipo() === 'certificado'"
-          [attr.aria-pressed]="tipo() === 'certificado'"
-          (click)="tipo.set('certificado')"
-        >
-          Certificados <span class="srs-chip__conteo">{{ conteos().certificado }}</span>
-        </button>
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="tipo() === 'expediente'"
-          [attr.aria-pressed]="tipo() === 'expediente'"
-          (click)="tipo.set('expediente')"
-        >
-          Expedientes <span class="srs-chip__conteo">{{ conteos().expediente }}</span>
-        </button>
-        <button
-          type="button"
-          class="srs-chip"
-          [class.is-active]="tipo() === 'sistema'"
-          [attr.aria-pressed]="tipo() === 'sistema'"
-          (click)="tipo.set('sistema')"
-        >
-          Sistema <span class="srs-chip__conteo">{{ conteos().sistema }}</span>
-        </button>
-      </div>
+    <div class="srs-chips" role="group" aria-label="Estado de lectura">
+      <button
+        type="button"
+        class="srs-chip"
+        [class.is-active]="lectura() === 'todas'"
+        [attr.aria-pressed]="lectura() === 'todas'"
+        (click)="lectura.set('todas')"
+      >
+        Todas <span class="srs-chip__conteo">{{ conteos().total }}</span>
+      </button>
+      <button
+        type="button"
+        class="srs-chip"
+        [class.is-active]="lectura() === 'no_leidas'"
+        [attr.aria-pressed]="lectura() === 'no_leidas'"
+        (click)="lectura.set('no_leidas')"
+      >
+        Sin leer <span class="srs-chip__conteo">{{ conteos().noLeidas }}</span>
+      </button>
     </div>
   </section>
 
@@ -140,8 +90,8 @@
     @if (resultados().length === 0) {
       <article class="panel">
         <div class="srs-vacio">
-          <ca-icon name="feedback" aria-hidden="true"></ca-icon>
-          <strong>No hay notificaciones con esos filtros</strong>
+          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+          <strong>No hay notificaciones con ese filtro</strong>
           <p>La bandeja está al día para el criterio seleccionado.</p>
           @if (hayFiltros()) {
             <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
@@ -157,7 +107,6 @@
             <span
               class="notificacion__icono"
               [class.notificacion__icono--alta]="notificacion.prioridad === 'alta'"
-              [class.notificacion__icono--ok]="notificacion.tipo === 'certificado'"
               aria-hidden="true"
             >
               <ca-icon [name]="icono(notificacion)"></ca-icon>
@@ -205,7 +154,7 @@
                       [routerLink]="enlace"
                       (click)="marcarLeida(notificacion)"
                     >
-                      Abrir
+                      Revisar solicitud
                       <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
                     </a>
                   }
@@ -230,8 +179,8 @@
   <div class="srs-aviso">
     <ca-icon name="feedback" aria-hidden="true"></ca-icon>
     <span>
-      Las notificaciones se generan con los eventos de las personas y centros de Guárico. El envío
-      de correos y las notificaciones externas se incorporarán en una fase posterior.
+      Solo se generan notificaciones cuando una solicitud de certificado reúne todos los requisitos
+      vigentes. Los vencimientos de vacunas o exámenes no envían avisos a esta bandeja.
     </span>
   </div>
 </div>

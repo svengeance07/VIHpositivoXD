@@ -130,7 +130,12 @@ export interface SolicitudCertificadoVista extends SolicitudCertificado {
   readonly correo: string;
 }
 
-export type TipoNotificacionSrs = 'esavi' | 'certificado' | 'expediente' | 'sistema';
+/**
+ * La bandeja de la subregión solo recibe avisos de solicitudes de certificado
+ * que ya reúnen todos los requisitos. Los vencimientos de vacunas o exámenes
+ * no generan notificaciones.
+ */
+export type TipoNotificacionSrs = 'solicitud_certificado';
 
 export type PrioridadNotificacionSrs = 'alta' | 'media' | 'baja';
 

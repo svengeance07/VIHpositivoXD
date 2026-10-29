@@ -9,20 +9,17 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import type {
-  NotificacionSrs,
-  TipoNotificacionSrs,
-} from '../../../../nucleo/modelos/subregion-salud';
+import type { NotificacionSrs } from '../../../../nucleo/modelos/subregion-salud';
 import { DatosSubregionSaludService } from '../../../../nucleo/servicios/datos-subregion-salud.service';
 import { SrsEncabezado } from '../../componentes/srs-encabezado/srs-encabezado';
 
 type FiltroLectura = 'todas' | 'no_leidas';
-type FiltroTipo = 'todos' | TipoNotificacionSrs;
 
 /**
  * Bandeja de notificaciones de la subregión.
- * Solo muestra eventos de personas y centros del estado asignado. Las acciones
- * del flujo de certificados agregan notificaciones nuevas automáticamente.
+ *
+ * Solo muestra solicitudes de certificado que ya reúnen todos los requisitos y
+ * esperan la revisión de la subregión. No hay avisos por vencimientos clínicos.
  */
 @Component({
   selector: 'app-subregion-salud-notificaciones',
@@ -36,7 +33,6 @@ export class SubregionSaludNotificaciones {
   protected readonly datos = inject(DatosSubregionSaludService);
 
   protected readonly lectura = signal<FiltroLectura>('todas');
-  protected readonly tipo = signal<FiltroTipo>('todos');
 
   protected readonly conteos = computed(() => {
     const notificaciones = this.datos.notificaciones();
@@ -44,24 +40,16 @@ export class SubregionSaludNotificaciones {
     return {
       total: notificaciones.length,
       noLeidas: notificaciones.filter((notificacion) => !notificacion.leida).length,
-      esavi: notificaciones.filter((notificacion) => notificacion.tipo === 'esavi').length,
-      certificado: notificaciones.filter((notificacion) => notificacion.tipo === 'certificado')
-        .length,
-      expediente: notificaciones.filter((notificacion) => notificacion.tipo === 'expediente')
-        .length,
-      sistema: notificaciones.filter((notificacion) => notificacion.tipo === 'sistema').length,
+      leidas: notificaciones.filter((notificacion) => notificacion.leida).length,
+      alta: notificaciones.filter((notificacion) => notificacion.prioridad === 'alta').length,
     };
   });
 
   protected readonly resultados = computed<readonly NotificacionSrs[]>(() => {
     const lectura = this.lectura();
-    const tipo = this.tipo();
 
     return this.datos.notificaciones().filter((notificacion) => {
       if (lectura === 'no_leidas' && notificacion.leida) {
-        return false;
-      }
-      if (tipo !== 'todos' && notificacion.tipo !== tipo) {
         return false;
       }
 
@@ -69,9 +57,7 @@ export class SubregionSaludNotificaciones {
     });
   });
 
-  protected readonly hayFiltros = computed(
-    () => this.lectura() !== 'todas' || this.tipo() !== 'todos',
-  );
+  protected readonly hayFiltros = computed(() => this.lectura() !== 'todas');
 
   protected marcarLeida(notificacion: NotificacionSrs): void {
     if (!notificacion.leida) {
@@ -85,19 +71,9 @@ export class SubregionSaludNotificaciones {
 
   protected limpiar(): void {
     this.lectura.set('todas');
-    this.tipo.set('todos');
   }
 
   protected icono(notificacion: NotificacionSrs): string {
-    switch (notificacion.tipo) {
-      case 'esavi':
-        return 'warning';
-      case 'certificado':
-        return 'check';
-      case 'expediente':
-        return 'clipboard';
-      case 'sistema':
-        return 'feedback';
-    }
+    return notificacion.prioridad === 'alta' ? 'warning' : 'clipboard';
   }
 }

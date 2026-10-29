@@ -9,29 +9,30 @@
 
 ## Project structure and stage
 
-- Current stage: views and navigation only. Landing, login, the master role, `/PS` and `/SRS` are implemented with mock data; `/consulta` is a placeholder. SRS certificate email delivery is deliberately deferred. No backend, no real auth, no guards or permission enforcement yet.
-- The database schema is **reference only and partial**: `docs/referencias/db_schema.sql` (received 2026-10-25) and `docs/diseno/modelo-datos.md`. Do not create migrations, ORM models, connections, or seeders yet.
+- Current stage: views and navigation only. Landing, login, `/consulta`, the master role, `/PS` and `/SRS` are implemented with mock data. Public certificate email delivery is simulated; no real email or verification code. No backend, no real auth, no guards or permission enforcement yet.
+- The database schema is **design only**: `docs/referencias/db_schema.sql` is the working schema (16 received tables plus proposed extensions) and `docs/diseno/modelo-datos.md` explains it. The received copy is frozen in `docs/referencias/db_schema_original_2026-10-25.sql`. Do not create migrations, ORM models, connections, or seeders yet.
 - Each role owns its folder under `src/app/roles/`: `master` (`/master`), `personal-salud` (`/PS`), `subregion-salud` (`/SRS`), each with `shell/` and `paginas/`.
 - Shared code lives in `src/app/nucleo` (models, mock data, services) and `src/app/compartido` (reusable UI); `src/app/publico` holds landing, login and consulta.
-- `/login` simulates authentication against `nucleo/datos/cuentas-acceso.ts` through `SesionService`. Roles 2 and 3 validate the entity account and then the jefe/trabajador profile. There is no backend and credentials are fake; see `docs/diseno/credenciales-demo.md`. The two-level flow is kept: `cuentas_entidad` (a proposed table, not in the received script) would hold entity credentials and `jefe_id`, while profiles remain rows of `personal` with `tipo_cuenta` (2/3).
+- `/login` simulates authentication against `nucleo/datos/cuentas-acceso.ts` through `SesionService`. Roles 2 and 3 validate the entity account and then the jefe/trabajador profile. There is no backend and credentials are fake; see `docs/diseno/credenciales-demo.md`. The two-level flow is kept: `cuentas_entidad` (proposed in the working schema) would hold entity credentials and `jefe_id`, while profiles remain rows of `personal` with `tipo_cuenta` (2/3).
 - Hardcoded data belongs in `nucleo/datos`, exposed through signal-based services in `nucleo/servicios`. Components never import mock arrays directly.
 - `app.routes.ts` is composition only, using lazy `loadChildren` per role.
 - Details and pending decisions: `docs/arquitectura.md`.
 
 ## Data model (reference, not implemented)
 
-- Source of truth: `docs/referencias/db_schema.sql` (partial, 16 tables). Reading and gaps: `docs/diseno/modelo-datos.md`. The old `docs/diseno/modelo-datos-preliminar.md` is historical.
-- `usuarios` = citizens, not accounts. Internal accounts are `personal` (roles 2/3) and `master` (role 1). A `cuentas_entidad` table is proposed for the entity-level login; it is not in the received script.
-- A subregion is a `centros_salud` row with a future `tipo` column (2 = centro, 3 = subregion; one per state), not a separate table. Its staff are `personal` with `tipo_cuenta = 3`. The establishment type (hospital, ambulatory, CDI) is expressed in the name, not in a column.
-- Jefe/trabajador is not a column: there is one jefe per center, derived from `centros_salud.encargado_id` (jefe = encargado). `usuarios.sexo`, `usuarios.creado_en` and `centros_salud.tipo` are agreed additions.
-- Missing from this delivery: lotes/stock, certificados, movimientos, búsquedas and incidencias. Do not design their final columns or implement them yet.
-- Do not edit the SQL reference by hand. Record schema changes and open questions in `docs/diseno/modelo-datos.md`.
+- Source of truth: `docs/referencias/db_schema.sql` (working schema: 16 received tables plus proposed extensions). Reading, flows and gaps: `docs/diseno/modelo-datos.md`. The old `docs/diseno/modelo-datos-preliminar.md` is historical.
+- `usuarios` = citizens, not accounts. Internal accounts are `personal` (roles 2/3) and `master` (role 1). `cuentas_entidad` is proposed for the entity-level login; it is not in the received script.
+- A subregion is a `centros_salud` row with `tipo` (2 = centro, 3 = subregion; one per state), not a separate table. Its staff are `personal` with `tipo_cuenta = 3`. The establishment type (hospital, ambulatory, CDI) is expressed in the name, not in a column.
+- Jefe/trabajador is not a column: there is one jefe per center, derived from `centros_salud.encargado_id` (jefe = encargado). `usuarios.sexo`, `usuarios.creado_en`, `usuarios.activo` and `centros_salud.tipo` are agreed additions.
+- `certificados_salud`, `notificaciones_srs` and `certificado_envios` are proposed. The SRS inbox only gets requests whose requirements are complete; no expiry/ESAVI/system notifications. Certificate email is simulated and has no verification code.
+- Still missing: lotes/stock, movimientos, búsquedas históricas and incidencias. Do not design their final columns or implement them yet.
+- Keep `db_schema_original_2026-10-25.sql` untouched. Add reviewed changes to `db_schema.sql` and document them in `docs/diseno/modelo-datos.md`.
 
 ## Commands (verified)
 
 - Install: `pnpm install`. If a dependency has build scripts, add it to `allowBuilds` in `pnpm-workspace.yaml` (or set it to `false` when the script is unnecessary); otherwise install fails with `ERR_PNPM_IGNORED_BUILDS`.
 - Dev server: `pnpm start` → http://localhost:4200.
-- Build/typecheck: `pnpm build` (production config; budgets are 500 kB warning / 1 MB error, current bundle ~403 kB).
+- Build/typecheck: `pnpm build` (production config; budgets are 500 kB warning / 1 MB error, current bundle ~473 kB).
 - All tests: `pnpm test --watch=false`. `--watch` defaults to true only in a TTY.
 - Single test file: `pnpm test --watch=false --include app/app.spec.ts` (path is relative to `src/`). Filter by suite/test name with `--filter "^App"`.
 - Format: `pnpm format`; verify with `pnpm format:check`. No linter is configured, so `pnpm build` is the typecheck gate.

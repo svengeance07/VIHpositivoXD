@@ -42,16 +42,16 @@
       </span>
       <span class="srs-metrica__etiqueta">Certificados pendientes</span>
       <strong>{{ datos.resumen().solicitudesPendientes }}</strong>
-      <small>{{ datos.resumen().certificadosEmitidos }} emitidos en el período de prueba.</small>
+      <small>Solicitudes esperando revisión en la bandeja.</small>
     </article>
 
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
         <ca-icon name="warning"></ca-icon>
       </span>
-      <span class="srs-metrica__etiqueta">Alertas sin leer</span>
+      <span class="srs-metrica__etiqueta">Solicitudes sin leer</span>
       <strong>{{ datos.resumen().noLeidas }}</strong>
-      <small>Notificaciones de personas del estado asignado.</small>
+      <small>Certificados completos pendientes de revisión.</small>
     </article>
   </section>
 
@@ -123,7 +123,7 @@
             Vigilancia
           </p>
           <h2>Notificaciones recientes</h2>
-          <p>Eventos de salud y trámites de la subregión.</p>
+          <p>Solicitudes de certificado listas para revisión.</p>
         </div>
         <a class="btn btn-ghost btn-sm" routerLink="/SRS/notificaciones">Abrir bandeja</a>
       </header>
@@ -142,7 +142,9 @@
                 [class.inicio-notificacion__icono--alta]="notificacion.prioridad === 'alta'"
                 aria-hidden="true"
               >
-                <ca-icon [name]="notificacion.tipo === 'esavi' ? 'warning' : 'feedback'"></ca-icon>
+                <ca-icon
+                  [name]="notificacion.prioridad === 'alta' ? 'warning' : 'clipboard'"
+                ></ca-icon>
               </span>
               <span class="inicio-notificacion__texto">
                 <strong>{{ notificacion.titulo }}</strong>
@@ -155,7 +157,7 @@
           } @else {
             <div class="inicio-notificacion" [class.is-no-leida]="!notificacion.leida">
               <span class="inicio-notificacion__icono" aria-hidden="true">
-                <ca-icon name="feedback"></ca-icon>
+                <ca-icon name="clipboard"></ca-icon>
               </span>
               <span class="inicio-notificacion__texto">
                 <strong>{{ notificacion.titulo }}</strong>
@@ -212,7 +214,7 @@
           <h2>De la solicitud al correo</h2>
           <p>Ruta prevista para la emisión del certificado de salud.</p>
         </div>
-        <span class="srs-badge srs-badge--suave">Correo: próxima fase</span>
+        <span class="srs-badge srs-badge--suave">Correo: simulado</span>
       </header>
 
       <ol class="inicio-flujo">
@@ -241,7 +243,7 @@
           <span class="inicio-flujo__numero">4</span>
           <div>
             <strong>Emisión y envío</strong>
-            <p>El certificado se emite; el envío por correo se habilitará después.</p>
+            <p>El certificado se emite y el ciudadano puede pedir el envío simulado a su correo.</p>
           </div>
         </li>
       </ol>
