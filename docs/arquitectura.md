@@ -1,6 +1,6 @@
 # Arquitectura y decisiones
 
-Última actualización: 2026-10-29
+Última actualización: 2026-11-06
 
 ## Alcance actual
 
@@ -42,8 +42,9 @@
   sigue validando el correo y la contraseña de `personal`; el jefe se deriva de `jefe_id`/`encargado_id`.
 - El login de dos niveles se mantiene: `cuentas_entidad` abre la entidad y `personal` abre el perfil. El master
   entra directo con `master`. Ver `modelo-datos.md` §5.1.
-- La validación es simulada con `SesionService`; no hay backend ni persistencia de sesión. Al recargar se pierde.
-- Credenciales de prueba: `docs/diseno/credenciales-demo.md`. En desarrollo, el login muestra el mismo listado.
+- La validación es simulada con `SesionService`; las cuentas y perfiles creados en caliente se persisten en `localStorage` (`vih_cuentas_acceso_v1`), mientras que la sesión activa vive en memoria y se reinicia al recargar.
+- Los formularios de los pasos 2 y 3 incluyen un `<button type="submit" class="visualmente-oculto">` junto al `<ca-button>` para garantizar el envío nativo con la tecla `Enter`.
+- Credenciales de prueba: `docs/diseno/credenciales-demo.md`. En desarrollo, el login muestra el listado vivo de `SesionService.cuentasDemo()`, incluyendo los centros y trabajadores dados de alta desde `/master` o `/SRS`.
 - El login pide **correo y contraseña** para todos los roles (decisión 16 de `vistas.md`). El esquema ya incluye
   `master.nombre_usuario`; el dashboard usa ese valor para el saludo. La UI de login conserva el correo y el backend
   podrá aceptar también el nombre de usuario del master.
@@ -54,16 +55,23 @@
 - `src/app/nucleo/modelos/`: interfaces del dominio (`Persona`, `Usuario`, etc.), todavía provisionales.
 - `src/app/nucleo/datos/`: arrays hardcodeados.
 - `src/app/nucleo/datos/catalogos.ts`: catálogos temporales (vacunas, exámenes, profesiones, grados de instrucción, grupos étnicos, tipos de establecimiento, tipos de sangre), expuestos por `CatalogosService`. Cuando exista backend se reemplazan por las tablas `vacunas`, `profesiones`, `etnias`, `tipoSangre` y las que falten. El catálogo de tipos de establecimiento no tendrá columna: sirve solo para sugerir el nombre del centro.
-- `src/app/nucleo/datos/cuentas-acceso.ts`: cuentas de prueba con sus perfiles jefe/trabajador; replica el futuro
-  `cuentas_entidad` + `personal` y las valida `SesionService`.
+- `src/app/nucleo/datos/cuentas-acceso.ts`: cuentas de prueba iniciales con sus perfiles jefe/trabajador; replica el futuro
+  `cuentas_entidad` + `personal` y las valida `SesionService` con persistencia en `localStorage` (`vih_cuentas_acceso_v1`).
 - `src/app/nucleo/datos/subregion-salud.ts`: ámbito de la subregión de Guárico, solicitudes de certificado y
   notificaciones propias del rol 3. Solo las solicitudes completas generan notificación. Los ciudadanos y el personal
-  tipo 2 se reutilizan de `master.ts`.
+  tipo 2 se reutilizan de `master.ts` a través de `DatosMasterService`.
+- `src/app/nucleo/servicios/datos-master.service.ts`: administra el catálogo reactivo de estados, municipios, parroquias,
+  centros/subregiones (`vih_centros_master_v1`) y personal (`vih_personal_master_v1`). Sincroniza automáticamente las
+  altas (`crearSubregion`, `crearCentro`, `crearEmpleado`) con `SesionService` para habilitar el login inmediato de las
+  nuevas cuentas y perfiles.
 - `src/app/nucleo/servicios/datos-subregion-salud.service.ts`: consolida las fichas ciudadanas (vacunas, exámenes,
-  requisitos y línea de tiempo), acota los datos al estado de la sesión y orquesta las solicitudes, decisiones,
-  emisiones, notificaciones y el envío simulado del certificado con `signal`. También expone la búsqueda pública por
-  cédula sin el filtro territorial del rol 3.
-- `src/app/nucleo/servicios/`: servicios con `signal` que leen y mutan los mocks.
+  requisitos y línea de tiempo), acota los datos al estado de la sesión y orquesta el alta de centros (`crearCentro`) y
+  trabajadores tipo 2 (`crearTrabajador`), además de las solicitudes, decisiones, emisiones, notificaciones y el envío
+  simulado del certificado con `signal`. También expone la búsqueda pública por cédula sin el filtro territorial del rol 3.
+- `src/app/nucleo/servicios/datos-personal-salud.service.ts`: gestiona el estado reactivo del Centro de Salud (`/PS`) con
+  persistencia en `localStorage` para enfermeros (`vih_enfermeros_centro_v1`), pacientes (`vih_pacientes_centro_v1`),
+  aplicaciones de vacunas (`vih_aplicaciones_centro_v1`) y reportes de incidencias ESAVI (`vih_reportes_centro_v1`).
+- `src/app/nucleo/servicios/`: servicios con `signal` que leen y mutan los mocks (y exponen `limpiarAlmacenamiento()` para aislar las pruebas unitarias).
 - Las vistas consumen servicios; nunca importan los arrays mock directamente.
 - El esquema de trabajo está en `docs/referencias/db_schema.sql` y su lectura en `docs/diseno/modelo-datos.md`. **No se ha implementado**: los mocks siguen siendo la fuente de datos de la app.
 - Correspondencia rápida: **ciudadano** → `usuarios` + teléfonos + residencias + catálogos; **personal** → `personal` + `centros_salud` + `profesiones`; **cuenta de entidad** → `cuentas_entidad` + `centros_salud`; **master** → `master`; **subregión** → `centros_salud` con `tipo = 3`; **certificado** → `certificados_salud` + `certificado_envios`; **notificación** → `notificaciones_srs`. Lotes, movimientos e incidencias todavía no tienen tabla.
@@ -125,6 +133,8 @@ src/app/
 
 - Las carpetas vacías se versionan con `.gitkeep` porque Git no guarda directorios vacíos.
 - Los shells usan las clases CSS de Caustica (`.ui-navbar`, `.ui-nav`, `.ui-table`, etc.). Caustica no incluye componentes Angular de layout, tabla ni formularios: solo custom elements para botón, icono, modal, tabs y collapse.
+- `src/styles.css` importa `caustica-design/css` y define los alias semánticos compartidos por `/PS` y `/SRS` (`--surface-glass`, `--surface-glass-hover`, `--surface`, `--border-subtle`, `--text-muted`, `--bg-canvas`, `--color-primario`, `--shadow-sm`, `--shadow-md`) conectados a los tokens de Caustica (`--glass-surface`, `--glass-surface-strong`, `--color-bg-elevated`, `--glass-border`, `--muted`, `--bg`, `--color-accent`), además de `font-variant-numeric: tabular-nums` en métricas y tablas, `:focus-visible`, `::selection` y `.visualmente-oculto`.
+- Las skills de desarrollo asisten la calidad del código y del diseño en `.opencode/skills/` y `.agents/skills/`: `angular-best-practices`, `liquid-glass-ui` e `impeccable` (incluyendo el detector determinista de antipatrones UI `impeccable.cmd detect src/ --json`).
 - El SQL de referencia y su procedencia viven en `docs/referencias/`; no forman parte del bundle ni se importan desde la app.
 
 ## Reglas de modularidad (3 personas)

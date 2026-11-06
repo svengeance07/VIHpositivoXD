@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { DatosPersonalSaludService } from '../../../../nucleo/servicios/datos-personal-salud.service';
+import { SesionService } from '../../../../nucleo/servicios/sesion.service';
 import { PsEncabezado } from '../../componentes/ps-encabezado/ps-encabezado';
 
 /**
@@ -32,6 +33,7 @@ import { PsEncabezado } from '../../componentes/ps-encabezado/ps-encabezado';
 })
 export class PersonalSaludInicio {
   protected readonly datosPS = inject(DatosPersonalSaludService);
+  private readonly sesion = inject(SesionService);
   private readonly router = inject(Router);
 
   /** Cédula ingresada en el buscador rápido del dashboard */
@@ -39,7 +41,9 @@ export class PersonalSaludInicio {
 
   /** Perfil y estado del centro */
   protected readonly esJefe = this.datosPS.esJefe;
-  protected readonly nombreCentro = computed(() => this.datosPS.centroNombre);
+  protected readonly nombreCentro = computed(
+    () => this.sesion.sesion()?.entidad ?? this.datosPS.centroNombre,
+  );
   protected readonly enfermero = this.datosPS.enfermeroActual;
 
   /** Métricas reactivas del centro */
@@ -52,7 +56,7 @@ export class PersonalSaludInicio {
   /** Saludo personalizado */
   protected readonly saludoUsuario = computed(() => {
     if (this.esJefe()) {
-      return 'Dra. María Pérez';
+      return this.sesion.sesion()?.perfil?.nombre ?? 'Dra. María Pérez';
     }
     return `${this.enfermero().nombre} (Enfermería)`;
   });

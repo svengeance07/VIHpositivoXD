@@ -8,6 +8,7 @@ describe('DatosPersonalSaludService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(DatosPersonalSaludService);
+    service.limpiarAlmacenamiento();
   });
 
   it('inicializa con métricas globales coherentes del centro de salud', () => {

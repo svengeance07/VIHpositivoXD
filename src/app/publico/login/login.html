@@ -106,6 +106,10 @@
             <p class="field-error" role="alert">{{ error() }}</p>
           }
 
+          <button type="submit" class="visualmente-oculto" tabindex="-1" aria-hidden="true">
+            Continuar
+          </button>
+
           <ca-button
             variant="primary"
             icon="log-in"
@@ -170,6 +174,10 @@
           @if (error()) {
             <p class="field-error" role="alert">{{ error() }}</p>
           }
+
+          <button type="submit" class="visualmente-oculto" tabindex="-1" aria-hidden="true">
+            Entrar al sistema
+          </button>
 
           <ca-button
             variant="primary"

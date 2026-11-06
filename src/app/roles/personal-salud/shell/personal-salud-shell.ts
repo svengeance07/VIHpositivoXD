@@ -52,7 +52,9 @@ export class PersonalSaludShell {
 
   /** Datos del usuario y centro activo */
   protected readonly esJefe = this.datosPS.esJefe;
-  protected readonly nombreCentro = computed(() => this.datosPS.centroNombre);
+  protected readonly nombreCentro = computed(
+    () => this.sesion.sesion()?.entidad ?? this.datosPS.centroNombre,
+  );
 
   protected readonly nombreUsuario = computed(() => {
     if (this.esJefe()) {
@@ -65,14 +67,18 @@ export class PersonalSaludShell {
     return this.esJefe() ? 'Jefe de Centro' : 'Enfermero Operativo';
   });
 
-  protected readonly iniciales = computed(() =>
-    this.nombreUsuario()
+  protected readonly iniciales = computed(() => {
+    const limpio = this.nombreUsuario().replace(
+      /^(lic\.|dra\.|dr\.|enf\.|tsu|téc\.|tec\.|bioanalista|analista|ing\.)\s+/i,
+      '',
+    );
+    return limpio
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
       .map((p) => p[0]?.toUpperCase() ?? '')
-      .join(''),
-  );
+      .join('');
+  });
 
   /**
    * Navegación completa adaptada a los requerimientos del Centro de Salud.

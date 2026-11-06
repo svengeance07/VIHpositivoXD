@@ -1,5 +1,15 @@
 # AGENTS.md
 
+## Mandatory pre-flight check (Read `docs/` first)
+
+- Before modifying any component, route, model, or service in `src/`, you MUST read the relevant documentation in `docs/`:
+  - `docs/arquitectura.md` — architecture, roles, state persistence, and pending decisions.
+  - `docs/diseno/vistas.md` — routes, screens, and UI behavior per role (`/master`, `/PS`, `/SRS`, `/consulta`).
+  - `docs/diseno/modelo-datos.md` — database schema mapping, business rules, and entity relationships.
+  - `docs/diseno/credenciales-demo.md` — when touching `/login`, `SesionService`, or account/profile creation flows.
+- Never contradict the domain rules or data model documented in `docs/diseno/modelo-datos.md`.
+- After completing structural, routing, or functional changes, update the corresponding `.md` files in `docs/` to keep documentation in sync.
+
 ## Stack and layout
 
 - Angular 22 + TypeScript 6, standalone components, zoneless (no `zone.js` dependency; drive state with signals so renders trigger).
@@ -57,6 +67,6 @@
 ## OpenCode setup
 
 - Project config is `.opencode/opencode.json` (JSON/JSONC); `.opencode/config.json` is not recognized.
-- Skills load from `.opencode/skills/<id>/SKILL.md`; the ID is the directory name. Current: `liquid-glass-ui`, `angular-best-practices`.
+- Skills load from `.opencode/skills/<id>/SKILL.md` and `.agents/skills/<id>/SKILL.md`; the ID is the directory name. Current: `liquid-glass-ui`, `angular-best-practices`, `impeccable`.
 - Custom agents, if added, go in `.opencode/agents/<name>.md`; `.opencode/agents.md` is ignored.
 - V2 loads `AGENTS.md` only — it does not fall back to `CLAUDE.md`.

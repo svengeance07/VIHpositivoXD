@@ -1,6 +1,6 @@
 # Modelo de datos
 
-Última actualización: 2026-10-29
+Última actualización: 2026-11-06
 Estado: **esquema de trabajo, todavía no implementado**.
 
 > Fuente de verdad: [`docs/referencias/db_schema.sql`](../referencias/db_schema.sql). Ese archivo
@@ -60,6 +60,14 @@ Estado: **esquema de trabajo, todavía no implementado**.
 | Correo del certificado         | La consulta pública permite simular el envío solo si el certificado está `autorizado` o `emitido`. No se implementa código de verificación todavía. |
 | Consulta pública               | Busca por cédula en `usuarios`, muestra datos personales y el estado del certificado. El detalle clínico sensible no se expone.                     |
 | Esquema                        | Las extensiones se agregan al final de `db_schema.sql`; el archivo original recibido se conserva intacto y fechado.                                 |
+
+### Decisiones confirmadas el 2026-11-06
+
+| Tema                                  | Decisión                                                                                                                                                                                                           |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Persistencia de prototipo (`signal`)  | Los servicios `DatosMasterService`, `DatosSubregionSaludService`, `DatosPersonalSaludService` y `SesionService` persisten las altas y cambios en `localStorage` para mantener coherencia entre vistas.             |
+| Sincronización de cuentas (`rol 2/3`) | Dar de alta un centro, subregión o trabajador desde `/master` o `/SRS` provisiona automáticamente su `CuentaAcceso` y `PerfilAcceso` en `SesionService`, replicando la relación `cuentas_entidad` + `personal`.    |
+| Preparación para integración con BD   | La arquitectura desacopla las vistas de los mocks mediante servicios de dominio; cuando se integre el backend (p. ej. NestJS + Drizzle ORM / Prisma sobre MySQL 8.4 o MariaDB 11.4), solo cambiarán los servicios. |
 
 ## 2. Diagrama del esquema y la propuesta
 

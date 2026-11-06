@@ -20,16 +20,9 @@
   overflow: hidden;
 }
 
-.notificacion.is-no-leida::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: linear-gradient(180deg, #0ea5e9, #10b981);
-}
-
 .notificacion.is-no-leida {
-  background: color-mix(in oklab, var(--color-accent) 4%, var(--glass-surface));
+  background: color-mix(in oklab, var(--color-accent) 6%, var(--glass-surface));
+  border-color: color-mix(in oklab, var(--color-accent) 36%, var(--glass-border));
 }
 
 .notificacion__icono {

@@ -33,6 +33,7 @@ import type {
   VacunacionSemana,
 } from '../modelos/master';
 import { CatalogosService } from './catalogos.service';
+import { SesionService } from './sesion.service';
 
 const CLAVE_STORAGE_CENTROS = 'vih_centros_master_v1';
 const CLAVE_STORAGE_PERSONAL = 'vih_personal_master_v1';
@@ -101,6 +102,7 @@ function guardarPersonal(lista: readonly PersonalSalud[]): void {
 @Injectable({ providedIn: 'root' })
 export class DatosMasterService {
   private readonly catalogos = inject(CatalogosService);
+  private readonly sesion = inject(SesionService);
 
   private readonly _estados = signal<readonly Estado[]>(ESTADOS);
   private readonly _municipios = signal<readonly Municipio[]>(MUNICIPIOS);
@@ -455,6 +457,10 @@ export class DatosMasterService {
       guardarCentros(actual);
       return actual;
     });
+    this.sesion.registrarCuentaCentro(
+      { id: centro.id, nombre: centro.nombre, codigo: centro.codigo, rol: 3 },
+      { id: jefe.id, nombre: jefe.nombre, correo: jefe.correo },
+    );
     this.registrarMovimiento(
       'creacion',
       'Centros',
@@ -517,6 +523,10 @@ export class DatosMasterService {
       guardarCentros(actual);
       return actual;
     });
+    this.sesion.registrarCuentaCentro(
+      { id: centro.id, nombre: centro.nombre, codigo: centro.codigo, rol: 2 },
+      { id: jefe.id, nombre: jefe.nombre, correo: jefe.correo },
+    );
     this.registrarMovimiento(
       'creacion',
       'Centros',
@@ -533,6 +543,8 @@ export class DatosMasterService {
     if (!centro) {
       return null;
     }
+
+    const jefeActual = this.jefeDeCentro(centro.id);
 
     const empleado: PersonalSalud = {
       id: this.generarId('p'),
@@ -564,6 +576,25 @@ export class DatosMasterService {
       });
     }
 
+    this.sesion.registrarPerfilEnCentro(
+      centro.id,
+      {
+        id: empleado.id,
+        nombre: empleado.nombre,
+        tipo: datos.tipo,
+        correo: empleado.correo,
+        clave: datos.tipo === 'jefe' ? 'jefe123' : 'trabajador123',
+      },
+      {
+        nombre: centro.nombre,
+        codigo: centro.codigo,
+        rol: centro.tipo,
+        jefe: jefeActual
+          ? { id: jefeActual.id, nombre: jefeActual.nombre, correo: jefeActual.correo }
+          : null,
+      },
+    );
+
     this.registrarMovimiento(
       'creacion',
       'Personal',
@@ -586,6 +617,7 @@ export class DatosMasterService {
     }
     this._centros.set(CENTROS);
     this._personal.set(PERSONAL);
+    this.sesion.limpiarAlmacenamiento();
   }
 
   private registrarMovimiento(

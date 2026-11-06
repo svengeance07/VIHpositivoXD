@@ -1,7 +1,7 @@
 # Vistas y navegación
 
-Última actualización: 2026-10-25
-Estado: **borrador** derivado de los bocetos a mano.
+Última actualización: 2026-11-06
+Estado: **implementado con datos mock y persistencia local (`localStorage`)**.
 
 > **Aviso:** el 2026-10-25 se recibió un esquema de base de datos **parcial**
 > ([`db_schema.sql`](../referencias/db_schema.sql)). Aquí se describe el _comportamiento_ de las vistas y
@@ -143,9 +143,16 @@ Observaciones:
 | `/master/personal/empleados`   | Búsqueda de empleados                              | 1       | `…-buscarEmpleados`                       | implementado (mock) |
 | `/master/movimientos`          | Registro de movimientos (logs)                     | 1       | `diagrama-autoridades`, sidebar           | implementado (mock) |
 | `/master/busquedas`            | Auditoría de búsquedas de usuarios                 | 1       | `diagrama-autoridades`                    | implementado (mock) |
-| `/PS`                          | Centro de control                                  | 2       | —                                         | implementado (mock) |
+| `/PS`                          | Centro de control (Jefe de Centro)                 | 2       | —                                         | implementado (mock) |
+| `/PS/estacion`                 | Estación de vacunación (Enfermero operativo)       | 2       | —                                         | implementado (mock) |
+| `/PS/pacientes`                | Consultar y vacunar pacientes                      | 2       | —                                         | implementado (mock) |
+| `/PS/pacientes/nuevo`          | Registro de nuevo paciente (adulto o menor)        | 2       | —                                         | implementado (mock) |
+| `/PS/reportes`                 | Reportes de incidencias (ESAVI)                    | 2       | —                                         | implementado (mock) |
+| `/PS/historial`                | Historial cronológico de dosis aplicadas           | 2       | —                                         | implementado (mock) |
+| `/PS/personal`                 | Gestión y métricas del equipo de enfermeros        | 2       | —                                         | implementado (mock) |
 | `/SRS`                         | Centro de control                                  | 3       | —                                         | implementado (mock) |
-| `/SRS/trabajadores`            | Consulta del personal tipo 2 del estado            | 3       | —                                         | implementado (mock) |
+| `/SRS/centros`                 | Gestión y alta de centros de salud del estado      | 3       | —                                         | implementado (mock) |
+| `/SRS/trabajadores`            | Gestión y alta del personal tipo 2 del estado      | 3       | —                                         | implementado (mock) |
 | `/SRS/trabajadores/:id`        | Ficha del trabajador                               | 3       | —                                         | implementado (mock) |
 | `/SRS/ciudadanos`              | Búsqueda de ciudadanos del estado                  | 3       | —                                         | implementado (mock) |
 | `/SRS/ciudadanos/:id`          | Ficha ciudadana con vacunas, exámenes y requisitos | 3       | —                                         | implementado (mock) |
@@ -406,8 +413,12 @@ acotado al estado **Guárico** (`srs-guarico`) y consume `DatosSubregionSaludSer
   cabecera de sesión y cierre de sesión.
 - **`/SRS`**: panel con métricas del estado, solicitudes por atender, notificaciones recientes, centros y flujo del
   certificado.
-- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: consulta de solo lectura del personal tipo 2 de los centros
-  del estado, con búsqueda, filtros por centro/rol y ficha de adscripción.
+- **`/SRS/centros`**: catálogo filtrable de los centros de salud (`tipo = 2`) adscritos al estado, con modal de alta
+  para registrar un nuevo centro junto con su jefe encargado inicial (sincronizado con `DatosMasterService` y `SesionService`).
+- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: listado y alta del personal tipo 2 de los centros
+  del estado, con búsqueda, filtros por centro/rol, modal de registro de nuevos trabajadores (jefe o trabajador operativo)
+  y ficha individual de adscripción. Al registrar un trabajador, se actualiza reactivamente la lista, se persiste en
+  `localStorage` y se habilita su perfil de acceso en `/login`.
 - **`/SRS/ciudadanos`** y **`/SRS/ciudadanos/:id`**: búsqueda de fichas del estado; la ficha muestra todas las vacunas
   y exámenes (vigentes y vencidos), los requisitos del certificado, una línea de tiempo de hasta ocho hitos y el
   historial de solicitudes.
@@ -426,6 +437,18 @@ requisitos combina las vacunas obligatorias del catálogo con la vigencia provis
 La bandeja de notificaciones **solo** recibe una solicitud cuando el expediente reúne todos los requisitos. Los
 vencimientos de vacunas o exámenes no generan avisos. Autorizar, descartar o emitir tampoco crea notificaciones
 nuevas.
+
+### 6.11 Personal de salud `/PS`
+
+Implementación operativa para el Centro de Salud (rol 2), consumiendo `DatosPersonalSaludService` y `SesionService`:
+
+- **Shell** (`shell/`): barra lateral colapsable Liquid Glass con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), conmutador rápido de modo (`Jefe de Centro` vs `Enfermero Operativo`) para pruebas en caliente y menú móvil.
+- **`/PS` (`inicio`)**: centro de control para el Jefe de Centro con buscador rápido por cédula, métricas del día (`tabular-nums`), distribución de biológicos aplicados, tabla en vivo de inmunizaciones y alertas ESAVI.
+- **`/PS/estacion` (`estacion-enfermero`)**: vista de trabajo para el perfil de enfermero con métricas de su turno y accesos directos de atención clínica.
+- **`/PS/pacientes`** y **`/PS/pacientes/nuevo`**: búsqueda y ficha clínica de pacientes (adultos y menores con representante), aplicación múltiple de vacunas y alta de nuevos pacientes.
+- **`/PS/reportes`**: registro y consulta de reportes de eventos adversos (ESAVI) con fichas clínicas estilizadas mediante bordes perimetrales tintados (`color-mix`) según severidad (`leve`, `moderado`, `severo`).
+- **`/PS/historial`**: bitácora filtrable de todas las dosis aplicadas en el centro.
+- **`/PS/personal`**: gestión del equipo de enfermeros del centro (alta de perfiles, activación/suspensión de permisos y métricas individuales).
 
 ## 7. Patrones de UI recurrentes
 

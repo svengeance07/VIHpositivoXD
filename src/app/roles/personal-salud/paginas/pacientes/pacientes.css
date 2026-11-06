@@ -1061,9 +1061,8 @@
 .alerta-item-clinico {
   padding: 1.35rem 1.6rem;
   border-radius: 1.15rem;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border-subtle);
-  border-left: 5px solid #f97316;
+  background: color-mix(in oklab, #f97316 4%, var(--surface, #ffffff));
+  border: 1px solid color-mix(in oklab, #f97316 32%, var(--border-subtle));
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
@@ -1079,16 +1078,18 @@
 }
 
 .alerta-item-clinico--leve {
-  border-left-color: #eab308;
+  border-color: color-mix(in oklab, #eab308 38%, var(--border-subtle));
+  background: color-mix(in oklab, #eab308 4%, var(--surface, #ffffff));
 }
 
 .alerta-item-clinico--moderado {
-  border-left-color: #f97316;
+  border-color: color-mix(in oklab, #f97316 38%, var(--border-subtle));
+  background: color-mix(in oklab, #f97316 4%, var(--surface, #ffffff));
 }
 
 .alerta-item-clinico--severo {
-  border-left-color: #ef4444;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.02), var(--surface, #ffffff));
+  border-color: color-mix(in oklab, #ef4444 42%, var(--border-subtle));
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), var(--surface, #ffffff));
 }
 
 /* Cabecera de la ficha */
@@ -1210,9 +1211,8 @@
 .alerta-tratamiento-caja {
   padding: 1rem 1.25rem;
   border-radius: 0.85rem;
-  background: rgba(2, 132, 199, 0.05);
-  border: 1px solid rgba(2, 132, 199, 0.2);
-  border-left: 4px solid #0284c7;
+  background: rgba(2, 132, 199, 0.06);
+  border: 1px solid rgba(2, 132, 199, 0.28);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;

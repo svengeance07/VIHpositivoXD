@@ -276,12 +276,13 @@
 }
 
 .reporte-card--moderado {
-  border-left: 4px solid #f97316;
+  border-color: color-mix(in oklab, #f97316 40%, var(--border-subtle));
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.04), var(--surface-glass));
 }
 
 .reporte-card--severo {
-  border-left: 4px solid #ef4444;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.03), var(--surface-glass));
+  border-color: color-mix(in oklab, #ef4444 45%, var(--border-subtle));
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), var(--surface-glass));
 }
 
 .reporte-card__cabecera {
@@ -959,8 +960,8 @@ ca-modal {
 .indicaciones-caja {
   padding: 0.9rem 1.1rem;
   border-radius: 0.75rem;
-  background: rgba(0, 0, 0, 0.03);
-  border-left: 4px solid var(--color-primario);
+  background: color-mix(in oklab, var(--color-primario) 6%, var(--surface-glass));
+  border: 1px solid color-mix(in oklab, var(--color-primario) 28%, var(--border-subtle));
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--text);

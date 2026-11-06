@@ -1,9 +1,10 @@
 # Credenciales de prueba
 
-Datos ficticios para recorrer la landing y el login mientras no existe backend. Viven en
-`src/app/nucleo/datos/cuentas-acceso.ts`; `SesionService` los valida en memoria.
+Datos ficticios para recorrer la landing y el login mientras no existe backend. Viven inicialmente en
+`src/app/nucleo/datos/cuentas-acceso.ts`; `SesionService` los valida y persiste las altas en `localStorage`
+(`vih_cuentas_acceso_v1`).
 
-> No reutilizar estas cuentas ni contraseñas fuera del prototipo. Al recargar la página la sesión se pierde.
+> No reutilizar estas cuentas ni contraseñas fuera del prototipo. La sesión activa vive en memoria y se reinicia al recargar la página, pero los centros, subregiones y perfiles creados desde `/master` o `/SRS` quedan guardados en `localStorage` y aparecen automáticamente en el desplegable **Credenciales de prueba** de `/login`.
 
 > **Simulación vs. esquema real:** el login actual valida dos niveles (cuenta de entidad + perfil). El script
 > parcial no trae credenciales de entidad; para resolverlo se propone la tabla `cuentas_entidad` (credenciales,
@@ -57,6 +58,19 @@ Rodríguez" es solo el nombre visible de la demo y no se guarda como columna.
 | ---------- | ------------------- | ------------------------------- | ------------- |
 | Jefe       | Lic. Carlos Rojas   | `jefe.subregion@vih.gob.ve`     | `jefe123`     |
 | Trabajador | Analista Sofía Díaz | `analista.subregion@vih.gob.ve` | `analista123` |
+
+## Altas dinámicas desde `/master` y `/SRS`
+
+Cuando se registra un nuevo centro, subregión o empleado desde las vistas de administración (`/master/personal/*`, `/SRS/centros` o `/SRS/trabajadores`), `DatosMasterService` y `DatosSubregionSaludService` sincronizan automáticamente las credenciales en `SesionService`:
+
+| Elemento registrado                        | Correo generado / asignado                 | Contraseña por defecto |
+| ------------------------------------------ | ------------------------------------------ | ---------------------- |
+| Cuenta de entidad · Centro (`tipo = 2`)    | `contacto.<codigo-normalizado>@vih.gob.ve` | `centro123`            |
+| Cuenta de entidad · Subregión (`tipo = 3`) | `contacto.<codigo-normalizado>@vih.gob.ve` | `subregion123`         |
+| Perfil de Jefe (`encargado_id`)            | Correo ingresado en el formulario de alta  | `jefe123`              |
+| Perfil de Trabajador (`tipo = trabajador`) | Correo ingresado en el formulario de alta  | `trabajador123`        |
+
+Si se registra un trabajador en un centro existente del catálogo mock que aún no tenía una cuenta en `CUENTAS_ACCESO` (por ejemplo, `Hospital Central de San Juan` o `Ambulatorio Rural Calabozo`), `SesionService.registrarPerfilEnCentro` provisiona automáticamente la cuenta de la entidad junto con su jefe encargado y el nuevo trabajador.
 
 ## Correspondencia con el esquema real
 

@@ -65,14 +65,53 @@ export class SesionService {
 
   /**
    * Registra un nuevo perfil de trabajador o jefe en el centro de salud para permitir su inicio de sesión.
+   * Si la entidad aún no tenía una cuenta registrada en el catálogo de demostración y se provee `entidad`,
+   * se provisiona automáticamente la cuenta de la entidad.
    */
   registrarPerfilEnCentro(
     centroId: string,
     perfil: { id: string; nombre: string; tipo: TipoEmpleado; correo: string; clave: string },
+    entidad?: {
+      nombre: string;
+      codigo: string;
+      rol?: RolInterno;
+      jefe?: { id: string; nombre: string; correo: string } | null;
+    },
   ): void {
     const correoNorm = this.normalizar(perfil.correo);
     this._cuentas.update((lista) => {
-      const actualizadas = lista.map((cuenta) => {
+      const existeCuenta = lista.some((cuenta) => cuenta.id === centroId);
+      let baseLista = lista;
+
+      if (!existeCuenta && entidad) {
+        const rolCuenta = entidad.rol ?? 2;
+        const correoEntidad = this.normalizar(
+          `contacto.${entidad.codigo.toLowerCase().replace(/[^a-z0-9]/g, '')}@vih.gob.ve`,
+        );
+        const perfilesIniciales: PerfilAcceso[] = [];
+        if (entidad.jefe && this.normalizar(entidad.jefe.correo) !== correoNorm) {
+          perfilesIniciales.push({
+            id: entidad.jefe.id,
+            nombre: entidad.jefe.nombre,
+            tipo: 'jefe',
+            correo: entidad.jefe.correo,
+            clave: 'jefe123',
+          });
+        }
+        baseLista = [
+          ...lista,
+          {
+            id: centroId,
+            rol: rolCuenta,
+            nombre: entidad.nombre,
+            correo: correoEntidad,
+            clave: rolCuenta === 3 ? 'subregion123' : 'centro123',
+            perfiles: perfilesIniciales,
+          },
+        ];
+      }
+
+      const actualizadas = baseLista.map((cuenta) => {
         if (cuenta.id === centroId) {
           const yaExiste = cuenta.perfiles.some((p) => this.normalizar(p.correo) === correoNorm);
           const perfilesActualizados = yaExiste
@@ -91,12 +130,13 @@ export class SesionService {
   }
 
   /**
-   * Registra una nueva cuenta de entidad para un centro recién creado con su jefe inicial.
+   * Registra una nueva cuenta de entidad para un centro o subregión recién creado con su jefe inicial.
    */
   registrarCuentaCentro(
-    centro: { id: string; nombre: string; codigo: string },
+    centro: { id: string; nombre: string; codigo: string; rol?: RolInterno },
     jefe: { id: string; nombre: string; correo: string },
   ): void {
+    const rolCuenta = centro.rol ?? 2;
     const correoNormalizado = this.normalizar(
       `contacto.${centro.codigo.toLowerCase().replace(/[^a-z0-9]/g, '')}@vih.gob.ve`,
     );
@@ -108,10 +148,10 @@ export class SesionService {
 
       const nuevaCuenta: CuentaAcceso = {
         id: centro.id,
-        rol: 2,
+        rol: rolCuenta,
         nombre: centro.nombre,
         correo: correoNormalizado,
-        clave: 'centro123',
+        clave: rolCuenta === 3 ? 'subregion123' : 'centro123',
         perfiles: [
           {
             id: jefe.id,
@@ -127,6 +167,18 @@ export class SesionService {
       guardarCuentas(actualizadas);
       return actualizadas;
     });
+  }
+
+  /** Reinicia el catálogo de cuentas de acceso a los valores iniciales de prueba. */
+  limpiarAlmacenamiento(): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(CLAVE_STORAGE_CUENTAS);
+      }
+    } catch {
+      // ignorar
+    }
+    this._cuentas.set(CUENTAS_ACCESO.map((c) => ({ ...c, perfiles: [...c.perfiles] })));
   }
 
   validarCuenta(rol: RolInterno, correo: string, clave: string): CuentaAcceso | null {

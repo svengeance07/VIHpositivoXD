@@ -22,11 +22,14 @@ import type {
 import { SesionService } from './sesion.service';
 
 const CLAVE_STORAGE_ENFERMEROS = 'vih_enfermeros_centro_v1';
+const CLAVE_STORAGE_PACIENTES_PS = 'vih_pacientes_centro_v1';
+const CLAVE_STORAGE_APLICACIONES_PS = 'vih_aplicaciones_centro_v1';
+const CLAVE_STORAGE_REPORTES_PS = 'vih_reportes_centro_v1';
 
-function cargarEnfermeros(): readonly Enfermero[] {
+function cargarColeccion<T>(clave: string, fallback: readonly T[]): readonly T[] {
   try {
     if (typeof localStorage !== 'undefined') {
-      const raw = localStorage.getItem(CLAVE_STORAGE_ENFERMEROS);
+      const raw = localStorage.getItem(clave);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -37,13 +40,13 @@ function cargarEnfermeros(): readonly Enfermero[] {
   } catch {
     // fallback
   }
-  return ENFERMEROS_MOCK;
+  return fallback;
 }
 
-function guardarEnfermeros(lista: readonly Enfermero[]): void {
+function guardarColeccion<T>(clave: string, lista: readonly T[]): void {
   try {
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(CLAVE_STORAGE_ENFERMEROS, JSON.stringify(lista));
+      localStorage.setItem(clave, JSON.stringify(lista));
     }
   } catch {
     // ignorar
@@ -71,11 +74,18 @@ export class DatosPersonalSaludService {
   readonly centroNombre = CENTRO_ACTUAL_NOMBRE;
 
   // Estado reactivo interno en Signals
-  private readonly _enfermeros = signal<readonly Enfermero[]>(cargarEnfermeros());
-  private readonly _pacientes = signal<readonly PacienteCentro[]>(PACIENTES_CENTRO_MOCK);
-  private readonly _aplicaciones = signal<readonly AplicacionVacuna[]>(APLICACIONES_VACUNAS_MOCK);
-  private readonly _reportes =
-    signal<readonly ReporteIncidenciaVacuna[]>(REPORTES_INCIDENCIAS_MOCK);
+  private readonly _enfermeros = signal<readonly Enfermero[]>(
+    cargarColeccion(CLAVE_STORAGE_ENFERMEROS, ENFERMEROS_MOCK),
+  );
+  private readonly _pacientes = signal<readonly PacienteCentro[]>(
+    cargarColeccion(CLAVE_STORAGE_PACIENTES_PS, PACIENTES_CENTRO_MOCK),
+  );
+  private readonly _aplicaciones = signal<readonly AplicacionVacuna[]>(
+    cargarColeccion(CLAVE_STORAGE_APLICACIONES_PS, APLICACIONES_VACUNAS_MOCK),
+  );
+  private readonly _reportes = signal<readonly ReporteIncidenciaVacuna[]>(
+    cargarColeccion(CLAVE_STORAGE_REPORTES_PS, REPORTES_INCIDENCIAS_MOCK),
+  );
 
   /**
    * Selector manual de modo de vista (Jefe vs Enfermero).
@@ -264,7 +274,7 @@ export class DatosPersonalSaludService {
 
     this._enfermeros.update((lista) => {
       const actualizados = [nuevo, ...lista];
-      guardarEnfermeros(actualizados);
+      guardarColeccion(CLAVE_STORAGE_ENFERMEROS, actualizados);
       return actualizados;
     });
     return nuevo;
@@ -278,7 +288,7 @@ export class DatosPersonalSaludService {
       const actualizados = lista.map((enf) =>
         enf.id === id ? { ...enf, activo: !enf.activo } : enf,
       );
-      guardarEnfermeros(actualizados);
+      guardarColeccion(CLAVE_STORAGE_ENFERMEROS, actualizados);
       return actualizados;
     });
   }
@@ -303,7 +313,11 @@ export class DatosPersonalSaludService {
       centroRegistroId: this.centroId,
     };
 
-    this._pacientes.update((lista) => [nuevo, ...lista]);
+    this._pacientes.update((lista) => {
+      const actualizados = [nuevo, ...lista];
+      guardarColeccion(CLAVE_STORAGE_PACIENTES_PS, actualizados);
+      return actualizados;
+    });
     return nuevo;
   }
 
@@ -324,11 +338,15 @@ export class DatosPersonalSaludService {
       centroId: this.centroId,
     };
 
-    this._aplicaciones.update((lista) => [nueva, ...lista]);
+    this._aplicaciones.update((lista) => {
+      const actualizadas = [nueva, ...lista];
+      guardarColeccion(CLAVE_STORAGE_APLICACIONES_PS, actualizadas);
+      return actualizadas;
+    });
 
     // Actualiza métricas del enfermero que la aplicó
-    this._enfermeros.update((lista) =>
-      lista.map((enf) =>
+    this._enfermeros.update((lista) => {
+      const actualizados = lista.map((enf) =>
         enf.id === datos.enfermeroId
           ? {
               ...enf,
@@ -336,8 +354,10 @@ export class DatosPersonalSaludService {
               vacunasAplicadasTotal: enf.vacunasAplicadasTotal + 1,
             }
           : enf,
-      ),
-    );
+      );
+      guardarColeccion(CLAVE_STORAGE_ENFERMEROS, actualizados);
+      return actualizados;
+    });
 
     return nueva;
   }
@@ -389,17 +409,41 @@ export class DatosPersonalSaludService {
       estadoSubregion: 'enviado',
     };
 
-    this._reportes.update((lista) => [nuevo, ...lista]);
+    this._reportes.update((lista) => {
+      const actualizados = [nuevo, ...lista];
+      guardarColeccion(CLAVE_STORAGE_REPORTES_PS, actualizados);
+      return actualizados;
+    });
 
     // Actualiza contador de reportes del enfermero
-    this._enfermeros.update((lista) =>
-      lista.map((enf) =>
+    this._enfermeros.update((lista) => {
+      const actualizados = lista.map((enf) =>
         enf.id === datos.enfermeroId
           ? { ...enf, reportesGeneradosTotal: enf.reportesGeneradosTotal + 1 }
           : enf,
-      ),
-    );
+      );
+      guardarColeccion(CLAVE_STORAGE_ENFERMEROS, actualizados);
+      return actualizados;
+    });
 
     return nuevo;
+  }
+
+  /** Reinicia el estado del centro de salud a los valores iniciales de prueba. */
+  limpiarAlmacenamiento(): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(CLAVE_STORAGE_ENFERMEROS);
+        localStorage.removeItem(CLAVE_STORAGE_PACIENTES_PS);
+        localStorage.removeItem(CLAVE_STORAGE_APLICACIONES_PS);
+        localStorage.removeItem(CLAVE_STORAGE_REPORTES_PS);
+      }
+    } catch {
+      // ignorar
+    }
+    this._enfermeros.set(ENFERMEROS_MOCK);
+    this._pacientes.set(PACIENTES_CENTRO_MOCK);
+    this._aplicaciones.set(APLICACIONES_VACUNAS_MOCK);
+    this._reportes.set(REPORTES_INCIDENCIAS_MOCK);
   }
 }
