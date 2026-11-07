@@ -61,7 +61,7 @@
 }
 
 .notificacion__fecha {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.74rem;
 }
 
@@ -81,7 +81,7 @@
 
 .notificacion p {
   margin: 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.84rem;
   line-height: 1.5;
 }
@@ -94,7 +94,7 @@
   gap: 0.65rem;
   padding-top: 0.45rem;
   border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 55%, transparent);
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.76rem;
   line-height: 1.4;
 }

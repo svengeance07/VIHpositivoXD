@@ -10,7 +10,7 @@
   <!-- Mensaje temporal de exportación exitosa -->
   @if (mensajeExportacion()) {
     <aside class="panel alerta-exito" role="status">
-      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
       <div class="alerta-exito__texto">
         <strong>Reporte Generado</strong>
         <p>{{ mensajeExportacion() }}</p>
@@ -21,7 +21,7 @@
         (click)="mensajeExportacion.set('')"
         aria-label="Cerrar aviso"
       >
-        <ca-icon name="close" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
       </button>
     </aside>
   }
@@ -31,7 +31,7 @@
     <article class="panel metrica">
       <div class="metrica__cabecera">
         <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
-          <ca-icon name="plus"></ca-icon>
+          <span class="ui-icon" data-icon="plus"></span>
         </span>
         <span class="metrica__etiqueta">Total Dosis Aplicadas</span>
       </div>
@@ -42,7 +42,7 @@
     <article class="panel metrica">
       <div class="metrica__cabecera">
         <span class="metrica__icono metrica__icono--amarillo" aria-hidden="true">
-          <ca-icon name="warning"></ca-icon>
+          <span class="ui-icon" data-icon="warning"></span>
         </span>
         <span class="metrica__etiqueta">Reportes de Incidencias</span>
       </div>
@@ -89,7 +89,7 @@
     <!-- Buscador y filtro de vacuna -->
     <div class="ps-filtros__herramientas">
       <div class="ps-filtros__busqueda">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <input
           type="search"
           class="ui-input"
@@ -154,12 +154,12 @@
                 <td>
                   @if (item.tipo === 'vacuna') {
                     <span class="chip-evento chip-evento--vacuna" title="Dosis Aplicada">
-                      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+                      <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
                       <span>Vacuna</span>
                     </span>
                   } @else {
                     <span class="chip-evento chip-evento--reporte" title="Incidencia ESAVI">
-                      <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                      <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
                       <span>ESAVI</span>
                     </span>
                   }
@@ -223,7 +223,7 @@
                     title="Ver detalle del registro"
                     aria-label="Ver detalle del registro"
                   >
-                    <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+                    <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
                     <span>Detalle</span>
                   </button>
                 </td>
@@ -234,7 +234,7 @@
       </div>
     } @else {
       <div class="estado-vacio">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <h4>No se encontraron registros con los filtros seleccionados</h4>
         <p>Prueba ajustando el término de búsqueda, la vacuna o la pestaña de visualización.</p>
         <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">
@@ -259,10 +259,11 @@
           <header class="ps-modal__cabecera">
             <div class="modal-cabecera-info">
               <span class="modal-eyebrow">
-                <ca-icon
-                  [name]="it.tipo === 'vacuna' ? 'check' : 'warning'"
+                <span
+                  class="ui-icon"
+                  [attr.data-icon]="it.tipo === 'vacuna' ? 'check' : 'warning'"
                   aria-hidden="true"
-                ></ca-icon>
+                ></span>
                 <span
                   >{{
                     it.tipo === 'vacuna'
@@ -296,10 +297,11 @@
             <!-- Timbre oficial del Ministerio / Centro -->
             <div class="comprobante-timbre">
               <div class="comprobante-timbre__logo">
-                <ca-icon
-                  [name]="it.tipo === 'vacuna' ? 'check' : 'warning'"
+                <span
+                  class="ui-icon"
+                  [attr.data-icon]="it.tipo === 'vacuna' ? 'check' : 'warning'"
                   aria-hidden="true"
-                ></ca-icon>
+                ></span>
               </div>
               <div class="comprobante-timbre__info">
                 <h4>REPÚBLICA BOLIVARIANA DE VENEZUELA</h4>
@@ -385,7 +387,7 @@
           <footer class="ps-modal__pie">
             <button type="button" class="btn btn-ghost" (click)="cerrarDetalle()">Cerrar</button>
             <button type="button" class="btn btn-primary" (click)="exportarBitacora()">
-              <ca-icon name="download" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="download" aria-hidden="true"></span>
               <span>Imprimir / Descargar Comprobante</span>
             </button>
           </footer>

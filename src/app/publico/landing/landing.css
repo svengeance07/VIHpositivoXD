@@ -1,75 +1,181 @@
 :host {
   display: block;
+  min-height: 100dvh;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .landing {
-  width: min(100%, 1180px);
-  margin-inline: auto;
-  padding: clamp(1.25rem, 3.5vw, 2.25rem) clamp(1.25rem, 4vw, 3rem) 3rem;
-  display: grid;
-  gap: clamp(2rem, 5vw, 4rem);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000;
 }
 
+/* Sticky Top Command Navbar */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--border);
+  background-color: rgba(0, 0, 0, 0.88);
+}
+
+.topbar__inner {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: 0.75rem clamp(1.25rem, 3vw, 2.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
 }
 
-.heroe {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
+.topbar__brand-group {
+  display: flex;
   align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
-h1 {
-  margin: 0.75rem 0 0;
-  font-size: clamp(2.25rem, 4.8vw, 3.6rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+.topbar__slash {
+  color: #3f3f46;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.topbar__tag {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.topbar__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--foreground);
-  text-wrap: balance;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: -0.02em;
+}
+
+.marca__logo {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-xs);
+  background-color: #fafafa;
+  color: #09090b;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+/* Architectural Vertical Frame (Vercel Grid Frame) */
+.landing__marco {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  flex: 1;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Centered Monumental Hero */
+.heroe {
+  padding: clamp(3.5rem, 7vw, 5.5rem) clamp(1.5rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(250, 250, 250, 0.06), transparent 60%), #050507;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.heroe__texto {
+  display: grid;
+  justify-items: center;
+  gap: 1.35rem;
+  max-width: 48rem;
+}
+
+.heroe__texto h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  color: #fafafa;
+}
+
+.acento {
+  color: #a1a1aa;
 }
 
 .lead {
-  max-width: 36rem;
-  margin: 1rem 0 0;
+  margin: 0;
+  max-width: 42rem;
   color: var(--muted-foreground);
-  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  font-size: clamp(0.96rem, 1.3vw, 1.1rem);
   line-height: 1.65;
 }
 
 .acciones {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-top: 0.4rem;
 }
 
 .nota {
-  margin-top: 0.9rem;
-  color: var(--muted-foreground);
-  font-size: 0.825rem;
+  margin: 0;
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
 }
 
+/* Section Toolbars */
+.seccion-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 1.15rem clamp(1.25rem, 3vw, 2rem);
+  background-color: #09090b;
+  border-bottom: 1px solid var(--border);
+}
+
+.seccion-barra__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.seccion-barra h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* 3-Column Flush Hairline Bento Grid for Roles */
 .niveles {
-  display: grid;
-  gap: 1rem;
-  padding: 1.5rem;
-}
-
-.niveles > .badge {
-  justify-self: start;
-}
-
-.niveles h2 {
-  margin: 0.25rem 0;
-  font-size: 1.125rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .niveles__lista {
@@ -77,99 +183,143 @@ h1 {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background-color: var(--border);
 }
 
-.niveles__lista li {
+.niveles__item {
+  display: grid;
+  gap: 1rem;
+  padding: 1.6rem clamp(1.25rem, 2.5vw, 2rem);
+  background-color: #050507;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.niveles__item:hover {
+  background-color: #0d0d11;
+}
+
+.niveles__cabecera {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border);
-}
-
-.niveles__lista li:first-child {
-  padding-top: 0;
-  border-top: 0;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .niveles__num {
-  flex: 0 0 auto;
-  width: 1.65rem;
-  height: 1.65rem;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--secondary);
   border: 1px solid var(--border);
-  background: var(--secondary);
-  color: var(--foreground);
-  font-size: 0.75rem;
+  color: #fafafa;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   font-weight: 600;
+}
+
+.niveles__flecha {
+  color: #71717a;
+  transition:
+    transform 140ms ease,
+    color 140ms ease;
+}
+
+.niveles__item:hover .niveles__flecha {
+  transform: translateX(3px);
+  color: #fafafa;
 }
 
 .niveles__texto {
   display: grid;
-  gap: 0.15rem;
-  color: var(--muted-foreground);
-  font-size: 0.875rem;
+  gap: 0.35rem;
 }
 
 .niveles__texto strong {
-  color: var(--foreground);
-  font-size: 0.925rem;
+  color: #fafafa;
+  font-size: 1rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
+.niveles__texto span {
+  color: var(--muted-foreground);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* 3-Column Flush Hairline Bento Grid for Capabilities */
 .rasgos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background-color: var(--border);
 }
 
 .rasgo {
   display: grid;
-  gap: 0.5rem;
-  padding: 1.25rem;
+  align-content: start;
+  gap: 0.65rem;
+  padding: 1.6rem clamp(1.25rem, 2.5vw, 2rem);
+  background-color: #050507;
 }
 
-.rasgo__icono {
-  color: var(--foreground);
-  width: 1.25rem;
-  height: 1.25rem;
+.rasgo__icono-caja {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  color: #fafafa;
 }
 
 .rasgo h3 {
   margin: 0;
-  color: var(--foreground);
-  font-size: 0.975rem;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fafafa;
 }
 
 .rasgo p {
   margin: 0;
+  font-size: 0.84rem;
   color: var(--muted-foreground);
-  font-size: 0.875rem;
   line-height: 1.55;
 }
 
+/* Footer */
 .pie {
+  border-top: 1px solid var(--border);
+  background-color: #000000;
+}
+
+.pie__inner {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: 1.15rem clamp(1.25rem, 3vw, 2.5rem);
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-  color: var(--muted-foreground);
-  font-size: 0.8rem;
+  gap: 0.75rem;
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
 }
 
-@media (max-width: 900px) {
-  .heroe {
+@media (max-width: 860px) {
+  .niveles__lista,
+  .rasgos {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 640px) {
-  .marca__texto {
+  .topbar__tag,
+  .topbar__slash {
     display: none;
   }
 }

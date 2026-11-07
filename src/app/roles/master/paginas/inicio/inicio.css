@@ -5,7 +5,11 @@
 .metricas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
-  gap: 1rem;
+  gap: 1px;
+  background-color: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
 .metrica {
@@ -196,16 +200,17 @@
   position: relative;
   min-height: 12rem;
   overflow: hidden;
-  border: 1px dashed var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: var(--secondary);
+  background: #050507;
   isolation: isolate;
 }
 
 .mapa__mancha {
   position: absolute;
   border-radius: 60% 40% 55% 45%;
-  background: rgba(24, 24, 27, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .mapa__mancha--1 {
@@ -229,7 +234,7 @@
   height: 0.5rem;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 0 0.25rem rgba(24, 24, 27, 0.12);
+  box-shadow: 0 0 0 0.25rem rgba(250, 250, 250, 0.16);
 }
 
 .mapa__punto--1 {

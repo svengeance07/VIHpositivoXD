@@ -5,7 +5,7 @@
     descripcion="Encuentra a los jefes de centros de salud y subregiones por nombre, cédula, profesión o ubicación."
   >
     <button type="button" class="btn btn-primary" (click)="abrirAlta()">
-      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
       Asignar jefe
     </button>
   </app-master-encabezado>
@@ -94,7 +94,7 @@
   <section class="panel">
     @if (resultados().length === 0) {
       <div class="master-vacio">
-        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
         <strong>No hay jefes que coincidan</strong>
         <p>Prueba con otro nombre, cédula, entidad o ubicación.</p>
       </div>

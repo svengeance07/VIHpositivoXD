@@ -18,7 +18,7 @@
 .trabajadores-busqueda__control .ui-icon {
   position: absolute;
   left: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   pointer-events: none;
 }
 
@@ -46,8 +46,9 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--foreground), #10b981);
-  color: #fff;
+  background: var(--secondary);
+  border: 1px solid var(--border-strong);
+  color: var(--foreground);
   font-size: 0.68rem;
   font-weight: 750;
   flex-shrink: 0;

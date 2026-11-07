@@ -1,8 +1,11 @@
 <div class="master-pagina">
-  <app-master-encabezado eyebrow="Administración de personal" titulo="Buscar centros de salud"
-    descripcion="Consulta hospitales, ambulatorios y CDI por nombre, código o ubicación.">
+  <app-master-encabezado
+    eyebrow="Administración de personal"
+    titulo="Buscar centros de salud"
+    descripcion="Consulta hospitales, ambulatorios y CDI por nombre, código o ubicación."
+  >
     <button type="button" class="btn btn-primary" (click)="abrirAlta()">
-      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
       Agregar centro
     </button>
   </app-master-encabezado>
@@ -11,40 +14,54 @@
     <div class="master-campos">
       <label class="field">
         <span class="field-label">Nombre</span>
-        <input type="search" placeholder="Hospital, ambulatorio o CDI" [value]="filtros().nombre"
-          (input)="actualizar('nombre', valor($event))" />
+        <input
+          type="search"
+          placeholder="Hospital, ambulatorio o CDI"
+          [value]="filtros().nombre"
+          (input)="actualizar('nombre', valor($event))"
+        />
       </label>
       <label class="field">
         <span class="field-label">Código</span>
-        <input type="search" placeholder="CS-DC-014" [value]="filtros().codigo"
-          (input)="actualizar('codigo', valor($event))" />
+        <input
+          type="search"
+          placeholder="CS-DC-014"
+          [value]="filtros().codigo"
+          (input)="actualizar('codigo', valor($event))"
+        />
       </label>
       <label class="field">
         <span class="field-label">Estado</span>
         <select [value]="filtros().estadoId" (change)="actualizar('estadoId', valor($event))">
           <option value="">Todos</option>
           @for (estado of datos.estados(); track estado.id) {
-          <option [value]="estado.id">{{ estado.nombre }}</option>
+            <option [value]="estado.id">{{ estado.nombre }}</option>
           }
         </select>
       </label>
       <label class="field">
         <span class="field-label">Municipio</span>
-        <select [value]="filtros().municipioId" [disabled]="!filtros().estadoId"
-          (change)="actualizar('municipioId', valor($event))">
+        <select
+          [value]="filtros().municipioId"
+          [disabled]="!filtros().estadoId"
+          (change)="actualizar('municipioId', valor($event))"
+        >
           <option value="">Todos</option>
           @for (municipio of municipios(); track municipio.id) {
-          <option [value]="municipio.id">{{ municipio.nombre }}</option>
+            <option [value]="municipio.id">{{ municipio.nombre }}</option>
           }
         </select>
       </label>
       <label class="field">
         <span class="field-label">Parroquia</span>
-        <select [value]="filtros().parroquiaId" [disabled]="!filtros().municipioId"
-          (change)="actualizar('parroquiaId', valor($event))">
+        <select
+          [value]="filtros().parroquiaId"
+          [disabled]="!filtros().municipioId"
+          (change)="actualizar('parroquiaId', valor($event))"
+        >
           <option value="">Todas</option>
           @for (parroquia of parroquias(); track parroquia.id) {
-          <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
+            <option [value]="parroquia.id">{{ parroquia.nombre }}</option>
           }
         </select>
       </label>
@@ -58,60 +75,65 @@
 
   <section class="panel">
     @if (resultados().length === 0) {
-    <div class="master-vacio">
-      <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
-      <strong>No hay centros que coincidan</strong>
-      <p>Cambia la ubicación o el nombre del centro.</p>
-    </div>
+      <div class="master-vacio">
+        <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
+        <strong>No hay centros que coincidan</strong>
+        <p>Cambia la ubicación o el nombre del centro.</p>
+      </div>
     } @else {
-    <div class="master-tabla-scroll">
-      <table class="master-tabla">
-        <thead>
-          <tr>
-            <th>Centro</th>
-            <th>Ubicación</th>
-            <th>Jefe de centro</th>
-            <th>Contacto</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (fila of resultados(); track fila.centro.id) {
-          <tr>
-            <td>
-              <a class="master-tabla__principal master-enlace-fila"
-                [routerLink]="['/master/personal/centros', fila.centro.id]">
-                <strong>{{ fila.centro.nombre }}</strong>
-                <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
-              </a>
-            </td>
-            <td>
-              <div class="master-tabla__principal">
-                <strong>{{ fila.estado?.nombre ?? '—' }}</strong>
-                <span class="master-tabla__secundario">
-                  {{ fila.municipio?.nombre ?? '—' }} · {{ fila.parroquia?.nombre ?? '—' }}
-                </span>
-              </div>
-            </td>
-            <td>
-              <div class="master-tabla__principal">
-                <strong>{{ jefe(fila) }}</strong>
-                <span class="master-tabla__secundario">
-                  {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
-                </span>
-              </div>
-            </td>
-            <td>{{ fila.jefe?.correo ?? fila.centro.telefono }}</td>
-            <td>
-              <a class="btn btn-ghost btn-compact" [routerLink]="['/master/personal/centros', fila.centro.id]">
-                Ver detalle
-              </a>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Centro</th>
+              <th>Ubicación</th>
+              <th>Jefe de centro</th>
+              <th>Contacto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.centro.id) {
+              <tr>
+                <td>
+                  <a
+                    class="master-tabla__principal master-enlace-fila"
+                    [routerLink]="['/master/personal/centros', fila.centro.id]"
+                  >
+                    <strong>{{ fila.centro.nombre }}</strong>
+                    <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
+                  </a>
+                </td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ fila.estado?.nombre ?? '—' }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.municipio?.nombre ?? '—' }} · {{ fila.parroquia?.nombre ?? '—' }}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ jefe(fila) }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ fila.jefe?.correo ?? fila.centro.telefono }}</td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-compact"
+                    [routerLink]="['/master/personal/centros', fila.centro.id]"
+                  >
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   </section>
 

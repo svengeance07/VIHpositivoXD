@@ -1,10 +1,19 @@
 <div class="master-pagina">
-  <app-master-encabezado eyebrow="Administración de personal" titulo="Subregiones de salud"
-    descripcion="Cada estado tiene una subregión responsable de coordinar sus centros y su personal.">
-    <button type="button" class="btn btn-primary" [disabled]="estadosDisponibles().length === 0" [attr.title]="
+  <app-master-encabezado
+    eyebrow="Administración de personal"
+    titulo="Subregiones de salud"
+    descripcion="Cada estado tiene una subregión responsable de coordinar sus centros y su personal."
+  >
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="estadosDisponibles().length === 0"
+      [attr.title]="
         estadosDisponibles().length === 0 ? 'Todos los estados ya tienen una subregión' : null
-      " (click)="abrirAlta()">
-      <ca-icon name="plus" aria-hidden="true"></ca-icon>
+      "
+      (click)="abrirAlta()"
+    >
+      <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
       Agregar subregión
     </button>
   </app-master-encabezado>
@@ -28,62 +37,71 @@
     <div class="subregiones__barra">
       <label class="field subregiones__buscador">
         <span class="field-label">Buscar subregión</span>
-        <input type="search" placeholder="Nombre, código, estado o jefe" [value]="busqueda()"
-          (input)="busqueda.set(valor($event))" />
+        <input
+          type="search"
+          placeholder="Nombre, código, estado o jefe"
+          [value]="busqueda()"
+          (input)="busqueda.set(valor($event))"
+        />
       </label>
       <span class="master-badge master-badge--suave">{{ resultados().length }} resultados</span>
     </div>
 
     @if (resultados().length === 0) {
-    <div class="master-vacio">
-      <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
-      <strong>No hay subregiones que coincidan</strong>
-      <p>Cambia el término de búsqueda o agrega una nueva subregión.</p>
-    </div>
+      <div class="master-vacio">
+        <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
+        <strong>No hay subregiones que coincidan</strong>
+        <p>Cambia el término de búsqueda o agrega una nueva subregión.</p>
+      </div>
     } @else {
-    <div class="master-tabla-scroll">
-      <table class="master-tabla">
-        <thead>
-          <tr>
-            <th>Subregión</th>
-            <th>Estado</th>
-            <th>Jefe de subregión</th>
-            <th>Contacto</th>
-            <th>Centros</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (fila of resultados(); track fila.centro.id) {
-          <tr>
-            <td>
-              <a class="master-tabla__principal master-enlace-fila"
-                [routerLink]="['/master/personal/subregiones', fila.centro.id]">
-                <strong>{{ fila.centro.nombre }}</strong>
-                <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
-              </a>
-            </td>
-            <td>{{ fila.estado?.nombre ?? '—' }}</td>
-            <td>
-              <div class="master-tabla__principal">
-                <strong>{{ jefe(fila) }}</strong>
-                <span class="master-tabla__secundario">
-                  {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
-                </span>
-              </div>
-            </td>
-            <td>{{ fila.jefe?.correo ?? '—' }}</td>
-            <td>{{ fila.centros }}</td>
-            <td>
-              <a class="btn btn-ghost btn-compact" [routerLink]="['/master/personal/subregiones', fila.centro.id]">
-                Ver detalle
-              </a>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+      <div class="master-tabla-scroll">
+        <table class="master-tabla">
+          <thead>
+            <tr>
+              <th>Subregión</th>
+              <th>Estado</th>
+              <th>Jefe de subregión</th>
+              <th>Contacto</th>
+              <th>Centros</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of resultados(); track fila.centro.id) {
+              <tr>
+                <td>
+                  <a
+                    class="master-tabla__principal master-enlace-fila"
+                    [routerLink]="['/master/personal/subregiones', fila.centro.id]"
+                  >
+                    <strong>{{ fila.centro.nombre }}</strong>
+                    <span class="master-tabla__secundario">{{ fila.centro.codigo }}</span>
+                  </a>
+                </td>
+                <td>{{ fila.estado?.nombre ?? '—' }}</td>
+                <td>
+                  <div class="master-tabla__principal">
+                    <strong>{{ jefe(fila) }}</strong>
+                    <span class="master-tabla__secundario">
+                      {{ fila.jefe?.cedula ? 'V-' + fila.jefe?.cedula : 'Sin cédula' }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ fila.jefe?.correo ?? '—' }}</td>
+                <td>{{ fila.centros }}</td>
+                <td>
+                  <a
+                    class="btn btn-ghost btn-compact"
+                    [routerLink]="['/master/personal/subregiones', fila.centro.id]"
+                  >
+                    Ver detalle
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   </section>
 

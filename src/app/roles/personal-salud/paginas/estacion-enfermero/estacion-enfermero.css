@@ -37,7 +37,7 @@
   height: 3.5rem;
   border-radius: var(--radius-lg);
   background: var(--primary);
-  color: #ffffff;
+  color: var(--primary-foreground);
   display: grid;
   place-items: center;
   font-size: 1.25rem;
@@ -76,7 +76,7 @@
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  color: var(--ok);
   font-size: 0.75rem;
   font-weight: 700;
   border: 1px solid rgba(16, 185, 129, 0.3);
@@ -170,7 +170,7 @@
 
 .metrica__icono--verde {
   background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  color: var(--ok);
 }
 
 .metrica__icono--azul {
@@ -185,7 +185,7 @@
 
 .metrica__icono--rojo {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .metrica__etiqueta {
@@ -300,12 +300,12 @@
 
 .accion-card__icono--verde {
   background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
+  color: var(--ok);
 }
 
 .accion-card__icono--rojo {
   background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .accion-card__icono--morado {
@@ -413,7 +413,7 @@
   padding: 0.1rem 0.4rem;
   border-radius: 0.35rem;
   background: rgba(245, 158, 11, 0.14);
-  color: #d97706;
+  color: var(--warn);
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -436,7 +436,7 @@
   padding: 0.1rem 0.4rem;
   border-radius: 0.3rem;
   background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  color: var(--ok);
   font-size: 0.72rem;
   font-weight: 700;
   width: fit-content;
@@ -446,7 +446,7 @@
   display: inline-block;
   padding: 0.18rem 0.5rem;
   border-radius: 0.35rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: #050507;
   font-size: 0.74rem;
   font-weight: 600;
   font-family: monospace;
@@ -481,7 +481,7 @@
 
 .tabla-vacia__contenido .ui-icon {
   font-size: 2rem;
-  color: #10b981;
+  color: var(--ok);
 }
 
 .tabla-vacia__contenido p {
@@ -538,7 +538,7 @@
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
   background: rgba(99, 102, 241, 0.12);
-  color: #6366f1;
+  color: var(--foreground);
   font-size: 0.72rem;
   font-weight: 700;
   white-space: nowrap;
@@ -568,7 +568,7 @@
   padding: 0.15rem 0.5rem;
   border-radius: 0.4rem;
   background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  color: var(--ok);
   font-size: 0.74rem;
   font-weight: 700;
   font-family: monospace;

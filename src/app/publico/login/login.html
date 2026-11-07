@@ -1,128 +1,176 @@
 <div class="acceso">
-  <aside class="acceso__lateral">
-    <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
-      <span class="marca__logo" aria-hidden="true">V</span>
-      <span class="marca__texto">Sistema V</span>
-    </a>
+  <header class="acceso__topbar">
+    <div class="acceso__topbar-inner">
+      <div class="acceso__brand">
+        <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
+          <span class="marca__logo" aria-hidden="true">V</span>
+          <span class="marca__texto">Sistema V</span>
+        </a>
+        <span class="acceso__slash" aria-hidden="true">/</span>
+        <span class="acceso__contexto">Autenticación Institucional</span>
+      </div>
 
-    <div class="acceso__copy">
-      <p class="ca-section-eyebrow">
-        <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
-        Acceso institucional
-      </p>
-      <h1>Gestión de salud, <span class="acento">sin fricción.</span></h1>
-      <p class="lead">
-        Selecciona tu nivel de gestión e ingresa directamente con las credenciales de tu cuenta
-        institucional o jefatura asignada.
-      </p>
+      <div class="acceso__topbar-acciones">
+        <a class="btn btn-ghost btn-sm" routerLink="/consulta">
+          <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+          <span>Consulta ciudadana</span>
+        </a>
+        <a class="btn btn-secondary btn-sm volver-inicio" routerLink="/">
+          <span class="ui-icon" data-icon="arrow-left" aria-hidden="true"></span>
+          <span>Volver al inicio</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="acceso__contenedor">
+    <div class="acceso__encabezado">
+      <ol class="pasos" aria-label="Pasos de acceso">
+        <li [class.is-active]="paso() >= 1" [attr.aria-current]="paso() === 1 ? 'step' : null">
+          <span aria-hidden="true">01</span>
+          <strong>Nivel de gestión</strong>
+        </li>
+        <li class="pasos__divisor" aria-hidden="true"></li>
+        <li [class.is-active]="paso() >= 2" [attr.aria-current]="paso() === 2 ? 'step' : null">
+          <span aria-hidden="true">02</span>
+          <strong>Credenciales de acceso</strong>
+        </li>
+      </ol>
+
+      <div class="acceso__copy">
+        <h1>Gestión de salud, <span class="acento">sin fricción.</span></h1>
+        <p class="lead">
+          Selecciona tu nivel de gestión e ingresa directamente con las credenciales de tu cuenta
+          institucional o jefatura asignada.
+        </p>
+      </div>
     </div>
 
-    <ol class="pasos" aria-label="Pasos de acceso">
-      <li [class.is-active]="paso() >= 1" [attr.aria-current]="paso() === 1 ? 'step' : null">
-        <span aria-hidden="true">1</span> Tipo de cuenta
-      </li>
-      <li [class.is-active]="paso() >= 2" [attr.aria-current]="paso() === 2 ? 'step' : null">
-        <span aria-hidden="true">2</span> Credenciales de acceso
-      </li>
-    </ol>
-  </aside>
+    <main class="panel acceso__panel">
+      @if (paso() === 1) {
+        <section class="paso">
+          <div class="paso__barra">
+            <span class="badge info">Paso 1 de 2</span>
+            <span class="paso__hint">Selecciona un módulo</span>
+          </div>
 
-  <main class="panel acceso__panel">
-    <a class="volver-inicio" routerLink="/">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
-      Volver al inicio
-    </a>
+          <h2>¿Cómo vas a ingresar?</h2>
+          <p class="sub">Elige el tipo de cuenta. Después validaremos tus credenciales.</p>
 
-    @if (paso() === 1) {
-    <section class="paso">
-      <p class="badge info">Paso 1 de 2</p>
-      <h2>¿Cómo vas a ingresar?</h2>
-      <p class="sub">Elige el tipo de cuenta. Después validaremos tus credenciales.</p>
-
-      <div class="roles">
-        @for (rol of rolesInternos(); track rol.id) {
-        <button type="button" class="rol" (click)="elegirRol(rol.id)">
-          <span class="rol__num" aria-hidden="true">{{ rol.id }}</span>
-          <span class="rol__texto">
-            <strong>{{ rol.nombre }}</strong>
-            <span>{{ descripcionRol(rol.id) }}</span>
-          </span>
-          <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
-        </button>
-        }
-      </div>
-
-      <p class="pie-panel">
-        ¿Eres ciudadano?
-        <a routerLink="/consulta">Consulta tu información por cédula</a>.
-      </p>
-    </section>
-    } @else {
-    <section class="paso">
-      <button type="button" class="enlace-volver" (click)="volver()">
-        <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
-        Cambiar tipo de cuenta
-      </button>
-
-      <p class="badge info">{{ rolActual()?.nombre }}</p>
-      <h2>{{ tituloCredenciales() }}</h2>
-      <p class="sub">
-        @if (rolElegido() === 1) {
-        Ingresa con tu correo institucional y tu contraseña.
-        } @else if (rolElegido() === 2) {
-        Ingresa con el correo y la contraseña del jefe encargado del centro de salud.
-        } @else {
-        Ingresa con el correo y la contraseña del jefe encargado de la subregión de salud.
-        }
-      </p>
-
-      <form class="form" (submit)="continuar($event, correo.value, clave.value)">
-        <label class="field">
-          <span class="field-label">Correo electrónico</span>
-          <input #correo type="email" name="correo" autocomplete="email" placeholder="nombre@institucion.gob.ve"
-            (input)="error.set('')" />
-        </label>
-
-        <label class="field">
-          <span class="field-label">Contraseña</span>
-          <input #clave type="password" name="clave" autocomplete="current-password" placeholder="••••••••"
-            (input)="error.set('')" />
-        </label>
-
-        @if (error()) {
-        <p class="field-error" role="alert">{{ error() }}</p>
-        }
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            (click)="continuar($event, correo.value, clave.value)"
-          >
-            <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
-            <span>Entrar al sistema</span>
-          </button>
-        </form>
-      </section>
-    }
-
-    @if (modoDemo) {
-    <details class="demo">
-      <summary>Credenciales de prueba</summary>
-      <div class="demo__lista">
-        @for (cuenta of cuentasDemo(); track cuenta.id) {
-        <div class="demo__cuenta">
-          <p class="demo__titulo">
-            {{ cuenta.nombre }}
-            @if (cuenta.entidad) {
-            <span>· {{ cuenta.entidad }}</span>
+          <div class="roles">
+            @for (rol of rolesInternos(); track rol.id) {
+              <button type="button" class="rol" (click)="elegirRol(rol.id)">
+                <span class="rol__num" aria-hidden="true">0{{ rol.id }}</span>
+                <span class="rol__texto">
+                  <strong>{{ rol.nombre }}</strong>
+                  <span>{{ descripcionRol(rol.id) }}</span>
+                </span>
+                <span class="rol__accion" aria-hidden="true">
+                  <span class="rol__kbd">ROL {{ rol.id }}</span>
+                  <span class="ui-icon" data-icon="arrow-right"></span>
+                </span>
+              </button>
             }
-            <span>· rol {{ cuenta.rol }}</span>
+          </div>
+
+          <div class="pie-panel">
+            <span>¿Eres ciudadano?</span>
+            <a class="btn btn-ghost btn-sm" routerLink="/consulta">
+              <span>Consulta tu información por cédula</span>
+              <span class="ui-icon" data-icon="arrow-right" aria-hidden="true"></span>
+            </a>
+          </div>
+        </section>
+      } @else {
+        <section class="paso">
+          <div class="paso__barra">
+            <button type="button" class="btn btn-ghost btn-sm enlace-volver" (click)="volver()">
+              <span class="ui-icon" data-icon="arrow-left" aria-hidden="true"></span>
+              <span>Cambiar tipo de cuenta</span>
+            </button>
+            <span class="badge info">{{ rolActual()?.nombre }}</span>
+          </div>
+
+          <h2>{{ tituloCredenciales() }}</h2>
+          <p class="sub">
+            @if (rolElegido() === 1) {
+              Ingresa con tu correo institucional y tu contraseña.
+            } @else if (rolElegido() === 2) {
+              Ingresa con el correo y la contraseña del jefe encargado del centro de salud.
+            } @else {
+              Ingresa con el correo y la contraseña del jefe encargado de la subregión de salud.
+            }
           </p>
-          <p class="demo__cred">{{ cuenta.correo }} · {{ cuenta.clave }}</p>
-        </div>
-        }
-      </div>
-    </details>
-    }
-  </main>
+
+          <form class="form" (submit)="continuar($event, correo.value, clave.value)">
+            <label class="field">
+              <span class="field-label">Correo electrónico</span>
+              <input
+                #correo
+                type="email"
+                name="correo"
+                autocomplete="email"
+                placeholder="nombre@institucion.gob.ve"
+                (input)="error.set('')"
+              />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Contraseña</span>
+              <input
+                #clave
+                type="password"
+                name="clave"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                (input)="error.set('')"
+              />
+            </label>
+
+            @if (error()) {
+              <p class="field-error" role="alert">{{ error() }}</p>
+            }
+
+            <div class="form__acciones">
+              <button type="button" class="btn btn-secondary" (click)="volver()">Atrás</button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                (click)="continuar($event, correo.value, clave.value)"
+              >
+                <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
+                <span>Entrar al sistema</span>
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      @if (modoDemo) {
+        <details class="demo">
+          <summary>
+            <span class="demo__summary-left">
+              <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+              <span>Credenciales de prueba</span>
+            </span>
+            <span class="badge">{{ cuentasDemo().length }} cuentas</span>
+          </summary>
+          <div class="demo__lista">
+            @for (cuenta of cuentasDemo(); track cuenta.id) {
+              <div class="demo__cuenta">
+                <p class="demo__titulo">
+                  {{ cuenta.nombre }}
+                  @if (cuenta.entidad) {
+                    <span>· {{ cuenta.entidad }}</span>
+                  }
+                  <span>· rol {{ cuenta.rol }}</span>
+                </p>
+                <p class="demo__cred">{{ cuenta.correo }} · {{ cuenta.clave }}</p>
+              </div>
+            }
+          </div>
+        </details>
+      }
+    </main>
+  </div>
 </div>

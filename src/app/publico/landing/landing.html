@@ -1,86 +1,138 @@
 <div class="landing">
   <header class="topbar">
-    <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
-      <span class="marca__logo" aria-hidden="true">V</span>
-      <span class="marca__texto">Sistema V</span>
-    </a>
+    <div class="topbar__inner">
+      <div class="topbar__brand-group">
+        <a class="marca" routerLink="/" aria-label="Sistema V, inicio">
+          <span class="marca__logo" aria-hidden="true">V</span>
+          <span class="marca__texto">Sistema V</span>
+        </a>
+        <span class="topbar__slash" aria-hidden="true">/</span>
+        <span class="topbar__tag">Red Nacional de Vigilancia</span>
+      </div>
 
-    <button type="button" class="btn btn-ghost" (click)="abrirLogin()">
-      <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
-      <span>Iniciar sesión</span>
-    </button>
-  </header>
-
-  <main class="heroe">
-    <div class="heroe__texto">
-      <p class="ca-section-eyebrow">
-        <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
-        Sistema nacional de salud
-      </p>
-
-      <h1>La salud de tu comunidad, <span class="acento">ordenada y a la vista.</span></h1>
-
-      <p class="lead">
-        Sistema V reúne centros de salud, vacunación y certificados en un solo lugar. Consulta tu
-        información o entra con tu cuenta institucional.
-      </p>
-
-      <div class="acciones">
-        <button type="button" class="btn btn-primary" (click)="abrirLogin()">
+      <nav class="topbar__acciones" aria-label="Accesos rápidos">
+        <a class="btn btn-ghost btn-sm" routerLink="/consulta">
+          <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+          <span>Consulta ciudadana</span>
+        </a>
+        <button type="button" class="btn btn-primary btn-sm" (click)="abrirLogin()">
           <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
           <span>Iniciar sesión</span>
         </button>
-        <a class="btn btn-ghost" routerLink="/consulta">Consultar por cédula</a>
-      </div>
-
-      <p class="nota">
-        Acceso para autoridades, subregiones y personal de salud. La consulta ciudadana no requiere
-        cuenta.
-      </p>
+      </nav>
     </div>
+  </header>
 
-    <aside class="panel niveles" aria-label="Niveles de gestión">
-      <p class="badge info">Sistema V</p>
-      <h2>Un expediente, tres niveles de gestión</h2>
+  <div class="landing__marco">
+    <main class="heroe">
+      <div class="heroe__texto">
+        <p class="ca-section-eyebrow">
+          <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+          Sistema nacional de salud · v2.0
+        </p>
+
+        <h1>La salud de tu comunidad, <span class="acento">ordenada y a la vista.</span></h1>
+
+        <p class="lead">
+          Sistema V unifica centros de salud, control de inmunizaciones y emisión de certificados en
+          una sola infraestructura. Consulta tu expediente ciudadano o ingresa a tu consola de
+          jefatura.
+        </p>
+
+        <div class="acciones">
+          <button type="button" class="btn btn-primary btn-lg" (click)="abrirLogin()">
+            <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
+            <span>Acceso institucional</span>
+          </button>
+          <a class="btn btn-secondary btn-lg" routerLink="/consulta">
+            <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+            <span>Consultar por cédula</span>
+          </a>
+        </div>
+
+        <p class="nota">
+          Consola operativa para Master (Rol 1), Jefes de Centro (Rol 2) y Jefes de Subregión (Rol
+          3). La consulta ciudadana (Rol 0) es libre y sin contraseña.
+        </p>
+      </div>
+    </main>
+
+    <section class="niveles" aria-label="Niveles de gestión">
+      <header class="seccion-barra">
+        <div class="seccion-barra__titulo">
+          <span class="badge info">Arquitectura de roles</span>
+          <h2>Un expediente clínico, tres niveles de gestión</h2>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="abrirLogin()">
+          <span>Seleccionar nivel en login</span>
+          <span class="ui-icon" data-icon="arrow-right" aria-hidden="true"></span>
+        </button>
+      </header>
 
       <ul class="niveles__lista">
-        <li>
-          <span class="niveles__num" aria-hidden="true">1</span>
-          <span class="niveles__texto">
-            <strong>Autoridades</strong>
-            <span>Vigilancia y administración general del sistema.</span>
-          </span>
+        <li class="niveles__item" (click)="abrirLogin()">
+          <div class="niveles__cabecera">
+            <span class="niveles__num" aria-hidden="true">ROL 01</span>
+            <span class="ui-icon niveles__flecha" data-icon="arrow-right" aria-hidden="true"></span>
+          </div>
+          <div class="niveles__texto">
+            <strong>Autoridades (Master)</strong>
+            <span>Vigilancia epidemiológica, control de lotes, auditoría y catálogos.</span>
+          </div>
         </li>
-        <li>
-          <span class="niveles__num" aria-hidden="true">2</span>
-          <span class="niveles__texto">
-            <strong>Personal de salud</strong>
-            <span>Jefatura y atención clínica de cada centro.</span>
-          </span>
+        <li class="niveles__item" (click)="abrirLogin()">
+          <div class="niveles__cabecera">
+            <span class="niveles__num" aria-hidden="true">ROL 02</span>
+            <span class="ui-icon niveles__flecha" data-icon="arrow-right" aria-hidden="true"></span>
+          </div>
+          <div class="niveles__texto">
+            <strong>Personal de salud (PS)</strong>
+            <span>Jefatura del establecimiento, vacunación de pacientes y reportes ESAVI.</span>
+          </div>
         </li>
-        <li>
-          <span class="niveles__num" aria-hidden="true">3</span>
-          <span class="niveles__texto">
-            <strong>Subregión de salud</strong>
-            <span>Coordinación estadal y control de centros.</span>
-          </span>
+        <li class="niveles__item" (click)="abrirLogin()">
+          <div class="niveles__cabecera">
+            <span class="niveles__num" aria-hidden="true">ROL 03</span>
+            <span class="ui-icon niveles__flecha" data-icon="arrow-right" aria-hidden="true"></span>
+          </div>
+          <div class="niveles__texto">
+            <strong>Subregión de salud (SRS)</strong>
+            <span>Coordinación estadal de centros, jefaturas y autorización de certificados.</span>
+          </div>
         </li>
       </ul>
-    </aside>
-  </main>
+    </section>
 
-  <section class="rasgos" aria-label="Capacidades del sistema">
-    @for (rasgo of rasgos; track rasgo.titulo) {
-      <article class="panel rasgo">
-        <span class="ui-icon rasgo__icono" [attr.data-icon]="rasgo.icono" aria-hidden="true"></span>
-        <h3>{{ rasgo.titulo }}</h3>
-        <p>{{ rasgo.detalle }}</p>
-      </article>
-    }
-  </section>
+    <section class="rasgos-bloque" aria-label="Capacidades del sistema">
+      <header class="seccion-barra">
+        <div class="seccion-barra__titulo">
+          <span class="badge info">Módulos operativos</span>
+          <h2>Trazabilidad sanitaria de extremo a extremo</h2>
+        </div>
+        <a class="btn btn-ghost btn-sm" routerLink="/consulta">
+          <span>Probar consulta pública</span>
+          <span class="ui-icon" data-icon="arrow-right" aria-hidden="true"></span>
+        </a>
+      </header>
+
+      <div class="rasgos">
+        @for (rasgo of rasgos; track rasgo.titulo) {
+          <article class="rasgo">
+            <span class="rasgo__icono-caja" aria-hidden="true">
+              <span class="ui-icon rasgo__icono" [attr.data-icon]="rasgo.icono"></span>
+            </span>
+            <h3>{{ rasgo.titulo }}</h3>
+            <p>{{ rasgo.detalle }}</p>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
 
   <footer class="pie">
-    <span>Sistema V · Gestión de salud pública</span>
-    <span>Prototipo de vistas · datos de prueba</span>
+    <div class="pie__inner">
+      <span>Sistema V · Gestión de salud pública</span>
+      <span>Arquitectura Spartan / Vercel · Datos de prueba</span>
+    </div>
   </footer>
 </div>

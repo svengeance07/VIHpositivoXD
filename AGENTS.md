@@ -47,7 +47,7 @@
 - Single test file: `pnpm test --watch=false --include app/app.spec.ts` (path is relative to `src/`). Filter by suite/test name with `--filter "^App"`.
 - Format: `pnpm format`; verify with `pnpm format:check`. No linter is configured, so `pnpm build` is the typecheck gate.
 
-## UI & Spartan / shadcn / Vercel (Zinc) Design System (verified)
+## UI & Spartan / shadcn / Vercel (Obsidian Dark Mode) Design System (verified)
 
 - Do **not** use `<ca-*>` custom elements from `caustica-design` (`<ca-button>`, `<ca-icon>`, `<ca-modal>`, `<ca-tabs>`, `<ca-collapse>`) or `@import 'caustica-design/css';`.
 - All views use standard native HTML elements styled by `src/styles.css` and component stylesheets:
@@ -55,12 +55,12 @@
   - Icons: `<span class="ui-icon" data-icon="<name>" aria-hidden="true"></span>` (or `[attr.data-icon]="..."`), which loads SVGs via CSS `mask-image` from `/icons/*.svg` (`public/icons/`).
   - Modals: `@if (abierto()) { <div class="ui-modal-backdrop" (click)="cerrar()"><div class="ui-modal-container" (click)="$event.stopPropagation()">...</div></div> }`.
   - Collapsibles: `<details class="ui-collapse"><summary class="ui-collapse__trigger">...</summary><div class="ui-collapse__panel">...</div></details>`.
-- Surface tokens: `src/styles.css` defines canonical **Spartan / shadcn / Vercel (Zinc)** semantic tokens (`--background: #fafafa`, `--foreground: #09090b`, `--card: #ffffff`, `--muted-foreground: #71717a`, `--border: #e4e4e7`, `--primary: #18181b`, `--secondary: #f4f4f5`, `--radius-sm`, `--radius-md`, `--radius-lg`) so all views render with crisp `1px solid` borders and flat surfaces.
+- Surface tokens: `src/styles.css` defines canonical **Spartan / shadcn / Vercel Obsidian Dark Mode** semantic tokens (`--background: #000000`, `--background-subtle: #050507`, `--foreground: #fafafa`, `--card: #09090b`, `--card-elevated: #121215`, `--muted: #141417`, `--muted-foreground: #a1a1aa`, `--border: #27272a`, `--border-strong: #3f3f46`, `--primary: #fafafa`, `--primary-foreground: #09090b`, `--secondary: #18181b`, `--radius-sm`, `--radius-md`, `--radius-lg`) so all views render with predominant black/dark-zinc surfaces, crisp white/gray text, and `1px solid #27272a` hairline borders.
 
 ## UI rules
 
-- Follow the **Spartan / shadcn / Vercel (Zinc)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): flat `#ffffff` cards over `#fafafa` canvas, `1px solid #e4e4e7` borders, monochrome `#18181b` primary actions, tight typographic hierarchy, and zero decorative blur/glass or neon gradients.
-- Reuse semantic tokens from `src/styles.css` (`--background`, `--card`, `--border`, `--primary`, `--muted-foreground`). See the `spartan-shadcn-ui` and `impeccable` skills.
+- Follow the **Spartan / shadcn / Vercel (Obsidian Dark Mode)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): predominant `#000000` / `#09090b` dark surfaces, crisp `#fafafa` white and `#a1a1aa` zinc-gray typography, `1px solid #27272a` hairline borders, stark white `#fafafa` primary buttons (`color: #09090b`), dark zinc `#18181b` secondary buttons, flush `1px` bento metric strips, two-tier Vercel top command header + horizontal navigation bar alongside the collapsible left rail, and zero decorative blur/glass or neon gradients.
+- Reuse semantic tokens from `src/styles.css` (`--background`, `--card`, `--border`, `--primary`, `--primary-foreground`, `--secondary`, `--muted-foreground`). See the `spartan-shadcn-ui` and `impeccable` skills.
 
 ## OpenCode setup
 

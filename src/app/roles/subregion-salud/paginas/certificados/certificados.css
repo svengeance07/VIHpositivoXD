@@ -16,7 +16,7 @@
 .certificados-busqueda__control .ui-icon {
   position: absolute;
   left: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   pointer-events: none;
 }
 

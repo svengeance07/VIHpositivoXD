@@ -70,7 +70,7 @@ flowchart TD
   `/consulta/verificacion` queda como fase futura.
 - **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro o subregión cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente en el paso 2 de `/login` con su correo y contraseña registrados en `personal`. El master entra directo con su cuenta en `master`. Ver
   [`modelo-datos.md`](./modelo-datos.md) §5.1.
-- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética unificada **Spartan / shadcn / Vercel (Zinc)**: barra lateral fija/colapsable blanca con borde de `1px solid #e4e4e7`, barra superior de contexto institucional, tarjetas planas `#ffffff` sobre lienzo `#fafafa`, cabeceras de página con badge contextual neutro y tablas limpias con números tabulares.
+- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética y disposición unificada **Spartan / shadcn / Vercel (Obsidian Dark Mode)**: barra de comando superior en dos niveles (breadcrumbs `V / Rol / Contexto` + botones de acción rápida + pestañas horizontales con indicador activo blanco) combinada con barra lateral fija/colapsable `#050507`, tarjetas oscuras `#09090b` sobre lienzo negro `#000000`, bordes de `1px solid #27272a`, tiras de métricas bento unidas por divisores de `1px`, botones primarios blancos (`#fafafa` con texto `#09090b`) y tablas oscuras con números tabulares.
 
 ### 3.1 Navegación interna del master
 

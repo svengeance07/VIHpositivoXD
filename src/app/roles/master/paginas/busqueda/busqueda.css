@@ -19,7 +19,7 @@
 
 .busqueda__cabecera p {
   margin: 0.22rem 0 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.84rem;
   line-height: 1.45;
 }
@@ -55,7 +55,7 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.82rem;
 }
 

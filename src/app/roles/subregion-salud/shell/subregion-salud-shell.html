@@ -1,73 +1,47 @@
 <div class="srs-shell">
-  <button
-    type="button"
-    class="velo"
-    [class.is-visible]="menuMovil()"
-    (click)="cerrarTodo()"
-    aria-label="Cerrar menú de navegación"
-  ></button>
+  <button type="button" class="velo" [class.is-visible]="menuMovil()" (click)="cerrarTodo()"
+    aria-label="Cerrar menú de navegación"></button>
 
-  <aside
-    id="barra-srs"
-    class="barra"
-    [class.is-expandida]="expandido()"
-    (mouseenter)="abrirHover()"
-    (mouseleave)="cerrarHover()"
-    (focusin)="abrirHover()"
-    (focusout)="cerrarEnfoque($event)"
-  >
+  <aside id="barra-srs" class="barra" [class.is-expandida]="expandido()" (mouseenter)="abrirHover()"
+    (mouseleave)="cerrarHover()" (focusin)="abrirHover()" (focusout)="cerrarEnfoque($event)">
     <div class="barra__cabecera">
-      <a
-        class="marca"
-        routerLink="/SRS"
-        (click)="alNavegar()"
-        aria-label="Ir al panel de la subregión"
-      >
+      <a class="marca" routerLink="/SRS" (click)="alNavegar()" aria-label="Ir al panel de la subregión">
         <span class="marca__logo" aria-hidden="true">SR</span>
         <span class="barra__marca-texto">
           <strong>Sistema V</strong>
-          <small>Subregión de Salud</small>
+          <small>Subregión · Rol 3</small>
         </span>
       </a>
 
-      <button
-        type="button"
-        class="barra__pin"
-        (click)="alternarFijado()"
-        [attr.aria-pressed]="fijado()"
+      <button type="button" class="barra__pin" (click)="alternarFijado()" [attr.aria-pressed]="fijado()"
         [attr.aria-label]="fijado() ? 'Soltar menú' : 'Fijar menú'"
         [attr.title]="fijado() ? 'Soltar menú' : 'Fijar menú'"
       >
         <span
           class="ui-icon"
-          [attr.data-icon]="fijado() ? 'chevron-left' : 'chevron-right'"
+          [attr.data-icon]="fijado() ? 'arrow-left' : 'arrow-right'"
           aria-hidden="true"
         ></span>
       </button>
 
       <button type="button" class="barra__cerrar" (click)="cerrarMenu()" aria-label="Cerrar menú">
-        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
       </button>
     </div>
 
     <nav class="barra__nav" aria-label="Navegación de la subregión">
       @for (item of navegacion(); track item.ruta) {
-        <a
-          class="barra__item"
-          [routerLink]="item.ruta"
-          routerLinkActive="is-active"
-          [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
-          [attr.title]="item.etiqueta"
-          (click)="alNavegar()"
-        >
-          <span class="barra__icono" aria-hidden="true">
-            <span [attr.data-icon]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></span>
-          </span>
-          <span class="barra__item-etiqueta">{{ item.etiqueta }}</span>
-          @if (item.badge) {
-            <span class="barra__item-badge">{{ item.badge }}</span>
-          }
-        </a>
+      <a class="barra__item" [routerLink]="item.ruta" routerLinkActive="is-active"
+        [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }" [attr.title]="item.etiqueta"
+        (click)="alNavegar()">
+        <span class="barra__icono" aria-hidden="true">
+          <ca-icon [name]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></ca-icon>
+        </span>
+        <span class="barra__item-etiqueta">{{ item.etiqueta }}</span>
+        @if (item.badge) {
+        <span class="barra__item-badge">{{ item.badge }}</span>
+        }
+      </a>
       }
     </nav>
 
@@ -80,66 +54,102 @@
         </span>
       </div>
 
-      <button
-        type="button"
-        class="btn btn-ghost barra__logout"
-        (click)="cerrarSesion()"
-        aria-label="Cerrar sesión"
-        title="Cerrar sesión"
-      >
-        <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
+      <button type="button" class="btn btn-ghost barra__logout" (click)="cerrarSesion()" aria-label="Cerrar sesión"
+        title="Cerrar sesión">
+        <ca-icon name="log-out" aria-hidden="true"></ca-icon>
         <span class="barra__item-etiqueta">Cerrar sesión</span>
       </button>
     </div>
   </aside>
 
   <div class="srs-shell__cuerpo">
-    <header class="barra-superior" aria-label="Cabecera móvil">
-      <button
-        type="button"
-        class="barra-superior__hamburguesa"
-        (click)="abrirMenu()"
-        aria-label="Abrir menú de navegación"
-        aria-controls="barra-srs"
-        [attr.aria-expanded]="menuMovil()"
-      >
-        <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
-      </button>
+    <header class="barra-superior" aria-label="Cabecera de la subregión">
+      <div class="barra-superior__top">
+        <div class="barra-superior__izq">
+          <button
+            type="button"
+            class="barra-superior__hamburguesa"
+            (click)="abrirMenu()"
+            aria-label="Abrir menú de navegación"
+            aria-controls="barra-srs"
+            [attr.aria-expanded]="menuMovil()"
+          >
+            <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
+          </button>
 
-      <span class="barra-superior__titulo">
-        <strong>
-          <span class="barra-superior__nombre-completo">{{ nombreSubregion }}</span>
-          <span class="barra-superior__nombre-corto">{{ estadoNombre }}</span>
-        </strong>
-        <span class="barra-superior__badge barra-superior__badge--jefe"> Jefe de subregión </span>
-      </span>
+          <span class="barra-superior__titulo">
+            <span class="barra-superior__logo-mini" aria-hidden="true">SR</span>
+            <span class="barra-superior__slash" aria-hidden="true">/</span>
+            <strong>
+              <span class="barra-superior__nombre-completo">{{ nombreSubregion }}</span>
+              <span class="barra-superior__nombre-corto">{{ estadoNombre }}</span>
+            </strong>
+            <span class="barra-superior__badge barra-superior__badge--jefe">
+              Jefe de subregión
+            </span>
+          </span>
+        </div>
 
-      <div class="barra-superior__acciones">
-        <a
-          class="btn btn-sm btn-ghost"
-          routerLink="/SRS/notificaciones"
-          [attr.title]="
-            datos.notificacionesNoLeidas() > 0
-              ? datos.notificacionesNoLeidas() + ' notificaciones sin leer'
-              : 'Notificaciones'
-          "
-          aria-label="Abrir notificaciones"
-        >
-          <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
-          @if (datos.notificacionesNoLeidas() > 0) {
-            <span class="barra-superior__contador">{{ datos.notificacionesNoLeidas() }}</span>
-          }
-        </a>
-        <button
-          type="button"
-          class="btn btn-sm btn-ghost"
-          (click)="cerrarSesion()"
-          title="Cerrar sesión"
-          aria-label="Cerrar sesión"
-        >
-          <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
-        </button>
+        <div class="barra-superior__acciones">
+          <a class="btn btn-secondary btn-sm" routerLink="/SRS/certificados">
+            <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+            <span>Certificados</span>
+          </a>
+
+          <a
+            class="btn btn-secondary btn-sm"
+            routerLink="/SRS/notificaciones"
+            [attr.title]="
+              datos.notificacionesNoLeidas() > 0
+                ? datos.notificacionesNoLeidas() + ' notificaciones sin leer'
+                : 'Notificaciones'
+            "
+            aria-label="Abrir notificaciones"
+          >
+            <span class="ui-icon" data-icon="bell" aria-hidden="true"></span>
+            <span>Avisos</span>
+            @if (datos.notificacionesNoLeidas() > 0) {
+              <span class="barra-superior__contador">{{ datos.notificacionesNoLeidas() }}</span>
+            }
+          </a>
+
+          <div class="srs-cuenta-top">
+            <span class="usuario-pill__avatar" aria-hidden="true">{{ iniciales() }}</span>
+            <span class="srs-cuenta-top__texto">
+              <strong>{{ nombreUsuario() }}</strong>
+              <small>{{ estadoNombre }}</small>
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-ghost"
+            (click)="cerrarSesion()"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
+            <span>Salir</span>
+          </button>
+        </div>
       </div>
+
+      <nav class="barra-superior__tabs" aria-label="Navegación rápida de la subregión">
+        @for (item of navegacion(); track item.ruta) {
+          <a
+            class="barra-superior__tab"
+            [routerLink]="item.ruta"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
+          >
+            <span [attr.data-icon]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></span>
+            <span>{{ item.etiqueta }}</span>
+            @if (item.badge) {
+              <span class="barra-superior__tab-badge">{{ item.badge }}</span>
+            }
+          </a>
+        }
+      </nav>
     </header>
 
     <main class="contenido">
