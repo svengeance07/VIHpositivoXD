@@ -11,7 +11,7 @@
       [disabled]="conteos().noLeidas === 0"
       (click)="marcarTodas()"
     >
-      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
       <span>Marcar todas como leídas</span>
     </button>
   </app-srs-encabezado>
@@ -19,7 +19,7 @@
   <section class="srs-metricas" aria-label="Resumen de notificaciones">
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="clipboard"></ca-icon>
+        <span class="ui-icon" data-icon="clipboard"></span>
       </span>
       <span class="srs-metrica__etiqueta">Notificaciones totales</span>
       <strong>{{ conteos().total }}</strong>
@@ -27,7 +27,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="feedback"></ca-icon>
+        <span class="ui-icon" data-icon="feedback"></span>
       </span>
       <span class="srs-metrica__etiqueta">Sin leer</span>
       <strong>{{ conteos().noLeidas }}</strong>
@@ -35,7 +35,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--ok">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="check"></ca-icon>
+        <span class="ui-icon" data-icon="check"></span>
       </span>
       <span class="srs-metrica__etiqueta">Leídas</span>
       <strong>{{ conteos().leidas }}</strong>
@@ -43,7 +43,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="warning"></ca-icon>
+        <span class="ui-icon" data-icon="warning"></span>
       </span>
       <span class="srs-metrica__etiqueta">Prioridad alta</span>
       <strong>{{ conteos().alta }}</strong>
@@ -90,7 +90,7 @@
     @if (resultados().length === 0) {
       <article class="panel">
         <div class="srs-vacio">
-          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
           <strong>No hay notificaciones con ese filtro</strong>
           <p>La bandeja está al día para el criterio seleccionado.</p>
           @if (hayFiltros()) {
@@ -109,7 +109,7 @@
               [class.notificacion__icono--alta]="notificacion.prioridad === 'alta'"
               aria-hidden="true"
             >
-              <ca-icon [name]="icono(notificacion)"></ca-icon>
+              <span class="ui-icon" [attr.data-icon]="icono(notificacion)"></span>
             </span>
 
             <div class="notificacion__contenido">
@@ -155,7 +155,7 @@
                       (click)="marcarLeida(notificacion)"
                     >
                       Revisar solicitud
-                      <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+                      <span class="ui-icon" data-icon="chevron-right" aria-hidden="true"></span>
                     </a>
                   }
                   @if (!notificacion.leida) {
@@ -177,7 +177,7 @@
   </section>
 
   <div class="srs-aviso">
-    <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+    <span class="ui-icon" data-icon="feedback" aria-hidden="true"></span>
     <span>
       Solo se generan notificaciones cuando una solicitud de certificado reúne todos los requisitos
       vigentes. Los vencimientos de vacunas o exámenes no envían avisos a esta bandeja.

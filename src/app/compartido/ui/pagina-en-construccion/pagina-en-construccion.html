@@ -9,30 +9,33 @@
     <p class="descripcion">{{ subtitulo() }}</p>
 
     @if (sesionActiva(); as sesion) {
-      <dl class="sesion">
-        <div>
-          <dt>Rol</dt>
-          <dd>{{ rolNombre() }}</dd>
-        </div>
-        <div>
-          <dt>Sesión</dt>
-          <dd>{{ sesion.nombre }}</dd>
-        </div>
-        @if (sesion.entidad) {
-          <div>
-            <dt>Entidad</dt>
-            <dd>{{ sesion.entidad }}</dd>
-          </div>
-        }
-      </dl>
+    <dl class="sesion">
+      <div>
+        <dt>Rol</dt>
+        <dd>{{ rolNombre() }}</dd>
+      </div>
+      <div>
+        <dt>Sesión</dt>
+        <dd>{{ sesion.nombre }}</dd>
+      </div>
+      @if (sesion.entidad) {
+      <div>
+        <dt>Entidad</dt>
+        <dd>{{ sesion.entidad }}</dd>
+      </div>
+      }
+    </dl>
 
-      <div class="acciones">
-        <ca-button variant="ghost" icon="log-out" (click)="salir()">Cerrar sesión</ca-button>
-      </div>
+    <div class="acciones">
+      <button type="button" class="btn btn-ghost" (click)="salir()">
+        <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
     } @else {
-      <div class="acciones">
-        <a class="btn btn-ghost" routerLink="/">Volver al inicio</a>
-      </div>
+    <div class="acciones">
+      <a class="btn btn-ghost" routerLink="/">Volver al inicio</a>
+    </div>
     }
   </div>
 </section>

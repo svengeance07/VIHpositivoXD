@@ -9,7 +9,7 @@
     "
   >
     <a class="btn btn-ghost" routerLink="/SRS/trabajadores">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="chevron-left" aria-hidden="true"></span>
       <span>Volver a jefes de centro</span>
     </a>
   </app-srs-encabezado>
@@ -112,7 +112,7 @@
     </section>
 
     <div class="srs-aviso">
-      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="feedback" aria-hidden="true"></span>
       <span>
         Cada centro de salud cuenta con el usuario único de su jefe encargado para la gestión y
         atención clínica del establecimiento.
@@ -121,7 +121,7 @@
   } @else {
     <section class="panel">
       <div class="srs-vacio">
-        <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
         <strong>Trabajador no encontrado</strong>
         <p>No existe un registro tipo 2 con ese identificador en la subregión.</p>
         <a class="btn btn-primary" routerLink="/SRS/trabajadores">Volver a la lista</a>

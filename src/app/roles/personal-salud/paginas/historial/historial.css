@@ -18,13 +18,13 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem 1.25rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.35);
   color: #047857;
 }
 
-.alerta-exito ca-icon {
+.alerta-exito .ui-icon {
   font-size: 1.25rem;
   color: #10b981;
   flex-shrink: 0;
@@ -57,10 +57,9 @@
 
 .metrica {
   padding: 1.25rem 1.4rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -70,7 +69,6 @@
 }
 
 .metrica:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -86,13 +84,13 @@
   justify-content: center;
   width: 2.3rem;
   height: 2.3rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   font-size: 1.15rem;
 }
 
 .metrica__icono--azul {
-  background: rgba(14, 165, 233, 0.14);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--verde {
@@ -101,8 +99,8 @@
 }
 
 .metrica__icono--morado {
-  background: rgba(168, 85, 247, 0.14);
-  color: #9333ea;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--amarillo {
@@ -137,10 +135,9 @@
 
 .ps-filtros {
   padding: 1.15rem 1.4rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -217,10 +214,9 @@
 
 .ps-bitacora-tabla {
   padding: 1.4rem;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: grid;
   gap: 1.1rem;
 }
@@ -240,7 +236,7 @@
 .tabla-responsive {
   width: 100%;
   overflow-x: auto;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
 }
 
@@ -277,7 +273,7 @@
 }
 
 .ui-table tbody tr:hover {
-  background: rgba(14, 165, 233, 0.03);
+  background: var(--secondary);
 }
 
 .ui-table tbody tr:last-child td {
@@ -305,9 +301,9 @@
 }
 
 .chip-evento--vacuna {
-  background: rgba(14, 165, 233, 0.12);
-  color: #0369a1;
-  border: 1px solid rgba(14, 165, 233, 0.25);
+  background: var(--secondary);
+  color: var(--foreground);
+  border: 1px solid var(--secondary);
 }
 
 .chip-evento--reporte {
@@ -316,7 +312,7 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.chip-evento ca-icon {
+.chip-evento .ui-icon {
   font-size: 0.8rem;
 }
 
@@ -369,8 +365,8 @@
   align-items: center;
   padding: 0.18rem 0.55rem;
   border-radius: 0.4rem;
-  background: rgba(14, 165, 233, 0.1);
-  color: #0369a1;
+  background: var(--secondary);
+  color: var(--foreground);
   font-size: 0.75rem;
   font-weight: 700;
   font-family: monospace;
@@ -431,7 +427,7 @@
   gap: 0.65rem;
 }
 
-.estado-vacio ca-icon {
+.estado-vacio .ui-icon {
   font-size: 2.2rem;
   color: var(--text-muted);
   opacity: 0.6;
@@ -450,7 +446,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-ca-modal {
+.ui-modal-backdrop {
   --modal-z: 1200;
 }
 
@@ -463,7 +459,7 @@ ca-modal {
   display: flex;
   flex-direction: column;
   background: var(--surface, #ffffff);
-  border-radius: 1.4rem;
+  border-radius: var(--radius-lg);
   border: 1.5px solid var(--border-subtle);
   box-shadow:
     0 24px 60px -10px rgba(0, 0, 0, 0.35),
@@ -500,11 +496,11 @@ ca-modal {
   font-weight: 750;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #0284c7;
+  color: var(--foreground);
   margin-bottom: 0.15rem;
 }
 
-.modal-eyebrow ca-icon {
+.modal-eyebrow .ui-icon {
   font-size: 0.85rem;
 }
 
@@ -535,9 +531,9 @@ ca-modal {
   align-items: center;
   gap: 1.1rem;
   padding: 1.1rem 1.35rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(14, 165, 233, 0.03));
-  border: 1px solid rgba(2, 132, 199, 0.22);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--secondary);
 }
 
 .comprobante-timbre__logo {
@@ -546,12 +542,12 @@ ca-modal {
   justify-content: center;
   width: 3.2rem;
   height: 3.2rem;
-  border-radius: 0.85rem;
-  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border-radius: var(--radius-md);
+  background: var(--primary);
   color: #fff;
   font-size: 1.5rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 4px 12px var(--border);
 }
 
 .comprobante-timbre__info h4 {
@@ -559,7 +555,7 @@ ca-modal {
   font-size: 0.88rem;
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #0284c7;
+  color: var(--foreground);
 }
 
 .comprobante-timbre__info p {
@@ -581,7 +577,7 @@ ca-modal {
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.15rem 1.35rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   background: rgba(248, 250, 252, 0.8);
   border: 1px solid var(--border-subtle);
 }
@@ -622,13 +618,12 @@ ca-modal {
 
 .comprobante-observaciones {
   padding: 0.85rem 1.1rem;
-  border-radius: 0.85rem;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border-subtle);
-  border-left: 3.5px solid #0284c7;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--border);
   font-size: 0.88rem;
   line-height: 1.5;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .comprobante-seccion--firma {
@@ -673,7 +668,7 @@ ca-modal {
   gap: 0.25rem;
   text-align: right;
   padding: 0.65rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: rgba(16, 185, 129, 0.08);
   border: 1px dashed rgba(16, 185, 129, 0.35);
 }

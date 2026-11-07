@@ -5,7 +5,7 @@
     descripcion="Filtra por código, vacuna, estado o centro de destino. Los resultados se actualizan mientras escribes."
   >
     <a class="btn btn-ghost" routerLink="/master/vacunas">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="chevron-left" aria-hidden="true"></span>
       Volver al control
     </a>
   </app-master-encabezado>
@@ -65,7 +65,7 @@
   <section class="panel">
     @if (resultados().length === 0) {
       <div class="master-vacio">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <strong>No hay lotes con esos filtros</strong>
         <p>Prueba con otro código, vacuna o centro de destino.</p>
       </div>
@@ -116,57 +116,66 @@
     }
   </section>
 
-  <ca-modal
-    [attr.open]="seleccionado() ? '' : null"
-    backdrop-label="Cerrar detalle del lote"
-    (openchange)="cerrarDetalle()"
-  >
-    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
-      @if (seleccionado(); as lote) {
-        <header class="master-modal__cabecera">
-          <div>
-            <h2>{{ lote.codigo }}</h2>
-            <p>{{ datos.nombreVacuna(lote.vacunaId) }} · {{ lote.dosis }} dosis</p>
+  @if (seleccionado(); as lote) {
+    <div class="ui-modal-backdrop" (click)="cerrarDetalle()">
+      <div class="ui-modal-container" (click)="$event.stopPropagation()">
+        <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+          <header class="master-modal__cabecera">
+            <div>
+              <h2>{{ lote.codigo }}</h2>
+              <p>{{ datos.nombreVacuna(lote.vacunaId) }} · {{ lote.dosis }} dosis</p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm ui-modal-close"
+              (click)="cerrarDetalle()"
+              aria-label="Cerrar detalle"
+            >
+              <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+            </button>
+          </header>
+          <div class="master-modal__cuerpo">
+            <div class="master-detalle__datos">
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Estado</span>
+                <span class="master-dato__valor">{{ etiquetaLote(lote.estado) }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Origen</span>
+                <span class="master-dato__valor">{{ lote.origen }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Destino</span>
+                <span class="master-dato__valor">{{
+                  datos.nombreCentro(lote.destinoCentroId)
+                }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Responsable</span>
+                <span class="master-dato__valor">{{ responsable(lote.responsableId) }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Fecha de envío</span>
+                <span class="master-dato__valor">{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Fecha de recepción</span>
+                <span class="master-dato__valor">{{
+                  lote.fechaRecepcion | date: 'dd/MM/yyyy'
+                }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Temperatura</span>
+                <span class="master-dato__valor">{{ lote.temperatura }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Observación</span>
+                <span class="master-dato__valor">{{ lote.observacion }}</span>
+              </div>
+            </div>
           </div>
-          <ca-modal-close label="Cerrar detalle"></ca-modal-close>
-        </header>
-        <div class="master-modal__cuerpo">
-          <div class="master-detalle__datos">
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Estado</span>
-              <span class="master-dato__valor">{{ etiquetaLote(lote.estado) }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Origen</span>
-              <span class="master-dato__valor">{{ lote.origen }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Destino</span>
-              <span class="master-dato__valor">{{ datos.nombreCentro(lote.destinoCentroId) }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Responsable</span>
-              <span class="master-dato__valor">{{ responsable(lote.responsableId) }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Fecha de envío</span>
-              <span class="master-dato__valor">{{ lote.fechaEnvio | date: 'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Fecha de recepción</span>
-              <span class="master-dato__valor">{{ lote.fechaRecepcion | date: 'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Temperatura</span>
-              <span class="master-dato__valor">{{ lote.temperatura }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Observación</span>
-              <span class="master-dato__valor">{{ lote.observacion }}</span>
-            </div>
-          </div>
-        </div>
-      }
-    </section>
-  </ca-modal>
+        </section>
+      </div>
+    </div>
+  }
 </div>

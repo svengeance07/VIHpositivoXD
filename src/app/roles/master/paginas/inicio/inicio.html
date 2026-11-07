@@ -9,27 +9,33 @@
 
   <section class="metricas" aria-label="Resumen del sistema">
     <article class="panel metrica">
-      <span class="metrica__icono" aria-hidden="true"><ca-icon name="clipboard"></ca-icon></span>
+      <span class="metrica__icono" aria-hidden="true"
+        ><span class="ui-icon" data-icon="clipboard"></span
+      ></span>
       <span class="metrica__etiqueta">Ciudadanos registrados</span>
       <strong>{{ datos.resumen().ciudadanos }}</strong>
       <small>Expedientes disponibles en el prototipo</small>
     </article>
     <article class="panel metrica">
       <span class="metrica__icono" aria-hidden="true"
-        ><ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon
+        ><span data-icon="layouts" class="ui-icon ui-icon--layouts"></span
       ></span>
       <span class="metrica__etiqueta">Centros de salud</span>
       <strong>{{ datos.resumen().centros }}</strong>
       <small>Hospitales, ambulatorios y CDI</small>
     </article>
     <article class="panel metrica">
-      <span class="metrica__icono" aria-hidden="true"><ca-icon name="feedback"></ca-icon></span>
+      <span class="metrica__icono" aria-hidden="true"
+        ><span class="ui-icon" data-icon="feedback"></span
+      ></span>
       <span class="metrica__etiqueta">Jefes activos</span>
       <strong>{{ datos.resumen().personal }}</strong>
       <small>Jefes de centros y subregiones</small>
     </article>
     <article class="panel metrica metrica--alerta">
-      <span class="metrica__icono" aria-hidden="true"><ca-icon name="warning"></ca-icon></span>
+      <span class="metrica__icono" aria-hidden="true"
+        ><span class="ui-icon" data-icon="warning"></span
+      ></span>
       <span class="metrica__etiqueta">Lotes en camino</span>
       <strong>{{ datos.resumen().lotesEnCamino }}</strong>
       <small>{{ datos.resumen().lotesReportados }} reportados por revisar</small>
@@ -56,10 +62,11 @@
           aria-controls="detalle-lotes"
           (click)="alternarLotes()"
         >
-          <ca-icon
-            [name]="lotesFijados() ? 'chevron-down' : 'chevron-right'"
+          <span
+            class="ui-icon"
+            [attr.data-icon]="lotesFijados() ? 'chevron-down' : 'chevron-right'"
             aria-hidden="true"
-          ></ca-icon>
+          ></span>
           {{ lotesFijados() ? 'Ocultar detalle' : 'Ver detalle' }}
         </button>
       </div>
@@ -179,9 +186,9 @@
 
       <div class="mapa__niveles" aria-hidden="true">
         <span>Estado</span>
-        <ca-icon name="chevron-right"></ca-icon>
+        <span class="ui-icon" data-icon="chevron-right"></span>
         <span>Municipio</span>
-        <ca-icon name="chevron-right"></ca-icon>
+        <span class="ui-icon" data-icon="chevron-right"></span>
         <span>Parroquia</span>
       </div>
       <p class="mapa__nota">

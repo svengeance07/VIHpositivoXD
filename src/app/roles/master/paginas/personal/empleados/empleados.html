@@ -156,104 +156,111 @@
     }
   </section>
 
-  <ca-modal
-    [attr.open]="altaAbierta() ? '' : null"
-    backdrop-label="Cerrar formulario de jefe"
-    (openchange)="cerrarAlta()"
-  >
-    <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
-      <header class="master-modal__cabecera">
-        <div>
-          <h2>Asignar jefe encargado</h2>
-          <p>Registra al jefe encargado y asígnalo como titular de un centro o subregión.</p>
-        </div>
-        <ca-modal-close label="Cerrar formulario"></ca-modal-close>
-      </header>
-
-      <form class="master-modal__cuerpo form" (submit)="guardar($event)">
-        <div class="master-campos">
-          <label class="field">
-            <span class="field-label">Nombre y apellido</span>
-            <input
-              type="text"
-              placeholder="Dr. Nombre Apellido"
-              [value]="alta().nombre"
-              (input)="actualizarAlta('nombre', valor($event))"
-              required
-            />
-          </label>
-          <label class="field">
-            <span class="field-label">Cédula</span>
-            <input
-              type="text"
-              inputmode="numeric"
-              placeholder="12345678"
-              [value]="alta().cedula"
-              (input)="actualizarAlta('cedula', valor($event))"
-              required
-            />
-          </label>
-          <label class="field">
-            <span class="field-label">Correo</span>
-            <input
-              type="email"
-              placeholder="nombre@vih.gob.ve"
-              [value]="alta().correo"
-              (input)="actualizarAlta('correo', valor($event))"
-              required
-            />
-          </label>
-          <label class="field">
-            <span class="field-label">Teléfono</span>
-            <input
-              type="tel"
-              placeholder="0414-000-0000"
-              [value]="alta().telefono"
-              (input)="actualizarAlta('telefono', valor($event))"
-            />
-          </label>
-        </div>
-
-        <div class="master-campos">
-          <label class="field">
-            <span class="field-label">Profesión</span>
-            <select
-              [value]="alta().profesionId"
-              (change)="actualizarAlta('profesionId', valor($event))"
-              required
+  @if (altaAbierta()) {
+    <div class="ui-modal-backdrop" (click)="cerrarAlta()">
+      <div class="ui-modal-container" (click)="$event.stopPropagation()">
+        <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
+          <header class="master-modal__cabecera">
+            <div>
+              <h2>Asignar jefe encargado</h2>
+              <p>Registra al jefe encargado y asígnalo como titular de un centro o subregión.</p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm ui-modal-close"
+              (click)="cerrarAlta()"
+              aria-label="Cerrar formulario"
             >
-              <option value="">Selecciona una profesión</option>
-              @for (profesion of catalogos.profesiones(); track profesion.id) {
-                <option [value]="profesion.id">{{ profesion.nombre }}</option>
-              }
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Centro o subregión</span>
-            <select
-              [value]="alta().centroId"
-              (change)="actualizarAlta('centroId', valor($event))"
-              required
-            >
-              <option value="">Selecciona un centro o subregión</option>
-              @for (centro of datos.centros(); track centro.id) {
-                <option [value]="centro.id">{{ centro.nombre }}</option>
-              }
-            </select>
-          </label>
-        </div>
+              <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+            </button>
+          </header>
 
-        @if (errorAlta()) {
-          <p class="field-error" role="alert">{{ errorAlta() }}</p>
-        }
+          <form class="master-modal__cuerpo form" (submit)="guardar($event)">
+            <div class="master-campos">
+              <label class="field">
+                <span class="field-label">Nombre y apellido</span>
+                <input
+                  type="text"
+                  placeholder="Dr. Nombre Apellido"
+                  [value]="alta().nombre"
+                  (input)="actualizarAlta('nombre', valor($event))"
+                  required
+                />
+              </label>
+              <label class="field">
+                <span class="field-label">Cédula</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="12345678"
+                  [value]="alta().cedula"
+                  (input)="actualizarAlta('cedula', valor($event))"
+                  required
+                />
+              </label>
+              <label class="field">
+                <span class="field-label">Correo</span>
+                <input
+                  type="email"
+                  placeholder="nombre@vih.gob.ve"
+                  [value]="alta().correo"
+                  (input)="actualizarAlta('correo', valor($event))"
+                  required
+                />
+              </label>
+              <label class="field">
+                <span class="field-label">Teléfono</span>
+                <input
+                  type="tel"
+                  placeholder="0414-000-0000"
+                  [value]="alta().telefono"
+                  (input)="actualizarAlta('telefono', valor($event))"
+                />
+              </label>
+            </div>
 
-        <div class="master-acciones master-acciones--fin">
-          <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
-            Asignar jefe
-          </button>
-        </div>
-      </form>
-    </section>
-  </ca-modal>
+            <div class="master-campos">
+              <label class="field">
+                <span class="field-label">Profesión</span>
+                <select
+                  [value]="alta().profesionId"
+                  (change)="actualizarAlta('profesionId', valor($event))"
+                  required
+                >
+                  <option value="">Selecciona una profesión</option>
+                  @for (profesion of catalogos.profesiones(); track profesion.id) {
+                    <option [value]="profesion.id">{{ profesion.nombre }}</option>
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Centro o subregión</span>
+                <select
+                  [value]="alta().centroId"
+                  (change)="actualizarAlta('centroId', valor($event))"
+                  required
+                >
+                  <option value="">Selecciona un centro o subregión</option>
+                  @for (centro of datos.centros(); track centro.id) {
+                    <option [value]="centro.id">{{ centro.nombre }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+
+            @if (errorAlta()) {
+              <p class="field-error" role="alert">{{ errorAlta() }}</p>
+            }
+
+            <div class="master-acciones master-acciones--fin">
+              <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
+              <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
+                Asignar jefe
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  }
 </div>

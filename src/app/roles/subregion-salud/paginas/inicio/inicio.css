@@ -13,32 +13,32 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.7rem 0.75rem;
-  border: 0.5px solid var(--glass-border);
-  border-radius: var(--ca-radius-md);
-  background: color-mix(in oklab, var(--glass-surface) 35%, transparent);
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
   color: inherit;
   text-decoration: none;
   transition:
-    background 160ms ease,
-    border-color 160ms ease;
+    background 140ms ease,
+    border-color 140ms ease;
 }
 
 .inicio-solicitud:hover {
-  background: color-mix(in oklab, var(--glass-surface) 65%, transparent);
-  border-color: color-mix(in oklab, var(--color-accent) 30%, var(--glass-border));
+  background: var(--secondary);
+  border-color: var(--border-strong);
 }
 
 .inicio-solicitud__avatar {
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 9999px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #0284c7, #10b981);
-  color: #fff;
+  background: var(--primary);
+  color: var(--primary-foreground);
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -50,14 +50,14 @@
 }
 
 .inicio-solicitud__texto strong {
-  font-size: 0.88rem;
+  font-size: 0.875rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .inicio-solicitud__texto small {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.76rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -77,34 +77,38 @@
 .inicio-notificacion {
   display: flex;
   gap: 0.65rem;
-  padding: 0.65rem 0.6rem;
-  border-radius: var(--ca-radius-md);
+  padding: 0.65rem 0.7rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
   color: inherit;
   text-decoration: none;
-  transition: background 160ms ease;
+  transition: background 140ms ease;
 }
 
 .inicio-notificacion:hover {
-  background: color-mix(in oklab, var(--glass-surface) 58%, transparent);
+  background: var(--secondary);
 }
 
 .inicio-notificacion.is-no-leida {
-  background: color-mix(in oklab, var(--color-accent) 7%, transparent);
+  background: var(--secondary);
+  border-color: var(--border);
 }
 
 .inicio-notificacion__icono {
   width: 1.95rem;
   height: 1.95rem;
-  border-radius: 0.6rem;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  background: color-mix(in oklab, var(--info) 12%, transparent);
+  background: var(--info-bg);
+  border: 1px solid var(--info-border);
   color: var(--info);
   flex-shrink: 0;
 }
 
 .inicio-notificacion__icono--alta {
-  background: color-mix(in oklab, var(--danger) 13%, transparent);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
   color: var(--danger);
 }
 
@@ -119,7 +123,7 @@
 }
 
 .inicio-notificacion__texto small {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
   line-height: 1.4;
   display: -webkit-box;
@@ -133,9 +137,9 @@
   align-items: flex-start;
   gap: 0.65rem;
   padding: 0.75rem;
-  border: 0.5px solid var(--glass-border);
-  border-radius: var(--ca-radius-md);
-  background: color-mix(in oklab, var(--glass-surface) 38%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
 }
 
 .inicio-centro__icono {
@@ -143,9 +147,10 @@
   height: 2rem;
   display: grid;
   place-items: center;
-  border-radius: 0.55rem;
-  background: color-mix(in oklab, #0ea5e9 13%, transparent);
-  color: #0284c7;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
   flex-shrink: 0;
 }
 
@@ -161,7 +166,7 @@
 }
 
 .inicio-centro__texto small {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.76rem;
   line-height: 1.35;
 }
@@ -185,15 +190,16 @@
 }
 
 .inicio-flujo__numero {
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.65rem;
+  height: 1.65rem;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: color-mix(in oklab, var(--color-accent) 13%, transparent);
-  color: var(--color-accent-2);
-  font-size: 0.76rem;
-  font-weight: 750;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -203,7 +209,7 @@
 
 .inicio-flujo p {
   margin: 0.12rem 0 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
   line-height: 1.4;
 }
@@ -213,23 +219,23 @@
   gap: 0.4rem;
   margin-top: 1rem;
   padding-top: 0.9rem;
-  border-top: 0.5px solid var(--glass-border);
+  border-top: 1px solid var(--border);
 }
 
 .inicio-cobertura__cabecera {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.8rem;
 }
 
 .inicio-cobertura__cabecera strong {
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .inicio-cobertura small {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.75rem;
   line-height: 1.35;
 }
@@ -241,10 +247,10 @@
 
   .inicio-solicitud__progreso {
     width: 100%;
-    margin-left: 2.95rem;
+    margin-left: 2.85rem;
   }
 
-  .inicio-solicitud > ca-icon {
+  .inicio-solicitud > .ui-icon {
     display: none;
   }
 }

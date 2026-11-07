@@ -59,7 +59,7 @@
   font-size: 0.82rem;
 }
 
-.busqueda__ayuda ca-icon {
+.busqueda__ayuda .ui-icon {
   flex-shrink: 0;
 }
 
@@ -106,6 +106,6 @@
   letter-spacing: -0.01em;
 }
 
-ca-modal {
+.ui-modal-backdrop {
   --modal-z: 100;
 }

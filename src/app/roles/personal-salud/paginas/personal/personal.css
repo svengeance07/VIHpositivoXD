@@ -36,13 +36,13 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem 1.2rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.35);
   color: #047857;
 }
 
-.alerta-exito ca-icon {
+.alerta-exito .ui-icon {
   font-size: 1.25rem;
   color: #10b981;
   flex-shrink: 0;
@@ -77,11 +77,9 @@
   display: flex;
   flex-direction: column;
   padding: 1.2rem 1.35rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass, rgba(255, 255, 255, 0.8));
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
-  -webkit-backdrop-filter: blur(var(--ca-blur-glass, 20px));
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
@@ -92,24 +90,23 @@
 }
 
 .metrica:hover {
-  transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07);
 }
 
 /* Variantes de acento de métricas */
 .metrica--azul {
-  background: linear-gradient(135deg, var(--surface-glass), rgba(2, 132, 199, 0.05));
-  border-color: rgba(2, 132, 199, 0.22);
+  background: var(--card);
+  border-color: var(--secondary);
 }
 
 .metrica--verde {
-  background: linear-gradient(135deg, var(--surface-glass), rgba(16, 185, 129, 0.05));
+  background: var(--card);
   border-color: rgba(16, 185, 129, 0.22);
 }
 
 .metrica--morado {
-  background: linear-gradient(135deg, var(--surface-glass), rgba(139, 92, 246, 0.05));
-  border-color: rgba(139, 92, 246, 0.22);
+  background: var(--card);
+  border-color: var(--secondary);
 }
 
 .metrica--rojo {
@@ -135,8 +132,8 @@
 }
 
 .metrica__icono--azul {
-  background: rgba(2, 132, 199, 0.14);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--verde {
@@ -145,8 +142,8 @@
 }
 
 .metrica__icono--morado {
-  background: rgba(139, 92, 246, 0.14);
-  color: #7c3aed;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--rojo {
@@ -186,11 +183,11 @@
 }
 
 .metrica__valor--azul {
-  color: #0284c7;
+  color: var(--foreground);
 }
 
 .metrica__valor--morado {
-  color: #7c3aed;
+  color: var(--foreground);
 }
 
 .metrica__valor--rojo {
@@ -228,7 +225,7 @@
   font-weight: 600;
 }
 
-.chip-kpi ca-icon {
+.chip-kpi .ui-icon {
   font-size: 0.75rem;
 }
 
@@ -246,9 +243,9 @@
 }
 
 .chip-kpi--azul {
-  background: rgba(2, 132, 199, 0.1);
-  color: #0284c7;
-  border: 1px solid rgba(2, 132, 199, 0.22);
+  background: var(--secondary);
+  color: var(--foreground);
+  border: 1px solid var(--secondary);
 }
 
 .chip-kpi--amber {
@@ -274,11 +271,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.95rem 1.35rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass, rgba(255, 255, 255, 0.8));
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 16px));
-  -webkit-backdrop-filter: blur(var(--ca-blur-glass, 16px));
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
 }
 
@@ -304,7 +299,7 @@
   width: 100%;
   padding-left: 2.5rem;
   padding-right: 2.35rem;
-  border-radius: 0.8rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--surface-glass, rgba(255, 255, 255, 0.9));
   height: 2.65rem;
@@ -317,8 +312,8 @@
 
 .ps-filtros__input:focus {
   outline: none;
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.16);
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 3px var(--secondary);
 }
 
 .btn-limpiar-busqueda {
@@ -365,7 +360,7 @@
 .ui-select {
   height: 2.65rem;
   padding: 0.45rem 1rem;
-  border-radius: 0.8rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--surface-glass, rgba(255, 255, 255, 0.9));
   color: var(--text);
@@ -379,8 +374,8 @@
 
 .ui-select:focus {
   outline: none;
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.16);
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 3px var(--secondary);
 }
 
 .btn-limpiar-todo {
@@ -390,7 +385,7 @@
   height: 2.65rem;
   padding: 0 0.85rem;
   font-size: 0.82rem;
-  border-radius: 0.8rem;
+  border-radius: var(--radius-md);
 }
 
 /* ------------------------------------------------------------------ */
@@ -399,11 +394,9 @@
 
 .ps-bloque-tabla {
   padding: 1.45rem 1.6rem;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass, rgba(255, 255, 255, 0.85));
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
-  -webkit-backdrop-filter: blur(var(--ca-blur-glass, 20px));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
@@ -448,14 +441,14 @@
   font-weight: 700;
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  background: rgba(2, 132, 199, 0.12);
-  color: #0284c7;
-  border: 1px solid rgba(2, 132, 199, 0.25);
+  background: var(--secondary);
+  color: var(--foreground);
+  border: 1px solid var(--secondary);
 }
 
 .tabla-contenedor {
   overflow-x: auto;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
 }
 
 .ps-tabla-enfermeros {
@@ -483,7 +476,7 @@
 }
 
 .ps-tabla-enfermeros tbody tr:hover {
-  background: rgba(2, 132, 199, 0.03);
+  background: var(--secondary);
 }
 
 .ps-tabla-enfermeros td {
@@ -500,15 +493,15 @@
 .avatar-iniciales {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #10b981, #0284c7);
+  border-radius: var(--radius-md);
+  background: var(--primary);
   color: #fff;
   display: grid;
   place-items: center;
   font-weight: 800;
   font-size: 0.85rem;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 3px 10px var(--secondary);
 }
 
 .celda-profesional__info {
@@ -537,7 +530,7 @@
   width: fit-content;
 }
 
-.badge-matricula ca-icon {
+.badge-matricula .ui-icon {
   font-size: 0.7rem;
   color: #10b981;
 }
@@ -598,7 +591,7 @@
 .barra-rendimiento__fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #10b981, #0284c7);
+  background: var(--primary);
   max-width: 100%;
   transition: width 300ms ease;
 }
@@ -715,7 +708,7 @@
   color: var(--text-muted);
 }
 
-.tabla-vacia__contenido ca-icon {
+.tabla-vacia__contenido .ui-icon {
   font-size: 2.2rem;
   opacity: 0.5;
 }
@@ -736,10 +729,9 @@
 
 .ps-tarjeta-identidad {
   padding: 1.75rem 2rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, var(--surface-glass), rgba(16, 185, 129, 0.05));
+  border-radius: var(--radius-lg);
+  background: var(--card);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
@@ -755,8 +747,8 @@
 .avatar-grande {
   width: 4.5rem;
   height: 4.5rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, #10b981, #0284c7);
+  border-radius: var(--radius-lg);
+  background: var(--primary);
   color: #fff;
   display: grid;
   place-items: center;
@@ -780,7 +772,7 @@
   margin: 0 0 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #0284c7;
+  color: var(--foreground);
 }
 
 .ps-tarjeta-identidad__grid {
@@ -811,17 +803,17 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
-  border-radius: 1.15rem;
-  background: rgba(2, 132, 199, 0.06);
-  border: 1px solid rgba(2, 132, 199, 0.2);
+  border-radius: var(--radius-lg);
+  background: var(--secondary);
+  border: 1px solid var(--secondary);
 }
 
 .aviso-informativo__icono {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.65rem;
-  background: rgba(2, 132, 199, 0.15);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -846,7 +838,7 @@
 /* Modales con Caustica (Alta y Detalle de Enfermeros)                 */
 /* ------------------------------------------------------------------ */
 
-ca-modal {
+.ui-modal-backdrop {
   --modal-z: 1200;
 }
 
@@ -856,7 +848,7 @@ ca-modal {
   isolation: isolate;
   background: var(--surface, #ffffff);
   border: 1px solid var(--border-subtle);
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   width: min(94vw, 36rem);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -955,7 +947,7 @@ ca-modal {
 
 .stat-caja {
   padding: 0.9rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -968,8 +960,8 @@ ca-modal {
 }
 
 .stat-caja--azul {
-  background: rgba(2, 132, 199, 0.1);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .stat-caja--rojo {
@@ -1017,10 +1009,9 @@ ca-modal {
 
 .ps-credencial-contenedor {
   padding: 1.5rem;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass, rgba(255, 255, 255, 0.85));
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
 }
 
 .ps-credencial-toolbar {
@@ -1081,17 +1072,17 @@ ca-modal {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.98) 0%,
     rgba(248, 250, 252, 0.95) 60%,
     rgba(241, 245, 249, 0.92) 100%
   );
-  border: 1px solid rgba(2, 132, 199, 0.3);
+  border: 1px solid var(--border);
   box-shadow:
     0 12px 36px rgba(0, 0, 0, 0.08),
-    0 2px 8px rgba(2, 132, 199, 0.08),
+    0 2px 8px var(--secondary),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -1123,7 +1114,7 @@ ca-modal {
 
 .cinta-azul {
   flex: 1;
-  background: #0284c7;
+  background: var(--foreground);
 }
 
 .cinta-roja {
@@ -1138,8 +1129,8 @@ ca-modal {
   justify-content: space-between;
   gap: 1rem;
   padding: 1.15rem 1.6rem 0.85rem;
-  border-bottom: 1px solid rgba(2, 132, 199, 0.15);
-  background: rgba(2, 132, 199, 0.03);
+  border-bottom: 1px solid var(--secondary);
+  background: var(--secondary);
 }
 
 .credencial-escudo {
@@ -1166,7 +1157,7 @@ ca-modal {
 .credencial-ministerio {
   font-size: 0.78rem;
   font-weight: 850;
-  color: #0284c7;
+  color: var(--foreground);
   letter-spacing: 0.02em;
 }
 
@@ -1238,18 +1229,18 @@ ca-modal {
   position: relative;
   width: 7.2rem;
   height: 8.5rem;
-  border-radius: 0.85rem;
-  background: linear-gradient(135deg, #0284c7, #10b981);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--foreground), #10b981);
   padding: 3px;
-  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 6px 18px var(--secondary);
 }
 
 .credencial-avatar {
   width: 100%;
   height: 100%;
-  border-radius: 0.7rem;
+  border-radius: var(--radius-md);
   background: #ffffff;
-  color: #0284c7;
+  color: var(--foreground);
   display: grid;
   place-items: center;
   font-size: 2.2rem;
@@ -1291,7 +1282,7 @@ ca-modal {
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 800;
-  color: #0284c7;
+  color: var(--foreground);
   letter-spacing: 0.06em;
   margin-bottom: 0.15rem;
 }
@@ -1338,7 +1329,7 @@ ca-modal {
 }
 
 .credencial-dato__valor--destacado {
-  color: #0284c7;
+  color: var(--foreground);
   font-weight: 800;
   font-family: monospace;
 }
@@ -1471,7 +1462,7 @@ ca-modal {
 .firma-garabato {
   font-family: 'Brush Script MT', 'Segoe Script', cursive;
   font-size: 1.25rem;
-  color: #0369a1;
+  color: var(--foreground);
   transform: rotate(-3deg);
 }
 
@@ -1554,7 +1545,6 @@ ca-modal {
   background: var(--surface-glass, rgba(255, 255, 255, 0.85));
   border: 1px solid var(--border-subtle);
   width: fit-content;
-  backdrop-filter: blur(var(--ca-blur-glass, 16px));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
@@ -1578,7 +1568,7 @@ ca-modal {
 }
 
 .personal-tab-btn.is-activo {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  background: linear-gradient(135deg, var(--foreground), #0ea5e9);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28);
+  box-shadow: 0 4px 12px var(--secondary);
 }

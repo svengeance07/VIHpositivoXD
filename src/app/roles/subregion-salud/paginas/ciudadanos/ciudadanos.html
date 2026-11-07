@@ -6,7 +6,7 @@
   >
     <span class="srs-badge srs-badge--suave">{{ datos.ciudadanos().length }} fichas</span>
     <a class="btn btn-primary" routerLink="/SRS/certificados">
-      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
       <span>Ver certificados</span>
     </a>
   </app-srs-encabezado>
@@ -14,7 +14,7 @@
   <section class="srs-metricas" aria-label="Resumen de ciudadanos">
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="filter"></ca-icon>
+        <span class="ui-icon" data-icon="filter"></span>
       </span>
       <span class="srs-metrica__etiqueta">Fichas del estado</span>
       <strong>{{ conteos().todos }}</strong>
@@ -22,7 +22,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--ok">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="check"></ca-icon>
+        <span class="ui-icon" data-icon="check"></span>
       </span>
       <span class="srs-metrica__etiqueta">Aptos para certificado</span>
       <strong>{{ conteos().aptos }}</strong>
@@ -30,7 +30,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="warning"></ca-icon>
+        <span class="ui-icon" data-icon="warning"></span>
       </span>
       <span class="srs-metrica__etiqueta">Con requisitos vencidos</span>
       <strong>{{ conteos().vencidos }}</strong>
@@ -38,7 +38,7 @@
     </article>
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="clipboard"></ca-icon>
+        <span class="ui-icon" data-icon="clipboard"></span>
       </span>
       <span class="srs-metrica__etiqueta">Faltan requisitos</span>
       <strong>{{ conteos().incompletos }}</strong>
@@ -59,7 +59,7 @@
       <label class="field ciudadanos-busqueda">
         <span class="field-label">Buscar ciudadano</span>
         <span class="ciudadanos-busqueda__control">
-          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
           <input
             type="search"
             placeholder="Ej. Génesis, 26548971 o San Juan"
@@ -121,7 +121,7 @@
 
     @if (resultados().length === 0) {
       <div class="srs-vacio">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <strong>No hay fichas con esos filtros</strong>
         <p>Prueba con otro nombre, cédula o criterio de requisitos.</p>
         <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">

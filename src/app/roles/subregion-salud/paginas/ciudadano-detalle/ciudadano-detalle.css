@@ -18,12 +18,12 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #0284c7, #10b981);
+  background: linear-gradient(135deg, var(--foreground), #10b981);
   color: #fff;
   font-size: 1.2rem;
   font-weight: 750;
   flex-shrink: 0;
-  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.22);
+  box-shadow: 0 10px 24px var(--secondary);
 }
 
 .ciudadano-hero__texto {

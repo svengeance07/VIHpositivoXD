@@ -6,7 +6,7 @@
   >
     <span class="srs-badge srs-badge--warn">{{ conteos().solicitado }} pendientes</span>
     <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
-      <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
       <span>Buscar ciudadanos</span>
     </a>
   </app-srs-encabezado>
@@ -14,7 +14,7 @@
   <section class="srs-metricas" aria-label="Resumen de certificados">
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="check"></ca-icon>
+        <span class="ui-icon" data-icon="check"></span>
       </span>
       <span class="srs-metrica__etiqueta">Pendientes de decisión</span>
       <strong>{{ conteos().solicitado }}</strong>
@@ -22,7 +22,7 @@
     </article>
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="feedback"></ca-icon>
+        <span class="ui-icon" data-icon="feedback"></span>
       </span>
       <span class="srs-metrica__etiqueta">Autorizados</span>
       <strong>{{ conteos().autorizado }}</strong>
@@ -30,7 +30,7 @@
     </article>
     <article class="panel srs-metrica srs-metrica--ok">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="check"></ca-icon>
+        <span class="ui-icon" data-icon="check"></span>
       </span>
       <span class="srs-metrica__etiqueta">Emitidos</span>
       <strong>{{ conteos().emitido }}</strong>
@@ -38,7 +38,7 @@
     </article>
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="warning"></ca-icon>
+        <span class="ui-icon" data-icon="warning"></span>
       </span>
       <span class="srs-metrica__etiqueta">Descartados</span>
       <strong>{{ conteos().descartado }}</strong>
@@ -59,7 +59,7 @@
       <label class="field certificados-busqueda">
         <span class="field-label">Buscar certificado</span>
         <span class="certificados-busqueda__control">
-          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
           <input
             type="search"
             placeholder="Ej. CERT-GUA-2026-001, Génesis o 26548971"
@@ -130,7 +130,7 @@
 
     @if (resultados().length === 0) {
       <div class="srs-vacio">
-        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
         <strong>No hay solicitudes con esos filtros</strong>
         <p>Cambia el estado o limpia la búsqueda para ver otros trámites.</p>
         <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
@@ -239,7 +239,7 @@
     }
 
     <div class="srs-aviso certificados-aviso">
-      <ca-icon name="feedback" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="feedback" aria-hidden="true"></span>
       <span>
         La emisión está disponible en este prototipo. El ciudadano solicita el envío desde la
         consulta pública; el correo todavía es simulado.

@@ -12,42 +12,43 @@
   display: grid;
   gap: 0.3rem;
   align-content: start;
-  min-height: 9rem;
+  min-height: 8.5rem;
 }
 
 .metrica__icono {
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2rem;
+  height: 2rem;
   display: grid;
   place-items: center;
-  border-radius: 0.7rem;
-  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
-  color: var(--color-accent-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
   margin-bottom: 0.15rem;
 }
 
 .metrica__etiqueta {
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .metrica strong {
-  font-size: clamp(1.8rem, 3vw, 2.35rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.6rem, 2.8vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .metrica small {
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
   line-height: 1.4;
 }
 
 .metrica--alerta .metrica__icono {
-  background: color-mix(in oklab, var(--warn) 16%, transparent);
+  background: var(--warn-bg);
+  border-color: var(--warn-border);
   color: var(--warn);
 }
 
@@ -62,14 +63,14 @@
 
 .bloque__cabecera h2 {
   margin: 0.12rem 0 0;
-  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
   letter-spacing: -0.02em;
 }
 
 .bloque__cabecera p {
-  margin: 0.3rem 0 0;
-  color: var(--muted);
-  font-size: 0.86rem;
+  margin: 0.25rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
   line-height: 1.45;
 }
 
@@ -81,31 +82,32 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.42rem 0.65rem;
-  border: 0.5px solid var(--glass-border);
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--glass-surface) 65%, transparent);
-  color: var(--muted);
+  padding: 0.375rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted-foreground);
   font: inherit;
   font-size: 0.8rem;
-  font-weight: 560;
+  font-weight: 500;
   cursor: pointer;
   transition:
-    color 160ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease;
+    color 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
 }
 
 .lote-card__toggle:hover,
 .lote-card__toggle.is-activo {
-  color: var(--color-accent-2);
-  border-color: color-mix(in oklab, var(--color-accent) 45%, var(--glass-border));
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  background: var(--secondary);
 }
 
 .lotes-preview {
   display: grid;
   gap: 0.1rem;
-  border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
+  border-top: 1px solid var(--border);
 }
 
 .lote-linea {
@@ -113,8 +115,8 @@
   grid-template-columns: 8.5rem minmax(9rem, 1.2fr) minmax(10rem, 1fr) auto;
   gap: 0.8rem;
   align-items: center;
-  padding: 0.62rem 0;
-  border-bottom: 0.5px solid color-mix(in oklab, var(--glass-border) 55%, transparent);
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
   font-size: 0.84rem;
 }
 
@@ -123,15 +125,15 @@
 }
 
 .lote-linea__codigo {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .lote-linea__vacuna {
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .lote-linea__destino {
-  color: var(--muted);
+  color: var(--muted-foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -143,7 +145,7 @@
 
 .ranking {
   display: grid;
-  gap: 0.42rem;
+  gap: 0.45rem;
 }
 
 .ranking__fila {
@@ -156,7 +158,7 @@
 }
 
 .ranking__puesto {
-  color: var(--faint);
+  color: var(--muted-foreground);
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
   text-align: end;
@@ -172,15 +174,15 @@
   height: 0.42rem;
   overflow: hidden;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--glass-border) 45%, transparent);
+  background: var(--secondary);
 }
 
 .ranking__barra span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
-  transition: width 400ms ease;
+  background: var(--primary);
+  transition: width 300ms ease;
 }
 
 .ranking__fila strong {
@@ -194,47 +196,16 @@
   position: relative;
   min-height: 12rem;
   overflow: hidden;
-  border: 0.5px dashed color-mix(in oklab, var(--glass-border) 85%, transparent);
-  border-radius: var(--ca-radius-md);
-  background:
-    radial-gradient(
-      circle at 28% 28%,
-      color-mix(in oklab, var(--color-accent) 18%, transparent),
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 70% 62%,
-      color-mix(in oklab, var(--color-accent-2) 16%, transparent),
-      transparent 38%
-    ),
-    linear-gradient(135deg, color-mix(in oklab, var(--glass-surface) 80%, transparent), transparent);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--secondary);
   isolation: isolate;
-}
-
-.mapa__lienzo::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image:
-    linear-gradient(
-      color-mix(in oklab, var(--glass-border) 55%, transparent) 0.5px,
-      transparent 0.5px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in oklab, var(--glass-border) 55%, transparent) 0.5px,
-      transparent 0.5px
-    );
-  background-size: 2.2rem 2.2rem;
-  mask-image: radial-gradient(circle at center, #000, transparent 78%);
 }
 
 .mapa__mancha {
   position: absolute;
   border-radius: 60% 40% 55% 45%;
-  background: color-mix(in oklab, var(--color-accent) 24%, transparent);
-  filter: blur(1px);
+  background: rgba(24, 24, 27, 0.06);
 }
 
 .mapa__mancha--1 {
@@ -245,7 +216,6 @@
 .mapa__mancha--2 {
   inset: 38% 25% 17% 37%;
   transform: rotate(24deg);
-  background: color-mix(in oklab, var(--color-accent-2) 22%, transparent);
 }
 
 .mapa__mancha--3 {
@@ -255,11 +225,11 @@
 
 .mapa__punto {
   position: absolute;
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
-  background: var(--color-accent-2);
-  box-shadow: 0 0 0 0.3rem color-mix(in oklab, var(--color-accent-2) 18%, transparent);
+  background: var(--primary);
+  box-shadow: 0 0 0 0.25rem rgba(24, 24, 27, 0.12);
 }
 
 .mapa__punto--1 {
@@ -287,12 +257,12 @@
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
   padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--glass-surface) 88%, transparent);
-  border: 0.5px solid var(--glass-border);
-  color: var(--muted);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -302,13 +272,13 @@
   gap: 0.35rem;
   align-items: center;
   margin-top: 0.7rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
 }
 
 .mapa__nota {
   margin: 0.4rem 0 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -338,12 +308,5 @@
   .ranking__fila {
     grid-template-columns: 1.2rem minmax(5.5rem, 8rem) minmax(3rem, 1fr) auto;
     gap: 0.4rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lote-card__toggle,
-  .ranking__barra span {
-    transition: none;
   }
 }

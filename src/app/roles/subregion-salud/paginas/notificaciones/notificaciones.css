@@ -28,7 +28,7 @@
 .notificacion__icono {
   width: 2.4rem;
   height: 2.4rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   display: grid;
   place-items: center;
   flex-shrink: 0;

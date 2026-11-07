@@ -11,15 +11,15 @@
 .trabajador-hero__avatar {
   width: 4.25rem;
   height: 4.25rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #0284c7, #10b981);
+  background: linear-gradient(135deg, var(--foreground), #10b981);
   color: #fff;
   font-size: 1.2rem;
   font-weight: 750;
   flex-shrink: 0;
-  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.22);
+  box-shadow: 0 10px 24px var(--secondary);
 }
 
 .trabajador-hero__texto {
@@ -89,7 +89,7 @@
   border-color: color-mix(in oklab, var(--color-accent) 30%, var(--glass-border));
 }
 
-.trabajador-equipo__item ca-icon {
+.trabajador-equipo__item .ui-icon {
   margin-left: auto;
   color: var(--muted);
 }
@@ -101,7 +101,7 @@
   display: grid;
   place-items: center;
   background: color-mix(in oklab, #0ea5e9 14%, transparent);
-  color: #0284c7;
+  color: var(--foreground);
   font-size: 0.7rem;
   font-weight: 750;
   flex-shrink: 0;

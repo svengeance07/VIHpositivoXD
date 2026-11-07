@@ -34,110 +34,95 @@
     </a>
 
     @if (paso() === 1) {
-      <section class="paso">
-        <p class="badge info">Paso 1 de 2</p>
-        <h2>¿Cómo vas a ingresar?</h2>
-        <p class="sub">Elige el tipo de cuenta. Después validaremos tus credenciales.</p>
+    <section class="paso">
+      <p class="badge info">Paso 1 de 2</p>
+      <h2>¿Cómo vas a ingresar?</h2>
+      <p class="sub">Elige el tipo de cuenta. Después validaremos tus credenciales.</p>
 
-        <div class="roles">
-          @for (rol of rolesInternos(); track rol.id) {
-            <button type="button" class="rol" (click)="elegirRol(rol.id)">
-              <span class="rol__num" aria-hidden="true">{{ rol.id }}</span>
-              <span class="rol__texto">
-                <strong>{{ rol.nombre }}</strong>
-                <span>{{ descripcionRol(rol.id) }}</span>
-              </span>
-              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
-            </button>
-          }
-        </div>
-
-        <p class="pie-panel">
-          ¿Eres ciudadano?
-          <a routerLink="/consulta">Consulta tu información por cédula</a>.
-        </p>
-      </section>
-    } @else {
-      <section class="paso">
-        <button type="button" class="enlace-volver" (click)="volver()">
-          <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
-          Cambiar tipo de cuenta
+      <div class="roles">
+        @for (rol of rolesInternos(); track rol.id) {
+        <button type="button" class="rol" (click)="elegirRol(rol.id)">
+          <span class="rol__num" aria-hidden="true">{{ rol.id }}</span>
+          <span class="rol__texto">
+            <strong>{{ rol.nombre }}</strong>
+            <span>{{ descripcionRol(rol.id) }}</span>
+          </span>
+          <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
         </button>
+        }
+      </div>
 
-        <p class="badge info">{{ rolActual()?.nombre }}</p>
-        <h2>{{ tituloCredenciales() }}</h2>
-        <p class="sub">
-          @if (rolElegido() === 1) {
-            Ingresa con tu correo institucional y tu contraseña.
-          } @else if (rolElegido() === 2) {
-            Ingresa con el correo y la contraseña del jefe encargado del centro de salud.
-          } @else {
-            Ingresa con el correo y la contraseña del jefe encargado de la subregión de salud.
-          }
-        </p>
+      <p class="pie-panel">
+        ¿Eres ciudadano?
+        <a routerLink="/consulta">Consulta tu información por cédula</a>.
+      </p>
+    </section>
+    } @else {
+    <section class="paso">
+      <button type="button" class="enlace-volver" (click)="volver()">
+        <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+        Cambiar tipo de cuenta
+      </button>
 
-        <form class="form" (submit)="continuar($event, correo.value, clave.value)">
-          <label class="field">
-            <span class="field-label">Correo electrónico</span>
-            <input
-              #correo
-              type="email"
-              name="correo"
-              autocomplete="email"
-              placeholder="nombre@institucion.gob.ve"
-              (input)="error.set('')"
-            />
-          </label>
+      <p class="badge info">{{ rolActual()?.nombre }}</p>
+      <h2>{{ tituloCredenciales() }}</h2>
+      <p class="sub">
+        @if (rolElegido() === 1) {
+        Ingresa con tu correo institucional y tu contraseña.
+        } @else if (rolElegido() === 2) {
+        Ingresa con el correo y la contraseña del jefe encargado del centro de salud.
+        } @else {
+        Ingresa con el correo y la contraseña del jefe encargado de la subregión de salud.
+        }
+      </p>
 
-          <label class="field">
-            <span class="field-label">Contraseña</span>
-            <input
-              #clave
-              type="password"
-              name="clave"
-              autocomplete="current-password"
-              placeholder="••••••••"
-              (input)="error.set('')"
-            />
-          </label>
+      <form class="form" (submit)="continuar($event, correo.value, clave.value)">
+        <label class="field">
+          <span class="field-label">Correo electrónico</span>
+          <input #correo type="email" name="correo" autocomplete="email" placeholder="nombre@institucion.gob.ve"
+            (input)="error.set('')" />
+        </label>
 
-          @if (error()) {
-            <p class="field-error" role="alert">{{ error() }}</p>
-          }
+        <label class="field">
+          <span class="field-label">Contraseña</span>
+          <input #clave type="password" name="clave" autocomplete="current-password" placeholder="••••••••"
+            (input)="error.set('')" />
+        </label>
 
-          <button type="submit" class="visualmente-oculto" tabindex="-1" aria-hidden="true">
-            Entrar al sistema
-          </button>
+        @if (error()) {
+        <p class="field-error" role="alert">{{ error() }}</p>
+        }
 
-          <ca-button
-            variant="primary"
-            icon="log-in"
+          <button
+            type="submit"
+            class="btn btn-primary"
             (click)="continuar($event, correo.value, clave.value)"
           >
-            Entrar al sistema
-          </ca-button>
+            <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
+            <span>Entrar al sistema</span>
+          </button>
         </form>
       </section>
     }
 
     @if (modoDemo) {
-      <details class="demo">
-        <summary>Credenciales de prueba</summary>
-        <div class="demo__lista">
-          @for (cuenta of cuentasDemo(); track cuenta.id) {
-            <div class="demo__cuenta">
-              <p class="demo__titulo">
-                {{ cuenta.nombre }}
-                @if (cuenta.entidad) {
-                  <span>· {{ cuenta.entidad }}</span>
-                }
-                <span>· rol {{ cuenta.rol }}</span>
-              </p>
-              <p class="demo__cred">{{ cuenta.correo }} · {{ cuenta.clave }}</p>
-            </div>
-          }
+    <details class="demo">
+      <summary>Credenciales de prueba</summary>
+      <div class="demo__lista">
+        @for (cuenta of cuentasDemo(); track cuenta.id) {
+        <div class="demo__cuenta">
+          <p class="demo__titulo">
+            {{ cuenta.nombre }}
+            @if (cuenta.entidad) {
+            <span>· {{ cuenta.entidad }}</span>
+            }
+            <span>· rol {{ cuenta.rol }}</span>
+          </p>
+          <p class="demo__cred">{{ cuenta.correo }} · {{ cuenta.clave }}</p>
         </div>
-      </details>
+        }
+      </div>
+    </details>
     }
   </main>
 </div>

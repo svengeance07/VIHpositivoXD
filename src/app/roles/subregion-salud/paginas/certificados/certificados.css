@@ -13,7 +13,7 @@
   align-items: center;
 }
 
-.certificados-busqueda__control ca-icon {
+.certificados-busqueda__control .ui-icon {
   position: absolute;
   left: 0.75rem;
   color: var(--muted);

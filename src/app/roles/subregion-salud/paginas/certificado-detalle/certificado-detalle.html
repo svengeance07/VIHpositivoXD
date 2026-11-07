@@ -9,7 +9,7 @@
     "
   >
     <a class="btn btn-ghost" routerLink="/SRS/certificados">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="chevron-left" aria-hidden="true"></span>
       <span>Volver a certificados</span>
     </a>
   </app-srs-encabezado>
@@ -17,14 +17,14 @@
   @if (solicitud(); as tramite) {
     @if (exito()) {
       <div class="srs-aviso certificado-alerta">
-        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
         <span>{{ exito() }}</span>
       </div>
     }
 
     @if (error()) {
       <div class="srs-aviso srs-aviso--warn certificado-alerta">
-        <ca-icon name="warning" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
         <span>{{ error() }}</span>
       </div>
     }
@@ -99,7 +99,10 @@
                 [class.certificado-requisito__icono--ok]="requisito.cumplido"
                 aria-hidden="true"
               >
-                <ca-icon [name]="requisito.cumplido ? 'check' : 'warning'"></ca-icon>
+                <span
+                  class="ui-icon"
+                  [attr.data-icon]="requisito.cumplido ? 'check' : 'warning'"
+                ></span>
               </span>
               <span class="certificado-requisito__texto">
                 <strong>{{ requisito.etiqueta }}</strong>
@@ -137,7 +140,7 @@
             @case ('solicitado') {
               @if (!tramite.ficha.aptoCertificado) {
                 <div class="srs-aviso srs-aviso--warn">
-                  <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                  <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
                   <span>
                     El expediente no cumple todos los requisitos. Si autorizas, quedará registrada
                     una excepción bajo tu responsabilidad.
@@ -160,18 +163,18 @@
 
               <div class="srs-acciones certificado-decisiones">
                 <button type="button" class="btn btn-primary" (click)="autorizar()">
-                  <ca-icon name="check" aria-hidden="true"></ca-icon>
+                  <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                   <span>Autorizar certificado</span>
                 </button>
                 <button type="button" class="btn btn-danger" (click)="descartar()">
-                  <ca-icon name="close" aria-hidden="true"></ca-icon>
+                  <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
                   <span>Descartar solicitud</span>
                 </button>
               </div>
             }
             @case ('autorizado') {
               <div class="srs-aviso">
-                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                 <span>
                   Solicitud autorizada por {{ tramite.revisadoPor }} el
                   {{ tramite.fechaRevision | date: 'dd/MM/yyyy' }}. El certificado está listo para
@@ -179,13 +182,13 @@
                 </span>
               </div>
               <button type="button" class="btn btn-primary certificado-emitir" (click)="emitir()">
-                <ca-icon name="download" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="download" aria-hidden="true"></span>
                 <span>Emitir certificado</span>
               </button>
             }
             @case ('emitido') {
               <div class="srs-aviso">
-                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                 <span>
                   Certificado emitido el {{ tramite.fechaEmision | date: 'dd/MM/yyyy' }}. El
                   ciudadano puede solicitar el envío desde la consulta pública.
@@ -194,7 +197,7 @@
             }
             @case ('descartado') {
               <div class="srs-aviso srs-aviso--warn">
-                <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
                 <span>
                   Solicitud descartada por {{ tramite.revisadoPor }} el
                   {{ tramite.fechaRevision | date: 'dd/MM/yyyy' }}.
@@ -242,7 +245,7 @@
             disabled
             title="El envío se solicita desde la consulta pública ciudadana"
           >
-            <ca-icon name="send" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="send" aria-hidden="true"></span>
             <span>Envío desde la consulta pública</span>
           </button>
 
@@ -329,7 +332,7 @@
   } @else {
     <section class="panel">
       <div class="srs-vacio">
-        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
         <strong>Solicitud no encontrada</strong>
         <p>No existe un certificado con ese identificador en la subregión.</p>
         <a class="btn btn-primary" routerLink="/SRS/certificados">Volver a la bandeja</a>

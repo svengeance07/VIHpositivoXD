@@ -70,7 +70,7 @@ flowchart TD
   `/consulta/verificacion` queda como fase futura.
 - **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro o subregión cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente en el paso 2 de `/login` con su correo y contraseña registrados en `personal`. El master entra directo con su cuenta en `master`. Ver
   [`modelo-datos.md`](./modelo-datos.md) §5.1.
-- Los tres roles internos aterrizan en un "centro de control" (dashboard). Es el mismo concepto con datos distintos.
+- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética unificada **Spartan / shadcn / Vercel (Zinc)**: barra lateral fija/colapsable blanca con borde de `1px solid #e4e4e7`, barra superior de contexto institucional, tarjetas planas `#ffffff` sobre lienzo `#fafafa`, cabeceras de página con badge contextual neutro y tablas limpias con números tabulares.
 
 ### 3.1 Navegación interna del master
 
@@ -269,8 +269,7 @@ Con el esquema parcial recibido:
 Origen: `vista-panel-desplegado.png` y `vista-inicial.png`.
 
 - Colapsado ocupa una franja estrecha; **se despliega al pasar el cursor** (anotación del boceto) y al hacer clic.
-- Al desplegarse, un velo oscurece el contenido de atrás (nota explícita del dibujo). Usar atenuación con tokens
-  de Caustica, no un blur nuevo.
+- Al desplegarse, un velo oscurece el contenido de atrás (nota explícita del dibujo). Usar atenuación neutra sin desenfoque (`backdrop-filter`).
 - Opciones dibujadas:
 
 | Opción                    | Icono del boceto | Ruta destino                   |
@@ -330,7 +329,7 @@ Origen: `…-subregiones-default.png`, `…-subregiones.png`, `…-buscarCentros
 
 - Título: **Administración de Personal**.
 - **Switch de tres opciones**: `Subregiones` · `buscar centros` · `buscar empleados`.
-- Al pulsar una opción **cambia la vista de abajo** (no navega a otra pantalla). Se implementa con `<ca-tabs>`.
+- Al pulsar una opción **cambia la vista de abajo** (no navega a otra pantalla). Se implementa con pestañas de ruta (`routerLink` / `routerLinkActive`).
 - La opción activa se resalta con borde/fondo distinto, según el boceto.
 - El estado del switch debería reflejarse en la URL para poder compartir enlaces (deducido).
 
@@ -427,7 +426,7 @@ nuevas.
 
 Implementación operativa para el Centro de Salud (rol 2), operada exclusivamente por su **Jefe de Centro** (sin sub-usuarios de enfermería) y consumiendo `DatosPersonalSaludService` y `SesionService`:
 
-- **Shell** (`shell/`): barra lateral colapsable Liquid Glass con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), identificación del Jefe de Centro y menú móvil.
+- **Shell** (`shell/`): barra lateral colapsable de estilo **Spartan / shadcn / Vercel (Zinc)** con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), identificación del Jefe de Centro y menú móvil.
 - **`/PS` (`inicio`)**: centro de control para el Jefe de Centro con buscador rápido por cédula, métricas del día (`tabular-nums`), pacientes registrados, tabla en vivo de inmunizaciones y alertas ESAVI.
 - **`/PS/pacientes`** y **`/PS/pacientes/nuevo`**: búsqueda y ficha clínica de pacientes (adultos y menores con representante), aplicación múltiple de vacunas y alta de nuevos pacientes.
 - **`/PS/reportes`**: registro y consulta de reportes de eventos adversos (ESAVI) con fichas clínicas estilizadas mediante bordes perimetrales tintados (`color-mix`) según severidad (`leve`, `moderado`, `severo`).
@@ -444,13 +443,12 @@ Son los que conviene construir una sola vez en `compartido/ui` en lugar de repet
 | Cabecera "Bienvenido, {nombre}"             | `/master`, centros de control        | Master: usar `master.nombre_usuario`; personal: nombre de `personal`    |
 | Chip de filtro que abre popover             | Búsqueda global, centros, empleados  | Un componente con dos modos: lista desplegable o caja de texto          |
 | Tabla scrollable con contador de resultados | Subregiones, resultados de búsqueda  | Encabezado fijo; paginación solo si el volumen lo exige                 |
-| Card desplegable                            | Lotes reportados/aceptados, top 10   | `<ca-collapse>`                                                         |
-| Switch de vistas                            | Administración de personal           | `<ca-tabs>`                                                             |
+| Card desplegable                            | Lotes reportados/aceptados, top 10   | `<details class="ui-collapse">`                                         |
+| Switch de vistas                            | Administración de personal           | Pestañas con `routerLink` / `routerLinkActive`                          |
 | Estado vacío y estado de carga              | Todas las tablas y búsquedas         | No dibujados; definirlos antes de implementar                           |
 | Vista larga con scroll                      | Dashboard (mapa), control de vacunas | Anotado explícitamente en los bocetos                                   |
 
-Reglas de la casa que aplican: reutilizar `<ca-*>` cuando exista el elemento, tokens de Caustica para color/blur/
-borde, y no anidar superficies con blur.
+Reglas de la casa que aplican: usar elementos HTML nativos (`.btn`, `span.ui-icon[data-icon]`, `<details class="ui-collapse">`, modales con `@if`) estilizados con los tokens semánticos **Spartan / shadcn / Vercel (Zinc)** de `src/styles.css`, sin elementos `<ca-*>` ni superficies con blur.
 
 ## 8. Inventario de pantallas
 

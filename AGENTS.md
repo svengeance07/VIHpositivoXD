@@ -42,31 +42,29 @@
 
 - Install: `pnpm install`. If a dependency has build scripts, add it to `allowBuilds` in `pnpm-workspace.yaml` (or set it to `false` when the script is unnecessary); otherwise install fails with `ERR_PNPM_IGNORED_BUILDS`.
 - Dev server: `pnpm start` → http://localhost:4200.
-- Build/typecheck: `pnpm build` (production config; budgets are 500 kB warning / 1 MB error, current bundle ~473 kB).
+- Build/typecheck: `pnpm build` (production config; budgets are 500 kB warning / 1 MB error, current bundle ~296 kB).
 - All tests: `pnpm test --watch=false`. `--watch` defaults to true only in a TTY.
 - Single test file: `pnpm test --watch=false --include app/app.spec.ts` (path is relative to `src/`). Filter by suite/test name with `--filter "^App"`.
 - Format: `pnpm format`; verify with `pnpm format:check`. No linter is configured, so `pnpm build` is the typecheck gate.
 
-## Caustica Design integration (verified)
+## UI & Spartan / shadcn / Vercel (Zinc) Design System (verified)
 
-- `caustica-design` ships light-DOM custom elements for Angular, not Angular components. Use only `caustica-design/css` and `caustica-design/angular`; ignore its React/Vue entries.
-- CSS is imported once at the top of `src/styles.css` via `@import 'caustica-design/css';`. `angular.json` lists only `src/styles.css` — package specifiers are rejected in the `styles` array.
-- `provideCaustica()` runs in `src/main.ts` before `bootstrapApplication`; it registers the elements at runtime.
-- `CUSTOM_ELEMENTS_SCHEMA` is set on `App`. Add it to any other component whose template uses `<ca-*>` elements.
-- `src/index.html` sets `data-theme="light"` on `<html>` and wraps the app in `.ca-root`.
-- Registered tags: `<ca-button>`, `<ca-icon>`, `<ca-modal>`/`<ca-modal-close>`, `<ca-tabs>`/`<ca-tabs-trigger>`/`<ca-tabs-content>`, `<ca-collapse>`/`<ca-collapse-trigger>`/`<ca-collapse-panel>`.
-- Glass knobs: `--ca-blur-glass`, `--ca-glass-fill`, `--ca-glass-edge`; recolor with `--ca-hue`, `--ca-chroma`. Avoid nesting many blurred surfaces.
-- `<ca-icon>` loads SVGs from `/icons/*.svg`; the 30 icons are already copied from `caustica-design/dist/icons` into `public/icons/`.
-- `caustica-design` 1.0 no incluye `layouts` ni `eyedropper` en `ICON_NAMES` aunque sus clases y SVG sí existen. Para esos dos, añade `class="ui-icon ui-icon--<nombre>"` al `<ca-icon>` (o una clase dinámica equivalente) para que se rendericen.
+- Do **not** use `<ca-*>` custom elements from `caustica-design` (`<ca-button>`, `<ca-icon>`, `<ca-modal>`, `<ca-tabs>`, `<ca-collapse>`) or `@import 'caustica-design/css';`.
+- All views use standard native HTML elements styled by `src/styles.css` and component stylesheets:
+  - Buttons: `<button type="button" class="btn btn-primary | btn-secondary | btn-ghost | btn-danger">` (or `<a class="btn ...">`).
+  - Icons: `<span class="ui-icon" data-icon="<name>" aria-hidden="true"></span>` (or `[attr.data-icon]="..."`), which loads SVGs via CSS `mask-image` from `/icons/*.svg` (`public/icons/`).
+  - Modals: `@if (abierto()) { <div class="ui-modal-backdrop" (click)="cerrar()"><div class="ui-modal-container" (click)="$event.stopPropagation()">...</div></div> }`.
+  - Collapsibles: `<details class="ui-collapse"><summary class="ui-collapse__trigger">...</summary><div class="ui-collapse__panel">...</div></details>`.
+- Surface tokens: `src/styles.css` defines canonical **Spartan / shadcn / Vercel (Zinc)** semantic tokens (`--background: #fafafa`, `--foreground: #09090b`, `--card: #ffffff`, `--muted-foreground: #71717a`, `--border: #e4e4e7`, `--primary: #18181b`, `--secondary: #f4f4f5`, `--radius-sm`, `--radius-md`, `--radius-lg`) so all views render with crisp `1px solid` borders and flat surfaces.
 
 ## UI rules
 
-- Reuse `<ca-*>` elements; create a standalone component only when no caustica element fits, and build it from caustica elements and tokens.
-- Keep the liquid-glass look consistent: reuse tokens instead of hard-coding blur, tint, border, or shadow values. See the `liquid-glass-ui` skill.
+- Follow the **Spartan / shadcn / Vercel (Zinc)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): flat `#ffffff` cards over `#fafafa` canvas, `1px solid #e4e4e7` borders, monochrome `#18181b` primary actions, tight typographic hierarchy, and zero decorative blur/glass or neon gradients.
+- Reuse semantic tokens from `src/styles.css` (`--background`, `--card`, `--border`, `--primary`, `--muted-foreground`). See the `spartan-shadcn-ui` and `impeccable` skills.
 
 ## OpenCode setup
 
 - Project config is `.opencode/opencode.json` (JSON/JSONC); `.opencode/config.json` is not recognized.
-- Skills load from `.opencode/skills/<id>/SKILL.md` and `.agents/skills/<id>/SKILL.md`; the ID is the directory name. Current: `liquid-glass-ui`, `angular-best-practices`, `impeccable`.
+- Skills load from `.opencode/skills/<id>/SKILL.md` and `.agents/skills/<id>/SKILL.md`; the ID is the directory name. Current: `spartan-shadcn-ui`, `angular-best-practices`, `impeccable`.
 - Custom agents, if added, go in `.opencode/agents/<name>.md`; `.opencode/agents.md` is ignored.
 - V2 loads `AGENTS.md` only — it does not fall back to `CLAUDE.md`.

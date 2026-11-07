@@ -9,7 +9,7 @@
     "
   >
     <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="chevron-left" aria-hidden="true"></span>
       <span>Volver a ciudadanos</span>
     </a>
   </app-srs-encabezado>
@@ -42,7 +42,7 @@
     <section class="srs-metricas" aria-label="Resumen del expediente">
       <article class="panel srs-metrica">
         <span class="srs-metrica__icono" aria-hidden="true">
-          <ca-icon name="check"></ca-icon>
+          <span class="ui-icon" data-icon="check"></span>
         </span>
         <span class="srs-metrica__etiqueta">Vacunas aplicadas</span>
         <strong>{{ persona.vacunas.length }}</strong>
@@ -52,7 +52,7 @@
       </article>
       <article class="panel srs-metrica">
         <span class="srs-metrica__icono" aria-hidden="true">
-          <ca-icon name="clipboard"></ca-icon>
+          <span class="ui-icon" data-icon="clipboard"></span>
         </span>
         <span class="srs-metrica__etiqueta">Exámenes registrados</span>
         <strong>{{ persona.examenes.length }}</strong>
@@ -60,7 +60,7 @@
       </article>
       <article class="panel srs-metrica">
         <span class="srs-metrica__icono" aria-hidden="true">
-          <ca-icon name="check"></ca-icon>
+          <span class="ui-icon" data-icon="check"></span>
         </span>
         <span class="srs-metrica__etiqueta">Requisitos cumplidos</span>
         <strong>{{ persona.requisitosCumplidos }}/{{ persona.requisitosTotales }}</strong>
@@ -68,7 +68,7 @@
       </article>
       <article class="panel srs-metrica">
         <span class="srs-metrica__icono" aria-hidden="true">
-          <ca-icon name="feedback"></ca-icon>
+          <span class="ui-icon" data-icon="feedback"></span>
         </span>
         <span class="srs-metrica__etiqueta">Solicitudes registradas</span>
         <strong>{{ solicitudes().length }}</strong>
@@ -114,7 +114,7 @@
               ></span>
             </div>
             <a class="btn btn-primary" [routerLink]="['/SRS/certificados', solicitud.id]">
-              <ca-icon name="check" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
               <span>Abrir solicitud</span>
             </a>
           </div>
@@ -122,7 +122,7 @@
           <div class="ciudadano-tramite">
             @if (persona.aptoCertificado) {
               <div class="srs-aviso">
-                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                 <span>
                   El expediente cumple los requisitos evaluados. Puedes registrar la solicitud para
                   que la subregión la revise y emita el certificado.
@@ -130,7 +130,7 @@
               </div>
             } @else {
               <div class="srs-aviso srs-aviso--warn">
-                <ca-icon name="warning" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
                 <span>
                   Faltan requisitos o hay datos vencidos. Puedes registrar la solicitud, pero la
                   subregión podría descartarla hasta que el ciudadano actualice su esquema.
@@ -138,7 +138,7 @@
               </div>
             }
             <button type="button" class="btn btn-primary" (click)="solicitarCertificado()">
-              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
               <span>{{
                 persona.aptoCertificado ? 'Solicitar certificado' : 'Solicitar evaluación'
               }}</span>
@@ -203,7 +203,10 @@
                 [class.ciudadano-requisito__icono--warn]="!requisito.cumplido"
                 aria-hidden="true"
               >
-                <ca-icon [name]="requisito.cumplido ? 'check' : 'warning'"></ca-icon>
+                <span
+                  class="ui-icon"
+                  [attr.data-icon]="requisito.cumplido ? 'check' : 'warning'"
+                ></span>
               </span>
               <span class="ciudadano-requisito__texto">
                 <strong>{{ requisito.etiqueta }}</strong>
@@ -244,7 +247,7 @@
                 [class.ciudadano-timeline__punto--info]="hito.tono === 'info'"
                 aria-hidden="true"
               >
-                <ca-icon [name]="iconoHito(hito.tipo)"></ca-icon>
+                <span class="ui-icon" [attr.data-icon]="iconoHito(hito.tipo)"></span>
               </span>
               <span class="ciudadano-timeline__texto">
                 <span class="ciudadano-timeline__fecha">
@@ -286,7 +289,7 @@
         </dl>
 
         <div class="srs-aviso srs-aviso--warn ciudadano-privacidad">
-          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
           <span>
             Los resultados de VIH y VDRL son datos sensibles. En la etapa de backend se deben
             registrar auditorías de acceso antes de habilitar esta ficha.
@@ -306,7 +309,7 @@
 
       @if (persona.vacunas.length === 0) {
         <div class="srs-vacio">
-          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
           <strong>Sin vacunas registradas</strong>
         </div>
       } @else {
@@ -366,7 +369,7 @@
 
       @if (persona.examenes.length === 0) {
         <div class="srs-vacio">
-          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
           <strong>Sin exámenes registrados</strong>
         </div>
       } @else {
@@ -415,7 +418,7 @@
   } @else {
     <section class="panel">
       <div class="srs-vacio">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <strong>Ficha no encontrada</strong>
         <p>No existe un ciudadano con ese identificador dentro del estado de la subregión.</p>
         <a class="btn btn-primary" routerLink="/SRS/ciudadanos">Volver a la búsqueda</a>

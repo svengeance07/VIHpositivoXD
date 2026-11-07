@@ -27,7 +27,7 @@
           (click)="abrirFiltro(chip.id)"
         >
           @if (tieneFiltro(chip.id)) {
-            <ca-icon name="check" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
           }
           {{ chip.etiqueta }}
         </button>
@@ -222,7 +222,11 @@
 
     <div class="busqueda__pie">
       <p class="busqueda__ayuda" [class.busqueda__ayuda--ok]="puedeBuscar()">
-        <ca-icon [name]="puedeBuscar() ? 'check' : 'filter'" aria-hidden="true"></ca-icon>
+        <span
+          class="ui-icon"
+          [attr.data-icon]="puedeBuscar() ? 'check' : 'filter'"
+          aria-hidden="true"
+        ></span>
         @if (puedeBuscar()) {
           Filtros suficientes para consultar.
         } @else {
@@ -231,14 +235,15 @@
       </p>
       <div class="master-acciones">
         <button type="button" class="btn btn-ghost" (click)="limpiarTodo()">Restablecer</button>
-        <ca-button
-          variant="primary"
-          icon="filter"
-          [attr.disabled]="puedeBuscar() ? null : ''"
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!puedeBuscar()"
           (click)="buscar()"
         >
-          Buscar
-        </ca-button>
+          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+          <span>Buscar</span>
+        </button>
       </div>
     </div>
   </section>
@@ -246,7 +251,7 @@
   @if (!busquedaHecha()) {
     <section class="panel">
       <div class="master-vacio">
-        <ca-icon name="filter" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
         <strong>Prepara tu búsqueda</strong>
         <p>Activa al menos dos filtros y pulsa Buscar para consultar los expedientes.</p>
       </div>
@@ -268,7 +273,7 @@
 
       @if (resultados().length === 0) {
         <div class="master-vacio">
-          <ca-icon name="filter" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
           <strong>No hay coincidencias</strong>
           <p>Prueba quitando un filtro o cambiando el rango de edad o la ubicación.</p>
         </div>
@@ -316,108 +321,120 @@
     </section>
   }
 
-  <ca-modal
-    [attr.open]="seleccionado() ? '' : null"
-    backdrop-label="Cerrar ficha ciudadana"
-    (openchange)="cerrarDetalle()"
-  >
-    <section class="master-modal master-modal--ancho" role="dialog" aria-modal="true" tabindex="-1">
-      @if (seleccionado(); as ciudadano) {
-        <header class="master-modal__cabecera">
-          <div>
-            <h2>{{ nombre(ciudadano) }}</h2>
-            <p>V-{{ ciudadano.cedula }} · {{ datos.edad(ciudadano.nacimiento) }} años</p>
-          </div>
-          <ca-modal-close label="Cerrar ficha"></ca-modal-close>
-        </header>
+  @if (seleccionado(); as ciudadano) {
+    <div class="ui-modal-backdrop" (click)="cerrarDetalle()">
+      <div class="ui-modal-container" (click)="$event.stopPropagation()">
+        <section
+          class="master-modal master-modal--ancho"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+        >
+          <header class="master-modal__cabecera">
+            <div>
+              <h2>{{ nombre(ciudadano) }}</h2>
+              <p>V-{{ ciudadano.cedula }} · {{ datos.edad(ciudadano.nacimiento) }} años</p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm ui-modal-close"
+              (click)="cerrarDetalle()"
+              aria-label="Cerrar ficha"
+            >
+              <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+            </button>
+          </header>
 
-        <div class="master-modal__cuerpo">
-          <div class="master-detalle__datos">
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Sexo</span>
-              <span class="master-dato__valor">{{ etiquetaSexo(ciudadano.sexo) }}</span>
+          <div class="master-modal__cuerpo">
+            <div class="master-detalle__datos">
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Sexo</span>
+                <span class="master-dato__valor">{{ etiquetaSexo(ciudadano.sexo) }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Etnia</span>
+                <span class="master-dato__valor">{{ datos.nombreEtnia(ciudadano.etniaId) }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Correo</span>
+                <span class="master-dato__valor">{{ ciudadano.correo }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Teléfono</span>
+                <span class="master-dato__valor">{{ ciudadano.telefono }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Ubicación</span>
+                <span class="master-dato__valor">{{ ubicacion(ciudadano) }}</span>
+              </div>
+              <div class="master-dato">
+                <span class="master-dato__etiqueta">Registro</span>
+                <span class="master-dato__valor">{{
+                  ciudadano.creadoEn | date: 'dd/MM/yyyy'
+                }}</span>
+              </div>
             </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Etnia</span>
-              <span class="master-dato__valor">{{ datos.nombreEtnia(ciudadano.etniaId) }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Correo</span>
-              <span class="master-dato__valor">{{ ciudadano.correo }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Teléfono</span>
-              <span class="master-dato__valor">{{ ciudadano.telefono }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Ubicación</span>
-              <span class="master-dato__valor">{{ ubicacion(ciudadano) }}</span>
-            </div>
-            <div class="master-dato">
-              <span class="master-dato__etiqueta">Registro</span>
-              <span class="master-dato__valor">{{ ciudadano.creadoEn | date: 'dd/MM/yyyy' }}</span>
-            </div>
-          </div>
 
-          <h3 class="busqueda__seccion">Vacunas aplicadas</h3>
-          <div class="master-tabla-scroll">
-            <table class="master-tabla">
-              <thead>
-                <tr>
-                  <th>Vacuna</th>
-                  <th>Dosis</th>
-                  <th>Fecha</th>
-                  <th>Lote</th>
-                  <th>Centro</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (vacuna of ciudadano.vacunas; track vacuna.vacunaId + vacuna.fecha) {
+            <h3 class="busqueda__seccion">Vacunas aplicadas</h3>
+            <div class="master-tabla-scroll">
+              <table class="master-tabla">
+                <thead>
                   <tr>
-                    <td>{{ datos.nombreVacuna(vacuna.vacunaId) }}</td>
-                    <td>{{ vacuna.dosis }}</td>
-                    <td>{{ vacuna.fecha | date: 'dd/MM/yyyy' }}</td>
-                    <td>{{ vacuna.lote }}</td>
-                    <td>{{ datos.nombreCentro(vacuna.centroId) }}</td>
+                    <th>Vacuna</th>
+                    <th>Dosis</th>
+                    <th>Fecha</th>
+                    <th>Lote</th>
+                    <th>Centro</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  @for (vacuna of ciudadano.vacunas; track vacuna.vacunaId + vacuna.fecha) {
+                    <tr>
+                      <td>{{ datos.nombreVacuna(vacuna.vacunaId) }}</td>
+                      <td>{{ vacuna.dosis }}</td>
+                      <td>{{ vacuna.fecha | date: 'dd/MM/yyyy' }}</td>
+                      <td>{{ vacuna.lote }}</td>
+                      <td>{{ datos.nombreCentro(vacuna.centroId) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
 
-          <h3 class="busqueda__seccion">Exámenes</h3>
-          <div class="master-tabla-scroll">
-            <table class="master-tabla">
-              <thead>
-                <tr>
-                  <th>Examen</th>
-                  <th>Fecha</th>
-                  <th>Resultado</th>
-                  <th>Dato sensible</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (examen of ciudadano.examenes; track examen.examenId + examen.fecha) {
+            <h3 class="busqueda__seccion">Exámenes</h3>
+            <div class="master-tabla-scroll">
+              <table class="master-tabla">
+                <thead>
                   <tr>
-                    <td>{{ datos.nombreExamen(examen.examenId) }}</td>
-                    <td>{{ examen.fecha | date: 'dd/MM/yyyy' }}</td>
-                    <td>{{ examen.resultado }}</td>
-                    <td>
-                      <span
-                        class="master-badge"
-                        [class.master-badge--danger]="examen.sensible"
-                        [class.master-badge--suave]="!examen.sensible"
-                      >
-                        {{ examen.sensible ? 'Sí' : 'No' }}
-                      </span>
-                    </td>
+                    <th>Examen</th>
+                    <th>Fecha</th>
+                    <th>Resultado</th>
+                    <th>Dato sensible</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (examen of ciudadano.examenes; track examen.examenId + examen.fecha) {
+                    <tr>
+                      <td>{{ datos.nombreExamen(examen.examenId) }}</td>
+                      <td>{{ examen.fecha | date: 'dd/MM/yyyy' }}</td>
+                      <td>{{ examen.resultado }}</td>
+                      <td>
+                        <span
+                          class="master-badge"
+                          [class.master-badge--danger]="examen.sensible"
+                          [class.master-badge--suave]="!examen.sensible"
+                        >
+                          {{ examen.sensible ? 'Sí' : 'No' }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      }
-    </section>
-  </ca-modal>
+        </section>
+      </div>
+    </div>
+  }
 </div>

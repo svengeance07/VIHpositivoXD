@@ -13,7 +13,7 @@
   align-items: center;
 }
 
-.ciudadanos-busqueda__control ca-icon {
+.ciudadanos-busqueda__control .ui-icon {
   position: absolute;
   left: 0.75rem;
   color: var(--muted);
@@ -40,7 +40,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #0284c7, #10b981);
+  background: linear-gradient(135deg, var(--foreground), #10b981);
   color: #fff;
   font-size: 0.68rem;
   font-weight: 750;

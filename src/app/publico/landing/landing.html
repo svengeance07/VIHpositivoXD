@@ -5,7 +5,10 @@
       <span class="marca__texto">Sistema V</span>
     </a>
 
-    <ca-button variant="ghost" icon="log-in" (click)="abrirLogin()">Iniciar sesión</ca-button>
+    <button type="button" class="btn btn-ghost" (click)="abrirLogin()">
+      <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
+      <span>Iniciar sesión</span>
+    </button>
   </header>
 
   <main class="heroe">
@@ -23,9 +26,10 @@
       </p>
 
       <div class="acciones">
-        <ca-button variant="primary" icon="log-in" (click)="abrirLogin()">
-          Iniciar sesión
-        </ca-button>
+        <button type="button" class="btn btn-primary" (click)="abrirLogin()">
+          <span class="ui-icon" data-icon="log-in" aria-hidden="true"></span>
+          <span>Iniciar sesión</span>
+        </button>
         <a class="btn btn-ghost" routerLink="/consulta">Consultar por cédula</a>
       </div>
 
@@ -68,7 +72,7 @@
   <section class="rasgos" aria-label="Capacidades del sistema">
     @for (rasgo of rasgos; track rasgo.titulo) {
       <article class="panel rasgo">
-        <ca-icon class="rasgo__icono" [attr.name]="rasgo.icono" aria-hidden="true"></ca-icon>
+        <span class="ui-icon rasgo__icono" [attr.data-icon]="rasgo.icono" aria-hidden="true"></span>
         <h3>{{ rasgo.titulo }}</h3>
         <p>{{ rasgo.detalle }}</p>
       </article>

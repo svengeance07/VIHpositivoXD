@@ -37,7 +37,7 @@
 - `/login` tiene **dos pasos** para todos los roles: **Paso 1 — Tipo de cuenta** (roles 1–3) y **Paso 2 — Credenciales de acceso** (correo y contraseña del usuario).
 - Al no existir sub-usuarios en los roles 2 y 3, no hace falta una tabla intermedia de cuentas de entidad: el esquema original recibido ya resuelve la autenticación directamente contra `master` (rol 1) y `personal` (roles 2 y 3, donde cada fila corresponde al Jefe encargado de su centro o subregión). Ver `modelo-datos.md` §5.1.
 - La validación es simulada con `SesionService`; las cuentas de los jefes creados o reasignados en caliente se persisten en `localStorage` (`vih_cuentas_acceso_v2`), mientras que la sesión activa vive en memoria y se reinicia al recargar.
-- El formulario del paso 2 incluye un `<button type="submit" class="visualmente-oculto">` junto al `<ca-button>` para garantizar el envío nativo con la tecla `Enter`.
+- El formulario del paso 2 utiliza un `<button type="submit" class="btn btn-primary btn-block">` nativo para garantizar el envío directo con clic o tecla `Enter`.
 - Credenciales de prueba: `docs/diseno/credenciales-demo.md`. En desarrollo, el login muestra el listado vivo de `SesionService.cuentasDemo()`, incluyendo los jefes de centros y subregiones dados de alta desde `/master` o `/SRS`.
 - El login pide **correo y contraseña** para todos los roles (decisión 16 de `vistas.md`). El esquema ya incluye
   `master.nombre_usuario`; el dashboard usa ese valor para el saludo. La UI de login conserva el correo y el backend
@@ -122,9 +122,9 @@ src/app/
 ```
 
 - Las carpetas vacías se versionan con `.gitkeep` porque Git no guarda directorios vacíos.
-- Los shells usan las clases CSS de Caustica (`.ui-navbar`, `.ui-nav`, `.ui-table`, etc.). Caustica no incluye componentes Angular de layout, tabla ni formularios: solo custom elements para botón, icono, modal, tabs y collapse.
-- `src/styles.css` importa `caustica-design/css` y define los alias semánticos compartidos por `/PS` y `/SRS` (`--surface-glass`, `--surface-glass-hover`, `--surface`, `--border-subtle`, `--text-muted`, `--bg-canvas`, `--color-primario`, `--shadow-sm`, `--shadow-md`) conectados a los tokens de Caustica (`--glass-surface`, `--glass-surface-strong`, `--color-bg-elevated`, `--glass-border`, `--muted`, `--bg`, `--color-accent`), además de `font-variant-numeric: tabular-nums` en métricas y tablas, `:focus-visible`, `::selection` y `.visualmente-oculto`.
-- Las skills de desarrollo asisten la calidad del código y del diseño en `.opencode/skills/` y `.agents/skills/`: `angular-best-practices`, `liquid-glass-ui` e `impeccable` (incluyendo el detector determinista de antipatrones UI `impeccable.cmd detect src/ --json`).
+- Todas las vistas prescinden de los custom elements `<ca-*>` de `caustica-design` y emplean elementos HTML nativos (`<button class="btn ...">`, `<span class="ui-icon" data-icon="...">`, `<details class="ui-collapse">`, modales controlados con `@if (...)`) junto con el catálogo de iconos SVG en `/icons/*.svg` mediante `mask-image`.
+- `src/styles.css` define de forma autónoma el sistema de diseño **Spartan / shadcn / Vercel (Zinc)**: lienzo `#fafafa` (`--background`), tarjetas `#ffffff` (`--card`), bordes nítidos de `1px solid #e4e4e7` (`--border`), texto primario `#09090b` (`--foreground`), texto secundario `#71717a` (`--muted-foreground`) y acento primario monocromático `#18181b` (`--primary`), además de `font-variant-numeric: tabular-nums` en métricas y tablas, `:focus-visible`, `::selection` y `.visualmente-oculto`.
+- Las skills de desarrollo asisten la calidad del código y del diseño en `.opencode/skills/` y `.agents/skills/`: `angular-best-practices`, `spartan-shadcn-ui` (basada en `spartan-ng/spartan` para vistas estilo shadcn/Vercel) e `impeccable` (incluyendo el detector determinista de antipatrones UI `impeccable.cmd detect src/ --json`).
 - El SQL de referencia y su procedencia viven en `docs/referencias/`; no forman parte del bundle ni se importan desde la app.
 
 ## Reglas de modularidad (3 personas)

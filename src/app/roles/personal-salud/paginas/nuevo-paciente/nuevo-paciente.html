@@ -6,7 +6,7 @@
     descripcion="Incorpora a nuevos ciudadanos (adultos o menores de edad vinculados a su representante) y registra su historial o primera vacuna aplicada."
   >
     <a class="btn btn-ghost" routerLink="/PS/pacientes">
-      <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="chevron-left" aria-hidden="true"></span>
       <span>Volver a Pacientes</span>
     </a>
   </app-ps-encabezado>
@@ -17,7 +17,7 @@
   @if (pacienteCreado(); as pac) {
     <section class="panel confirmacion-tarjeta" aria-label="Confirmación de registro">
       <div class="confirmacion-tarjeta__icono">
-        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
       </div>
 
       <div class="confirmacion-tarjeta__cuerpo">
@@ -30,7 +30,7 @@
 
         @if (pac.esMenor) {
           <div class="confirmacion-representante">
-            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
             <div>
               <strong>Menor de edad vinculado a representante legal:</strong>
               <p>{{ pac.nombreRepresentante }} (C.I. {{ pac.cedulaRepresentante }})</p>
@@ -56,11 +56,11 @@
 
         <footer class="confirmacion-acciones">
           <button type="button" class="btn btn-primary" (click)="verCarnetPaciente()">
-            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
             <span>Ver Carnet de este Paciente</span>
           </button>
           <button type="button" class="btn btn-secondary" (click)="registrarOtro()">
-            <ca-icon name="plus" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
             <span>Registrar Otro Paciente</span>
           </button>
         </footer>
@@ -75,7 +75,7 @@
     <form class="ps-alta-form" (submit)="guardarExpediente($event)">
       @if (errorFormulario()) {
         <aside class="panel alerta-error" role="alert">
-          <ca-icon name="warning" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
           <span>{{ errorFormulario() }}</span>
         </aside>
       }
@@ -103,7 +103,7 @@
               <p>Mayor de 18 años con cédula de identidad propia.</p>
             </div>
             <span class="tipo-card__check" aria-hidden="true">
-              <ca-icon [name]="!form().esMenor ? 'check' : 'minus'"></ca-icon>
+              <span class="ui-icon" [attr.data-icon]="!form().esMenor ? 'check' : 'minus'"></span>
             </span>
           </div>
 
@@ -121,7 +121,7 @@
               <p>Lactantes, niños o adolescentes vinculados a la cédula del representante legal.</p>
             </div>
             <span class="tipo-card__check" aria-hidden="true">
-              <ca-icon [name]="form().esMenor ? 'check' : 'minus'"></ca-icon>
+              <span class="ui-icon" [attr.data-icon]="form().esMenor ? 'check' : 'minus'"></span>
             </span>
           </div>
         </div>
@@ -209,7 +209,7 @@
             <div class="field field-aviso-menor">
               <span class="field-label">Cédula de Identidad</span>
               <div class="aviso-cedula-menor">
-                <ca-icon name="check" aria-hidden="true"></ca-icon>
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                 <span>No se solicita (Menor sin cédula · Vinculado a su Representante Legal)</span>
               </div>
             </div>
@@ -374,7 +374,7 @@
         @if (form().esMenor) {
           <div class="bloque-representante-form">
             <div class="bloque-representante-cabecera">
-              <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
               <div>
                 <h4>Datos del Representante Legal (Obligatorio para menores)</h4>
                 <p>
@@ -567,7 +567,7 @@
 
           <div class="boton-agregar-vacuna-box">
             <button type="button" class="btn btn-secondary btn-sm" (click)="agregarVacunaInicial()">
-              <ca-icon name="plus" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
               <span>+ Añadir Vacuna al Expediente</span>
             </button>
           </div>
@@ -608,7 +608,7 @@
                           (click)="removerVacunaInicial(idx)"
                           title="Eliminar de la lista"
                         >
-                          <ca-icon name="trash" aria-hidden="true"></ca-icon>
+                          <span class="ui-icon" data-icon="trash" aria-hidden="true"></span>
                         </button>
                       </td>
                     </tr>
@@ -629,7 +629,7 @@
       <footer class="ps-alta-acciones">
         <a class="btn btn-ghost" routerLink="/PS/pacientes">Cancelar</a>
         <button type="submit" class="btn btn-primary btn-lg">
-          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
           <span>Guardar y Crear Expediente Clínico</span>
         </button>
       </footer>

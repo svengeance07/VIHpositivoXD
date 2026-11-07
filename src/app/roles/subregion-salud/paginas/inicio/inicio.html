@@ -5,11 +5,11 @@
     descripcion="Coordina el personal de los centros del estado, revisa las fichas ciudadanas y autoriza o descarta los certificados de salud."
   >
     <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
-      <ca-icon name="filter" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
       <span>Buscar ciudadanos</span>
     </a>
     <a class="btn btn-primary" routerLink="/SRS/certificados">
-      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
       <span>Revisar certificados</span>
     </a>
   </app-srs-encabezado>
@@ -17,7 +17,7 @@
   <section class="srs-metricas" aria-label="Indicadores de la subregión">
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="clipboard"></ca-icon>
+        <span class="ui-icon" data-icon="clipboard"></span>
       </span>
       <span class="srs-metrica__etiqueta">Jefes de centro</span>
       <strong>{{ datos.resumen().jefes }}</strong>
@@ -26,7 +26,7 @@
 
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="filter"></ca-icon>
+        <span class="ui-icon" data-icon="filter"></span>
       </span>
       <span class="srs-metrica__etiqueta">Ciudadanos del estado</span>
       <strong>{{ datos.resumen().ciudadanos }}</strong>
@@ -35,7 +35,7 @@
 
     <article class="panel srs-metrica srs-metrica--alerta">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="check"></ca-icon>
+        <span class="ui-icon" data-icon="check"></span>
       </span>
       <span class="srs-metrica__etiqueta">Certificados pendientes</span>
       <strong>{{ datos.resumen().solicitudesPendientes }}</strong>
@@ -44,7 +44,7 @@
 
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="warning"></ca-icon>
+        <span class="ui-icon" data-icon="warning"></span>
       </span>
       <span class="srs-metrica__etiqueta">Solicitudes sin leer</span>
       <strong>{{ datos.resumen().noLeidas }}</strong>
@@ -68,7 +68,7 @@
 
       @if (solicitudesPendientes().length === 0) {
         <div class="srs-vacio">
-          <ca-icon name="check" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
           <strong>No hay solicitudes pendientes</strong>
           <p>La bandeja está al día. Las nuevas solicitudes aparecerán aquí.</p>
         </div>
@@ -105,7 +105,7 @@
                   ></span>
                 </span>
               </span>
-              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
+              <span class="ui-icon" data-icon="chevron-right" aria-hidden="true"></span>
             </a>
           }
         </div>
@@ -139,9 +139,10 @@
                 [class.inicio-notificacion__icono--alta]="notificacion.prioridad === 'alta'"
                 aria-hidden="true"
               >
-                <ca-icon
-                  [name]="notificacion.prioridad === 'alta' ? 'warning' : 'clipboard'"
-                ></ca-icon>
+                <span
+                  class="ui-icon"
+                  [attr.data-icon]="notificacion.prioridad === 'alta' ? 'warning' : 'clipboard'"
+                ></span>
               </span>
               <span class="inicio-notificacion__texto">
                 <strong>{{ notificacion.titulo }}</strong>
@@ -154,7 +155,7 @@
           } @else {
             <div class="inicio-notificacion" [class.is-no-leida]="!notificacion.leida">
               <span class="inicio-notificacion__icono" aria-hidden="true">
-                <ca-icon name="clipboard"></ca-icon>
+                <span class="ui-icon" data-icon="clipboard"></span>
               </span>
               <span class="inicio-notificacion__texto">
                 <strong>{{ notificacion.titulo }}</strong>
@@ -185,7 +186,7 @@
         @for (centro of datos.centros(); track centro.centro.id) {
           <div class="inicio-centro">
             <span class="inicio-centro__icono" aria-hidden="true">
-              <ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon>
+              <span data-icon="layouts" class="ui-icon ui-icon--layouts"></span>
             </span>
             <div class="inicio-centro__texto">
               <strong>{{ centro.centro.nombre }}</strong>

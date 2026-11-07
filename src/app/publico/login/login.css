@@ -3,12 +3,12 @@
 }
 
 .acceso {
-  width: min(100%, 1180px);
+  width: min(100%, 1140px);
   min-height: 100dvh;
   margin-inline: auto;
   padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 3rem);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(20rem, 30rem);
+  grid-template-columns: minmax(0, 1fr) minmax(21rem, 29rem);
   align-items: center;
   gap: clamp(1.5rem, 5vw, 4rem);
 }
@@ -16,23 +16,24 @@
 .acceso__lateral {
   display: grid;
   align-content: center;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(1.5rem, 3.5vw, 2.25rem);
 }
 
 h1 {
-  margin: 0.9rem 0 0;
-  font-size: clamp(2.1rem, 3.8vw, 3.2rem);
-  font-weight: 680;
-  line-height: 1.04;
+  margin: 0.75rem 0 0;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.06;
   letter-spacing: -0.035em;
-  color: var(--text);
+  color: var(--foreground);
   text-wrap: balance;
 }
 
 .lead {
-  max-width: 33rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
+  max-width: 32rem;
+  margin: 0.9rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 1rem;
   line-height: 1.65;
 }
 
@@ -48,89 +49,93 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  color: var(--faint);
-  font-size: 0.88rem;
-  transition: color 0.15s ease;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 140ms ease;
 }
 
 .pasos li span {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.65rem;
+  height: 1.65rem;
   display: grid;
   place-items: center;
-  border: 1px solid var(--glass-border);
-  border-radius: 999px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pasos li.is-active {
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .pasos li.is-active span {
-  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
-  background: color-mix(in oklab, var(--color-accent) 15%, transparent);
-  color: var(--color-accent);
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .acceso__panel {
   display: grid;
   align-content: start;
-  gap: 0.75rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
+  gap: 0.85rem;
+  padding: clamp(1.35rem, 3vw, 2rem);
 }
 
 .volver-inicio,
 .enlace-volver {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   width: fit-content;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--faint);
+  color: var(--muted-foreground);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 500;
   text-decoration: none;
   cursor: pointer;
+  transition: color 140ms ease;
 }
 
 .volver-inicio:hover,
 .enlace-volver:hover {
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .enlace-volver:focus-visible,
 .rol:focus-visible,
 .perfil:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
 .paso {
   display: grid;
   align-content: start;
-  gap: 0.15rem;
+  gap: 0.2rem;
 }
 
 .paso > .badge {
   justify-self: start;
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
 }
 
 .paso h2 {
   margin: 0.45rem 0 0.2rem;
-  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
-  letter-spacing: -0.02em;
-  color: var(--text);
+  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+  letter-spacing: -0.025em;
+  color: var(--foreground);
 }
 
 .sub {
   margin: 0 0 0.5rem;
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
   line-height: 1.55;
 }
 
@@ -147,55 +152,59 @@ h1 {
   gap: 0.85rem;
   width: 100%;
   padding: 0.85rem 0.95rem;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--ca-radius-md);
-  background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
-  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
   font: inherit;
   text-align: left;
   cursor: pointer;
   transition:
-    border-color 0.15s ease,
-    transform 0.15s ease;
+    border-color 140ms ease,
+    background-color 140ms ease;
 }
 
 .rol:hover {
-  border-color: color-mix(in oklab, var(--color-accent) 42%, var(--glass-border));
-  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: var(--secondary);
 }
 
 .rol__num {
   flex: 0 0 auto;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.85rem;
+  height: 1.85rem;
   display: grid;
   place-items: center;
-  border-radius: 0.55rem;
-  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
-  color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rol__texto {
   display: grid;
   flex: 1;
-  gap: 0.1rem;
+  gap: 0.12rem;
   min-width: 0;
 }
 
 .rol__texto strong {
-  font-size: 0.95rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--foreground);
 }
 
 .rol__texto span {
-  color: var(--muted);
-  font-size: 0.82rem;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 
+.rol .ui-icon,
 .rol ca-icon {
-  color: var(--faint);
+  color: var(--muted-foreground);
 }
 
 .perfil {
@@ -203,36 +212,35 @@ h1 {
   gap: 0.15rem;
   width: 100%;
   padding: 0.7rem 0.9rem;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--ca-radius-md);
-  background: color-mix(in oklab, var(--glass-surface) 45%, transparent);
-  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .perfil.is-selected {
-  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
-  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  border-color: var(--primary);
+  background: var(--secondary);
 }
 
 .perfil__tipo {
-  color: var(--color-accent);
+  color: var(--muted-foreground);
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .perfil strong {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .form {
   margin-top: 0.7rem;
 }
 
+.form .btn-primary,
 .form ca-button {
   width: 100%;
   justify-content: center;
@@ -241,61 +249,69 @@ h1 {
 
 .pie-panel {
   margin: 1rem 0 0;
-  color: var(--faint);
-  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  font-size: 0.84rem;
 }
 
 .pie-panel a {
-  color: var(--color-accent);
+  color: var(--foreground);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .demo {
   margin-top: 0.5rem;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--border);
   padding-top: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.78rem;
 }
 
 .demo summary {
-  color: var(--faint);
+  color: var(--muted-foreground);
+  font-weight: 500;
   cursor: pointer;
+}
+
+.demo summary:hover {
+  color: var(--foreground);
 }
 
 .demo__lista {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.55rem;
   max-height: 12rem;
   margin-top: 0.6rem;
   overflow: auto;
 }
 
 .demo__cuenta {
-  padding-left: 0.55rem;
-  border-left: 2px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--secondary);
 }
 
 .demo__titulo {
   margin: 0;
-  color: var(--text);
-  font-size: 0.8rem;
+  color: var(--foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .demo__titulo span {
-  color: var(--faint);
+  color: var(--muted-foreground);
+  font-weight: 400;
 }
 
 .demo__cred,
 .demo__cuenta li {
-  margin: 0.1rem 0 0;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 0.72rem;
-  word-break: break-word;
-}
-
-.demo__cuenta ul {
   margin: 0.15rem 0 0;
-  padding-left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  word-break: break-word;
 }
 
 @media (max-width: 860px) {

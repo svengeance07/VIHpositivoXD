@@ -32,7 +32,7 @@ describe('Login', () => {
     const inputs = element.querySelectorAll<HTMLInputElement>('.paso input');
     inputs[0].value = correo;
     inputs[1].value = clave;
-    element.querySelector<HTMLElement>('.paso .form ca-button')?.click();
+    element.querySelector<HTMLButtonElement>('.paso .form button[type="submit"]')?.click();
     fixture.detectChanges();
   }
 

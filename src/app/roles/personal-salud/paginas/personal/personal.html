@@ -15,7 +15,7 @@
     <!-- Mensaje temporal de descarga o copia de validación -->
     @if (mensajeCredencial()) {
       <aside class="panel alerta-exito" role="status">
-        <ca-icon name="check" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
         <div class="alerta-exito__texto">
           <strong>Credencial Oficial</strong>
           <p>{{ mensajeCredencial() }}</p>
@@ -26,7 +26,7 @@
           (click)="mensajeCredencial.set('')"
           aria-label="Cerrar aviso"
         >
-          <ca-icon name="close" aria-hidden="true"></ca-icon>
+          <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
         </button>
       </aside>
     }
@@ -54,7 +54,7 @@
             (click)="voltearCredencial()"
             title="Alternar entre anverso y reverso"
           >
-            <ca-icon name="reload" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="reload" aria-hidden="true"></span>
             <span>Ver {{ caraCredencial() === 'frente' ? 'Reverso' : 'Anverso' }}</span>
           </button>
           <button
@@ -63,7 +63,7 @@
             (click)="copiarEnlaceVerificacion()"
             title="Copiar código de validación"
           >
-            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
+            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
             <span>Copiar Validación</span>
           </button>
         </div>
@@ -115,7 +115,7 @@
                     {{ inicialesPerfil() }}
                   </div>
                   <div class="credencial-sello-verificado" title="Validado en Sistema Nacional">
-                    <ca-icon name="check" aria-hidden="true"></ca-icon>
+                    <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
                     <span>MPPS</span>
                   </div>
                 </div>
@@ -270,7 +270,7 @@
       <article class="panel metrica metrica--verde">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
-            <ca-icon name="check"></ca-icon>
+            <span class="ui-icon" data-icon="check"></span>
           </span>
           <span class="metrica__etiqueta">Vacunas Hoy</span>
         </div>
@@ -288,7 +288,7 @@
       <article class="panel metrica metrica--azul">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
-            <ca-icon name="clipboard"></ca-icon>
+            <span class="ui-icon" data-icon="clipboard"></span>
           </span>
           <span class="metrica__etiqueta">Pacientes Atendidos</span>
         </div>
@@ -306,7 +306,7 @@
       <article class="panel metrica metrica--morado">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
-            <ca-icon name="calendar"></ca-icon>
+            <span class="ui-icon" data-icon="calendar"></span>
           </span>
           <span class="metrica__etiqueta">Total Histórico</span>
         </div>
@@ -324,7 +324,7 @@
       <article class="panel metrica metrica--rojo">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
-            <ca-icon name="warning"></ca-icon>
+            <span class="ui-icon" data-icon="warning"></span>
           </span>
           <span class="metrica__etiqueta">Reportes ESAVI</span>
         </div>

@@ -18,13 +18,13 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.9rem 1.25rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.35);
   color: #047857;
 }
 
-.alerta-exito ca-icon {
+.alerta-exito .ui-icon {
   font-size: 1.25rem;
   color: #10b981;
   flex-shrink: 0;
@@ -50,7 +50,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.8rem 1.1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #b91c1c;
@@ -71,10 +71,9 @@
 
 .metrica {
   padding: 1.25rem 1.4rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -84,7 +83,6 @@
 }
 
 .metrica:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -100,7 +98,7 @@
   justify-content: center;
   width: 2.3rem;
   height: 2.3rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   font-size: 1.15rem;
 }
 
@@ -110,13 +108,13 @@
 }
 
 .metrica__icono--azul {
-  background: rgba(14, 165, 233, 0.14);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--morado {
-  background: rgba(168, 85, 247, 0.14);
-  color: #9333ea;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .metrica__icono--verde {
@@ -184,10 +182,9 @@
 
 .ps-filtros {
   padding: 1.15rem 1.4rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -255,10 +252,9 @@
 
 .reporte-card {
   padding: 1.4rem;
-  border-radius: 1.15rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(var(--ca-blur-glass, 20px));
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -270,9 +266,8 @@
 }
 
 .reporte-card:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(14, 165, 233, 0.35);
+  border-color: var(--border);
 }
 
 .reporte-card--moderado {
@@ -319,7 +314,7 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem 0.95rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
@@ -342,8 +337,8 @@
   align-items: center;
   padding: 0.15rem 0.5rem;
   border-radius: 0.4rem;
-  background: rgba(14, 165, 233, 0.12);
-  color: #0369a1;
+  background: var(--secondary);
+  color: var(--foreground);
   font-size: 0.75rem;
   font-weight: 700;
   font-family: monospace;
@@ -414,10 +409,10 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.78rem;
-  color: #0369a1;
+  color: var(--foreground);
 }
 
-.estado-subregion-badge ca-icon {
+.estado-subregion-badge .ui-icon {
   font-size: 0.85rem;
 }
 
@@ -426,12 +421,12 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3.5rem 1.5rem;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px dashed var(--border-subtle);
 }
 
-.estado-vacio ca-icon {
+.estado-vacio .ui-icon {
   font-size: 2.5rem;
   color: var(--text-muted);
   opacity: 0.6;
@@ -453,7 +448,7 @@
 /* 4. Estilos de Modal y Formularios                                  */
 /* ------------------------------------------------------------------ */
 
-ca-modal {
+.ui-modal-backdrop {
   --modal-z: 1200;
 }
 
@@ -466,7 +461,7 @@ ca-modal {
   display: flex;
   flex-direction: column;
   background: var(--surface, #ffffff);
-  border-radius: 1.4rem;
+  border-radius: var(--radius-lg);
   border: 1.5px solid var(--border-subtle);
   box-shadow:
     0 24px 60px -10px rgba(0, 0, 0, 0.35),
@@ -507,7 +502,7 @@ ca-modal {
   margin-bottom: 0.15rem;
 }
 
-.modal-eyebrow ca-icon {
+.modal-eyebrow .ui-icon {
   font-size: 0.85rem;
 }
 
@@ -538,7 +533,7 @@ ca-modal {
   flex-direction: column;
   gap: 0.85rem;
   padding: 1.25rem 1.35rem;
-  border-radius: 1.1rem;
+  border-radius: var(--radius-lg);
   background: rgba(248, 250, 252, 0.7);
   border: 1px solid var(--border-subtle);
 }
@@ -559,12 +554,12 @@ ca-modal {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0284c7, #0369a1);
+  background: var(--primary);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 800;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 2px 6px var(--border);
 }
 
 .paso-desc {
@@ -592,9 +587,9 @@ ca-modal {
   align-items: center;
   gap: 0.85rem;
   padding: 0.75rem 1.1rem;
-  border-radius: 0.85rem;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(14, 165, 233, 0.04));
-  border: 1px solid rgba(2, 132, 199, 0.22);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--secondary);
 }
 
 .paciente-elegido-avatar {
@@ -604,7 +599,7 @@ ca-modal {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(2, 132, 199, 0.12);
+  background: var(--secondary);
   flex-shrink: 0;
 }
 
@@ -634,7 +629,7 @@ ca-modal {
 
 .vacuna-opcion-card {
   padding: 0.85rem 1.05rem;
-  border-radius: 0.9rem;
+  border-radius: var(--radius-md);
   background: var(--surface, #ffffff);
   border: 1.5px solid var(--border-subtle);
   cursor: pointer;
@@ -646,15 +641,15 @@ ca-modal {
 }
 
 .vacuna-opcion-card:hover {
-  border-color: #0284c7;
-  background: rgba(2, 132, 199, 0.04);
+  border-color: var(--foreground);
+  background: var(--secondary);
   transform: translateY(-1px);
 }
 
 .vacuna-opcion-card.is-seleccionada {
-  border-color: #0284c7;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(14, 165, 233, 0.05));
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35);
+  border-color: var(--foreground);
+  background: var(--card);
+  box-shadow: 0 0 0 2px var(--border);
 }
 
 .vacuna-opcion-titulos {
@@ -670,7 +665,7 @@ ca-modal {
 }
 
 .vacuna-opcion-check {
-  color: #0284c7;
+  color: var(--foreground);
   font-size: 1.1rem;
   flex-shrink: 0;
 }
@@ -687,8 +682,8 @@ ca-modal {
   font-weight: 700;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  background: rgba(2, 132, 199, 0.1);
-  color: #0284c7;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 
 .campos-grid {
@@ -734,7 +729,7 @@ ca-modal {
   font-weight: 700;
 }
 
-.sintoma-toggle-btn ca-icon {
+.sintoma-toggle-btn .ui-icon {
   font-size: 0.85rem;
 }
 
@@ -745,7 +740,7 @@ ca-modal {
 .ui-textarea {
   width: 100%;
   padding: 0.85rem 1rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--surface, #ffffff);
   color: var(--text);
@@ -758,8 +753,8 @@ ca-modal {
 
 .ui-textarea:focus {
   outline: none;
-  border-color: var(--color-primario, #0284c7);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  border-color: var(--color-primario, var(--foreground));
+  box-shadow: 0 0 0 3px var(--secondary);
 }
 
 /* Nivel de gravedad selector */
@@ -774,7 +769,7 @@ ca-modal {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.95rem 1.15rem;
-  border-radius: 0.95rem;
+  border-radius: var(--radius-md);
   background: var(--surface, #ffffff);
   border: 1.5px solid var(--border-subtle);
   cursor: pointer;
@@ -793,7 +788,7 @@ ca-modal {
 
 .gravedad-radio-card--leve.is-activo {
   border-color: #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.03));
+  background: var(--card);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
 }
 
@@ -831,17 +826,17 @@ ca-modal {
   align-items: flex-start;
   gap: 0.85rem;
   padding: 0.95rem 1.25rem;
-  border-radius: 0.95rem;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.05));
-  border: 1px solid rgba(14, 165, 233, 0.35);
-  color: #0369a1;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   font-size: 0.84rem;
   line-height: 1.45;
 }
 
-.aviso-envio-subregion ca-icon {
+.aviso-envio-subregion .ui-icon {
   font-size: 1.35rem;
-  color: #0284c7;
+  color: var(--foreground);
   flex-shrink: 0;
   margin-top: 0.1rem;
 }
@@ -882,9 +877,9 @@ ca-modal {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
   padding: 1.1rem 1.3rem;
-  border-radius: 1rem;
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.25);
+  border-radius: var(--radius-lg);
+  background: var(--secondary);
+  border: 1px solid var(--secondary);
 }
 
 .ficha-campo {
@@ -910,7 +905,7 @@ ca-modal {
   flex-direction: column;
   gap: 0.65rem;
   padding: 1.1rem 1.3rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   background: var(--surface-glass);
   border: 1px solid var(--border-subtle);
 }
@@ -959,7 +954,7 @@ ca-modal {
 
 .indicaciones-caja {
   padding: 0.9rem 1.1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: color-mix(in oklab, var(--color-primario) 6%, var(--surface-glass));
   border: 1px solid color-mix(in oklab, var(--color-primario) 28%, var(--border-subtle));
   font-size: 0.92rem;

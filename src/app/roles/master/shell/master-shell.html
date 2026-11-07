@@ -38,11 +38,15 @@
         [attr.aria-label]="fijado() ? 'Soltar menú' : 'Fijar menú'"
         [attr.title]="fijado() ? 'Soltar menú' : 'Fijar menú'"
       >
-        <ca-icon [name]="fijado() ? 'chevron-left' : 'chevron-right'" aria-hidden="true"></ca-icon>
+        <span
+          class="ui-icon"
+          [attr.data-icon]="fijado() ? 'chevron-left' : 'chevron-right'"
+          aria-hidden="true"
+        ></span>
       </button>
 
       <button type="button" class="barra__cerrar" (click)="cerrarMenu()" aria-label="Cerrar menú">
-        <ca-icon name="close" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
       </button>
     </div>
 
@@ -57,7 +61,7 @@
           (click)="alNavegar()"
         >
           <span class="barra__icono" aria-hidden="true">
-            <ca-icon [name]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></ca-icon>
+            <span [attr.data-icon]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></span>
           </span>
           <span class="barra__etiqueta">{{ item.etiqueta }}</span>
         </a>
@@ -74,7 +78,7 @@
       </div>
 
       <button type="button" class="barra__salir" (click)="cerrarSesion()">
-        <ca-icon name="log-out" aria-hidden="true"></ca-icon>
+        <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
         <span>Cerrar sesión</span>
       </button>
     </div>
@@ -90,7 +94,7 @@
         aria-controls="barra-master"
         aria-label="Abrir menú de navegación"
       >
-        <ca-icon name="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></ca-icon>
+        <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
       </button>
 
       <div class="barra-superior__ruta">
