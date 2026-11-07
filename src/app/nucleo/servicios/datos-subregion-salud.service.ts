@@ -811,15 +811,7 @@ export class DatosSubregionSaludService {
     if (datos.estadoId !== this.estadoId) {
       return null;
     }
-    const creado = this.datos.crearCentro(datos);
-    if (creado && creado.tipo === 2 && creado.estadoId === this.estadoId) {
-      this.sesion.registrarCuentaCentro(
-        { id: creado.id, nombre: creado.nombre, codigo: creado.codigo },
-        { id: creado.encargadoId ?? '', nombre: datos.jefeNombre, correo: datos.jefeCorreo },
-      );
-      return creado;
-    }
-    return creado ?? null;
+    return this.datos.crearCentro(datos);
   }
 
   crearTrabajador(datos: AltaEmpleado): PersonalSalud | null {
@@ -828,16 +820,6 @@ export class DatosSubregionSaludService {
       return null;
     }
 
-    const creado = this.datos.crearEmpleado(datos);
-    if (creado) {
-      this.sesion.registrarPerfilEnCentro(centro.id, {
-        id: creado.id,
-        nombre: creado.nombre,
-        tipo: datos.tipo,
-        correo: creado.correo,
-        clave: 'trabajador123',
-      });
-    }
-    return creado;
+    return this.datos.crearEmpleado({ ...datos, tipo: 'jefe' });
   }
 }

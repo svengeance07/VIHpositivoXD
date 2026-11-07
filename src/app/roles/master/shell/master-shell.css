@@ -4,7 +4,7 @@
 }
 
 .master-shell {
-  --barra-ancho: 5.25rem;
+  --barra-ancho: 4.5rem;
   --barra-expandida: 17rem;
   --barra-transicion: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   min-height: 100dvh;
@@ -49,14 +49,17 @@
   align-items: center;
   gap: 0.35rem;
   min-height: 2.9rem;
-  padding-inline: 0.2rem;
+  padding-inline: 0.45rem;
 }
 
 .barra__cabecera .marca {
+  display: flex;
+  align-items: center;
   min-width: 0;
   flex: 1 1 auto;
   gap: 0.75rem;
   border-radius: 0.8rem;
+  overflow: hidden;
 }
 
 .barra__cabecera .marca:focus-visible {
@@ -151,9 +154,11 @@
 
 .barra__nav {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.28rem;
   align-content: start;
   flex: 1 1 auto;
+  overflow-x: hidden;
   overflow-y: auto;
   padding-block: 0.2rem;
 }
@@ -162,13 +167,18 @@
   display: flex;
   align-items: center;
   gap: 0.72rem;
+  width: 100%;
+  min-width: 0;
   min-height: 2.75rem;
   padding: 0.4rem 0.55rem;
+  border: 0.5px solid transparent;
   border-radius: 0.82rem;
+  overflow: hidden;
   color: var(--muted);
   text-decoration: none;
   transition:
     color 160ms ease,
+    border-color 160ms ease,
     background-color 160ms ease;
 }
 
@@ -180,7 +190,8 @@
 
 .barra__item.is-active {
   color: var(--color-accent-2);
-  background: color-mix(in oklab, var(--color-accent) 13%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
 }
 
 .barra__icono {
@@ -190,11 +201,15 @@
   place-items: center;
   flex-shrink: 0;
   border-radius: 0.68rem;
-  background: color-mix(in oklab, var(--glass-surface) 70%, transparent);
+  background: transparent;
   transition: background-color 160ms ease;
 }
 
-.barra__item.is-active .barra__icono {
+.barra.is-expandida .barra__icono {
+  background: color-mix(in oklab, var(--glass-surface) 70%, transparent);
+}
+
+.barra.is-expandida .barra__item.is-active .barra__icono {
   background: color-mix(in oklab, var(--color-accent) 18%, transparent);
 }
 
@@ -218,6 +233,7 @@
 
 .barra__pie {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.55rem;
   padding-top: 0.6rem;
   border-top: 0.5px solid color-mix(in oklab, var(--glass-border) 70%, transparent);
@@ -228,7 +244,8 @@
   align-items: center;
   gap: 0.58rem;
   min-width: 0;
-  padding: 0.2rem;
+  overflow: hidden;
+  padding: 0.2rem 0.525rem;
 }
 
 .barra__avatar {

@@ -31,9 +31,7 @@ export class SubregionSaludInicio {
   protected readonly datos = inject(DatosSubregionSaludService);
   private readonly sesion = inject(SesionService);
 
-  protected readonly nombre = computed(
-    () => this.sesion.sesion()?.perfil?.nombre ?? 'Lic. Carlos Rojas',
-  );
+  protected readonly nombre = computed(() => this.sesion.sesion()?.nombre ?? 'Lic. Carlos Rojas');
 
   protected readonly solicitudesPendientes = computed(() =>
     this.datos.solicitudesPendientes().slice(0, 4),

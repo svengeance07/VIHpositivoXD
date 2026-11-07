@@ -3,18 +3,9 @@
   <app-ps-encabezado
     [eyebrow]="'Jefatura de Centro · ' + nombreCentro()"
     [titulo]="'Bienvenido/a, ' + saludoUsuario()"
-    descripcion="Supervisión general de cobertura de inmunizaciones, rendimiento de la plantilla y vigilancia epidemiológica del centro."
+    descripcion="Supervisión general de cobertura de inmunizaciones, atención de pacientes y vigilancia epidemiológica del centro."
   >
     <div class="cabecera-acciones">
-      <a
-        class="btn btn-ghost"
-        routerLink="/PS/estacion"
-        title="Abrir puesto de atención de enfermería"
-      >
-        <ca-icon name="feedback" aria-hidden="true"></ca-icon>
-        <span>Ver Estación Enfermero →</span>
-      </a>
-
       <a class="btn btn-primary" routerLink="/PS/pacientes">
         <ca-icon name="plus" aria-hidden="true"></ca-icon>
         <span>Nueva Inmunización</span>
@@ -54,10 +45,10 @@
         <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
           <ca-icon name="feedback"></ca-icon>
         </span>
-        <span class="metrica__etiqueta">Enfermeros activos</span>
+        <span class="metrica__etiqueta">Pacientes registrados</span>
       </div>
-      <strong>{{ metricasCentro().enfermerosActivos }} / {{ personalEnfermeria().length }}</strong>
-      <small>Plantilla operativa en guardia</small>
+      <strong>{{ datosPS.pacientes().length }}</strong>
+      <small>Expedientes activos en el centro</small>
     </article>
 
     <article class="panel metrica metrica--alerta">
@@ -149,8 +140,8 @@
         <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
       </div>
       <div class="accion-card__contenido">
-        <h4>Generar Perfil de Enfermero</h4>
-        <p>Crear cuentas para nuevo personal de enfermería y supervisar métricas de rendimiento.</p>
+        <h4>Mi Credencial y Rendimiento</h4>
+        <p>Consulta tu credencial digital oficial del MPPS y la bitácora de dosis aplicadas.</p>
       </div>
       <span class="accion-card__flecha" aria-hidden="true">→</span>
     </a>

@@ -62,9 +62,6 @@ export class MasterSubregiones {
   protected readonly totalCentros = computed(() =>
     this.datos.subregiones().reduce((total, fila) => total + fila.centros, 0),
   );
-  protected readonly totalEmpleados = computed(() =>
-    this.datos.subregiones().reduce((total, fila) => total + fila.empleados, 0),
-  );
   protected readonly formularioValido = computed(() => {
     const alta = this.alta();
     return Boolean(

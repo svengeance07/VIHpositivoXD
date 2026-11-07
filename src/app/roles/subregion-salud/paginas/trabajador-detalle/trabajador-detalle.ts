@@ -37,19 +37,4 @@ export class SubregionSaludTrabajadorDetalle {
     const trabajador = this.trabajador();
     return trabajador ? this.datos.centro(trabajador.centro.id) : null;
   });
-
-  protected readonly companeros = computed(() => {
-    const trabajador = this.trabajador();
-    if (!trabajador) {
-      return [];
-    }
-
-    return this.datos
-      .trabajadores()
-      .filter(
-        (companero) =>
-          companero.personal.centroId === trabajador.centro.id &&
-          companero.personal.id !== trabajador.personal.id,
-      );
-  });
 }

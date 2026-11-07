@@ -1,16 +1,16 @@
 <div class="srs-pagina">
   <app-srs-encabezado
-    eyebrow="Expediente de personal"
+    eyebrow="Expediente de jefatura"
     [titulo]="trabajador()?.personal?.nombre ?? 'Registro no encontrado'"
     [descripcion]="
       trabajador()
-        ? 'Consulta la adscripción, los datos de contacto y el equipo del centro.'
-        : 'El identificador no corresponde a un trabajador de esta subregión.'
+        ? 'Consulta la adscripción y los datos de contacto del jefe encargado del centro.'
+        : 'El identificador no corresponde a un jefe de centro de esta subregión.'
     "
   >
     <a class="btn btn-ghost" routerLink="/SRS/trabajadores">
       <ca-icon name="chevron-left" aria-hidden="true"></ca-icon>
-      <span>Volver al personal</span>
+      <span>Volver a jefes de centro</span>
     </a>
   </app-srs-encabezado>
 
@@ -20,9 +20,7 @@
       <div class="trabajador-hero__texto">
         <div class="trabajador-hero__titulo">
           <h2>{{ persona.personal.nombre }}</h2>
-          <span class="srs-badge" [class.srs-badge--info]="persona.esJefe">
-            {{ persona.esJefe ? 'Jefe de centro' : 'Trabajador' }}
-          </span>
+          <span class="srs-badge srs-badge--info">Jefe de centro</span>
           <span
             class="srs-badge"
             [class.srs-badge--ok]="persona.personal.activo"
@@ -79,7 +77,7 @@
         <header class="srs-panel-cabecera">
           <div>
             <h2>Adscripción</h2>
-            <p>Centro y ubicación donde presta servicio.</p>
+            <p>Centro y ubicación donde ejerce la jefatura.</p>
           </div>
           <span class="srs-badge srs-badge--suave">{{ persona.centro.codigo }}</span>
         </header>
@@ -102,58 +100,22 @@
             <dd class="srs-dato__valor">{{ persona.parroquiaNombre }}</dd>
           </div>
           <div class="srs-dato">
-            <dt class="srs-dato__etiqueta">Jefe del centro</dt>
-            <dd class="srs-dato__valor">{{ centro()?.jefe?.nombre ?? 'Sin asignar' }}</dd>
+            <dt class="srs-dato__etiqueta">Teléfono del centro</dt>
+            <dd class="srs-dato__valor">{{ persona.centro.telefono }}</dd>
           </div>
           <div class="srs-dato">
-            <dt class="srs-dato__etiqueta">Equipo del centro</dt>
-            <dd class="srs-dato__valor">{{ centro()?.trabajadores ?? 0 }} personas</dd>
+            <dt class="srs-dato__etiqueta">Dirección</dt>
+            <dd class="srs-dato__valor">{{ persona.centro.direccion }}</dd>
           </div>
         </dl>
       </article>
     </section>
 
-    <section class="panel">
-      <header class="srs-panel-cabecera">
-        <div>
-          <h2>Equipo del centro</h2>
-          <p>Otros registros tipo 2 adscritos a {{ persona.centro.nombre }}.</p>
-        </div>
-      </header>
-
-      @if (companeros().length === 0) {
-        <div class="srs-vacio">
-          <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
-          <strong>No hay otros registros en este centro</strong>
-        </div>
-      } @else {
-        <div class="trabajador-equipo">
-          @for (companero of companeros(); track companero.personal.id) {
-            <a
-              class="trabajador-equipo__item"
-              [routerLink]="['/SRS/trabajadores', companero.personal.id]"
-            >
-              <span class="trabajador-equipo__avatar" aria-hidden="true">
-                {{ companero.iniciales }}
-              </span>
-              <span class="srs-tabla__principal">
-                <strong>{{ companero.personal.nombre }}</strong>
-                <span class="srs-tabla__secundario">
-                  {{ companero.profesion }} · {{ companero.esJefe ? 'Jefe' : 'Trabajador' }}
-                </span>
-              </span>
-              <ca-icon name="chevron-right" aria-hidden="true"></ca-icon>
-            </a>
-          }
-        </div>
-      }
-    </section>
-
     <div class="srs-aviso">
       <ca-icon name="feedback" aria-hidden="true"></ca-icon>
       <span>
-        Este registro es de solo consulta. Las altas, actualizaciones y desactivaciones del personal
-        se gestionan desde el panel del master.
+        Cada centro de salud cuenta con el usuario único de su jefe encargado para la gestión y
+        atención clínica del establecimiento.
       </span>
     </div>
   } @else {

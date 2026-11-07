@@ -24,7 +24,7 @@ const ALTA_TRABAJADOR_VACIA: AltaEmpleado = {
   telefono: '',
   profesionId: '',
   centroId: '',
-  tipo: 'trabajador',
+  tipo: 'jefe',
 };
 
 /**

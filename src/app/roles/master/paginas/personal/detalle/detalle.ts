@@ -61,29 +61,9 @@ export class MasterDetalle {
     const fila = this.subregion();
     return fila ? this.datos.centrosDeEstado(fila.centro.estadoId) : [];
   });
-  protected readonly personalSubregion = computed(() => {
-    const fila = this.subregion();
-    return fila ? this.datos.personalDeCentro(fila.centro.id) : [];
-  });
-  protected readonly personalCentro = computed(() => {
-    const fila = this.centro();
-    return fila ? this.datos.personalDeCentro(fila.centro.id) : [];
-  });
   protected readonly lotesCentro = computed(() => {
     const fila = this.centro();
     return fila ? this.datos.lotesDeCentro(fila.centro.id) : [];
-  });
-  protected readonly jefeEmpleado = computed(() => {
-    const fila = this.empleado();
-    return fila ? this.datos.jefeDeCentro(fila.personal.centroId) : null;
-  });
-  protected readonly companeros = computed(() => {
-    const fila = this.empleado();
-    return fila
-      ? this.datos
-          .personalDeCentro(fila.personal.centroId)
-          .filter((persona) => persona.id !== fila.personal.id)
-      : [];
   });
 
   protected readonly volverRuta = computed(() => {
@@ -97,10 +77,6 @@ export class MasterDetalle {
   }
 
   protected tipoPersonal(fila: PersonalVista): string {
-    return fila.esJefe ? 'Jefe' : 'Trabajador';
-  }
-
-  protected esJefe(fila: PersonalVista): boolean {
-    return fila.esJefe;
+    return fila.personal.tipoCuenta === 3 ? 'Jefe de subregión' : 'Jefe de centro';
   }
 }

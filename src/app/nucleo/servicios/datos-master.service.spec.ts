@@ -164,7 +164,7 @@ describe('DatosMasterService', () => {
     expect(service.busquedas()[0].usuario).toBe('master');
   });
 
-  it('persiste empleados creados en localStorage y los recupera al reinstanciar', () => {
+  it('persiste jefes asignados en localStorage y los recupera al reinstanciar', () => {
     const centro = service.centrosVista()[0];
     const personalAntes = service.personalVista().length;
 
@@ -175,14 +175,15 @@ describe('DatosMasterService', () => {
       telefono: '0412-000-0000',
       profesionId: 'prof-enf',
       centroId: centro.centro.id,
-      tipo: 'trabajador',
+      tipo: 'jefe',
     });
 
     expect(empleado).not.toBeNull();
-    expect(service.personalVista().length).toBe(personalAntes + 1);
+    // Reemplaza al jefe anterior del centro manteniendo 1 usuario por centro
+    expect(service.personalVista().length).toBe(personalAntes);
 
     // Verificar que se guardó en localStorage
-    const raw = localStorage.getItem('vih_personal_master_v1');
+    const raw = localStorage.getItem('vih_personal_master_v2');
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!);
     expect(parsed.some((p: { cedula: string }) => p.cedula === '77001122')).toBe(true);
@@ -209,22 +210,23 @@ describe('DatosMasterService', () => {
     expect(centro).not.toBeNull();
     expect(service.centrosVista().length).toBe(centrosAntes + 1);
 
-    const raw = localStorage.getItem('vih_centros_master_v1');
+    const raw = localStorage.getItem('vih_centros_master_v2');
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!);
     expect(parsed.some((c: { codigo: string }) => c.codigo === 'CS-PER-01')).toBe(true);
   });
 
   it('limpiarAlmacenamiento resetea datos al catálogo original', () => {
-    // Crear datos nuevos
-    service.crearEmpleado({
-      nombre: 'Temporal',
-      cedula: '00099900',
-      correo: 'temporal@vih.gob.ve',
-      telefono: '',
-      profesionId: 'prof-enf',
-      centroId: service.centrosVista()[0].centro.id,
-      tipo: 'trabajador',
+    // Crear un centro con su jefe
+    service.crearCentro({
+      nombre: 'Centro Temporal',
+      codigo: 'CS-TMP-01',
+      estadoId: 'guarico',
+      municipioId: 'm-san-juan',
+      parroquiaId: 'p-san-juan',
+      jefeNombre: 'Dra. Temporal',
+      jefeCedula: '00099900',
+      jefeCorreo: 'temporal@vih.gob.ve',
     });
 
     const conNuevo = service.personalVista().length;
@@ -233,7 +235,7 @@ describe('DatosMasterService', () => {
     service.limpiarAlmacenamiento();
 
     expect(service.personalVista().length).toBeLessThan(conNuevo);
-    expect(localStorage.getItem('vih_personal_master_v1')).toBeNull();
-    expect(localStorage.getItem('vih_centros_master_v1')).toBeNull();
+    expect(localStorage.getItem('vih_personal_master_v2')).toBeNull();
+    expect(localStorage.getItem('vih_centros_master_v2')).toBeNull();
   });
 });

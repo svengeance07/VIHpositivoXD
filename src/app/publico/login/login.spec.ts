@@ -36,67 +36,42 @@ describe('Login', () => {
     fixture.detectChanges();
   }
 
-  it('hace el flujo de dos niveles para el personal de salud', () => {
+  it('permite iniciar sesión directamente al jefe de centro de salud (rol 2)', () => {
     const { fixture, element } = crear();
 
     elegirRol(element, 1);
-    fixture.detectChanges();
-    enviar(fixture, 'centro@vih.gob.ve', 'centro123');
-
-    expect(element.querySelectorAll('.perfil')).toHaveLength(2);
-
-    element.querySelectorAll<HTMLButtonElement>('.perfil')[0].click();
     fixture.detectChanges();
     enviar(fixture, 'jefe.centro@vih.gob.ve', 'jefe123');
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/PS');
   });
 
-  it('lleva al enfermero a su estación de vacunación', () => {
-    const { fixture, element } = crear();
-
-    elegirRol(element, 1);
-    fixture.detectChanges();
-    enviar(fixture, 'centro@vih.gob.ve', 'centro123');
-
-    element.querySelectorAll<HTMLButtonElement>('.perfil')[1].click();
-    fixture.detectChanges();
-    enviar(fixture, 'enfermero.centro@vih.gob.ve', 'enfermero123');
-
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/PS/estacion');
-  });
-
-  it('hace el flujo de dos niveles para la subregión', () => {
+  it('permite iniciar sesión directamente al jefe de subregión (rol 3)', () => {
     const { fixture, element } = crear();
 
     elegirRol(element, 2);
     fixture.detectChanges();
-    enviar(fixture, 'subregion@vih.gob.ve', 'subregion123');
-
-    element.querySelectorAll<HTMLButtonElement>('.perfil')[1].click();
-    fixture.detectChanges();
-    enviar(fixture, 'analista.subregion@vih.gob.ve', 'analista123');
+    enviar(fixture, 'jefe.subregion@vih.gob.ve', 'jefe123');
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/SRS');
   });
 
-  it('deja entrar al master sin pedir un perfil', () => {
+  it('permite iniciar sesión directamente al master (rol 1)', () => {
     const { fixture, element } = crear();
 
     elegirRol(element, 0);
     fixture.detectChanges();
     enviar(fixture, 'master@vih.gob.ve', 'master123');
 
-    expect(element.querySelectorAll('.perfil')).toHaveLength(0);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/master');
   });
 
-  it('muestra un error si las credenciales de la entidad no coinciden', () => {
+  it('muestra un error si las credenciales no coinciden con la cuenta del rol elegido', () => {
     const { fixture, element } = crear();
 
     elegirRol(element, 1);
     fixture.detectChanges();
-    enviar(fixture, 'centro@vih.gob.ve', 'incorrecta');
+    enviar(fixture, 'jefe.centro@vih.gob.ve', 'incorrecta');
 
     expect(element.querySelector('.paso')?.textContent).toContain('no corresponden');
     expect(router.navigateByUrl).not.toHaveBeenCalled();

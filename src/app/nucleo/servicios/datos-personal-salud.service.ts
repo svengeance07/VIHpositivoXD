@@ -21,10 +21,10 @@ import type {
 } from '../modelos/personal-salud';
 import { SesionService } from './sesion.service';
 
-const CLAVE_STORAGE_ENFERMEROS = 'vih_enfermeros_centro_v1';
-const CLAVE_STORAGE_PACIENTES_PS = 'vih_pacientes_centro_v1';
-const CLAVE_STORAGE_APLICACIONES_PS = 'vih_aplicaciones_centro_v1';
-const CLAVE_STORAGE_REPORTES_PS = 'vih_reportes_centro_v1';
+const CLAVE_STORAGE_ENFERMEROS = 'vih_enfermeros_centro_v2';
+const CLAVE_STORAGE_PACIENTES_PS = 'vih_pacientes_centro_v2';
+const CLAVE_STORAGE_APLICACIONES_PS = 'vih_aplicaciones_centro_v2';
+const CLAVE_STORAGE_REPORTES_PS = 'vih_reportes_centro_v2';
 
 function cargarColeccion<T>(clave: string, fallback: readonly T[]): readonly T[] {
   try {
@@ -88,28 +88,13 @@ export class DatosPersonalSaludService {
   );
 
   /**
-   * Selector manual de modo de vista (Jefe vs Enfermero).
-   * Permite alternar la perspectiva en la UI instantáneamente para pruebas de desarrollo.
+   * En el modelo de usuario único por entidad, el centro de salud opera
+   * directamente con el perfil del Jefe de Centro.
    */
-  private readonly _modoManual = signal<PerfilPersonalSalud | null>(null);
-
-  /**
-   * Determina el rol operativo efectivo en curso:
-   * Prioridad: modo manual de prueba > sesión activa simulada > fallback 'jefe'.
-   */
-  readonly perfilEfectivo = computed<PerfilPersonalSalud>(() => {
-    const modo = this._modoManual();
-    if (modo) return modo;
-
-    const sesionActual = this.sesion.sesion();
-    if (sesionActual?.perfil?.tipo === 'trabajador') {
-      return 'enfermero';
-    }
-    return 'jefe';
-  });
+  readonly perfilEfectivo = computed<PerfilPersonalSalud>(() => 'jefe');
 
   /** Indica si la vista actual opera con permisos de Jefe del Centro */
-  readonly esJefe = computed(() => this.perfilEfectivo() === 'jefe');
+  readonly esJefe = computed(() => true);
 
   /** Listas públicas de solo lectura */
   readonly enfermeros = this._enfermeros.asReadonly();
@@ -120,47 +105,24 @@ export class DatosPersonalSaludService {
     VACUNAS_DISPONIBLES_CENTRO,
   ).asReadonly();
 
-  /** Profesional de salud asignado a la sesión actual (Dra. María Pérez si es perfil Jefe, o el enfermero autenticado) */
+  /** Jefe de centro asignado a la sesión actual */
   readonly enfermeroActual = computed<Enfermero>(() => {
     const sesionActual = this.sesion.sesion();
-    const esJefe = this.esJefe();
     const todos = this._enfermeros();
+    const base =
+      todos.find((e) => e.id === 'prof-01' || e.correo === 'jefe.centro@vih.gob.ve') ?? todos[0];
 
-    // 1. Si la sesión activa es de perfil Jefe (o modo jefe activo)
-    if (esJefe || sesionActual?.perfil?.tipo === 'jefe') {
-      const jefe = todos.find(
-        (e) =>
-          e.id === 'prof-01' ||
-          e.correo === 'jefe.centro@vih.gob.ve' ||
-          e.nombre.toLowerCase().includes('maría'),
-      );
-      if (jefe) return jefe;
+    if (sesionActual && sesionActual.rol === 2) {
+      const porCorreo = todos.find((e) => e.correo === sesionActual.correo);
+      if (porCorreo) return porCorreo;
+      return {
+        ...base,
+        nombre: sesionActual.nombre || base.nombre,
+        correo: sesionActual.correo || base.correo,
+      };
     }
 
-    // 2. Si hay un usuario logueado con perfil específico (ej: Enf. Luis Gómez u otro)
-    const perfilSesion = sesionActual?.perfil;
-    if (perfilSesion) {
-      const porId = todos.find((e) => e.id === perfilSesion.id);
-      if (porId) return porId;
-
-      const nombreSesion = perfilSesion.nombre.toLowerCase();
-      if (nombreSesion) {
-        const encontrado = todos.find(
-          (e) =>
-            e.nombre.toLowerCase().includes(nombreSesion) ||
-            nombreSesion.includes(e.nombre.toLowerCase()),
-        );
-        if (encontrado) return encontrado;
-      }
-    }
-
-    // 3. Fallback: Si no es jefe, busca al primer enfermero operativo
-    if (!esJefe) {
-      const enfermero = todos.find((e) => e.id === 'enf-01' || !e.nombre.startsWith('Dra.'));
-      if (enfermero) return enfermero;
-    }
-
-    return todos.find((e) => e.activo) ?? todos[0];
+    return base;
   });
 
   /**
@@ -248,10 +210,10 @@ export class DatosPersonalSaludService {
   });
 
   /**
-   * Cambia el modo manual de prueba entre 'jefe' y 'enfermero'.
+   * Mantiene compatibilidad de firma con llamadas existentes; el modo siempre es 'jefe'.
    */
-  setModoManual(modo: PerfilPersonalSalud): void {
-    this._modoManual.set(modo);
+  setModoManual(_modo: PerfilPersonalSalud): void {
+    // No-op: en el modelo actual solo existe el usuario Jefe de Centro.
   }
 
   /**

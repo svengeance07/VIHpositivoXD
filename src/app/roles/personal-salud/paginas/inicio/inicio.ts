@@ -54,12 +54,9 @@ export class PersonalSaludInicio {
   protected readonly ultimasAplicaciones = this.datosPS.ultimasAplicaciones;
 
   /** Saludo personalizado */
-  protected readonly saludoUsuario = computed(() => {
-    if (this.esJefe()) {
-      return this.sesion.sesion()?.perfil?.nombre ?? 'Dra. María Pérez';
-    }
-    return `${this.enfermero().nombre} (Enfermería)`;
-  });
+  protected readonly saludoUsuario = computed(
+    () => this.sesion.sesion()?.nombre ?? this.enfermero().nombre,
+  );
 
   /**
    * Ejecuta la búsqueda rápida de un paciente por cédula o abre el módulo de fichas.

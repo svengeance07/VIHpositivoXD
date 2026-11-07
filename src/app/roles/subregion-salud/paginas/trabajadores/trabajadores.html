@@ -1,13 +1,13 @@
 <div class="srs-pagina">
   <app-srs-encabezado
-    [eyebrow]="'Personal de salud · ' + datos.estadoNombre"
-    titulo="Trabajadores tipo 2"
-    descripcion="Consulta los registros del personal de salud asignado a los centros de la subregión, incluidos jefes y trabajadores."
+    [eyebrow]="'Jefaturas de salud · ' + datos.estadoNombre"
+    titulo="Jefes de centros de salud"
+    descripcion="Consulta y asigna a los jefes encargados de cada centro de salud adscrito a la subregión."
   >
-    <span class="srs-badge srs-badge--suave">{{ datos.trabajadores().length }} registros</span>
+    <span class="srs-badge srs-badge--suave">{{ datos.trabajadores().length }} jefes</span>
     <button type="button" class="btn btn-primary" (click)="abrirAlta()">
       <ca-icon name="plus" aria-hidden="true"></ca-icon>
-      <span>Agregar trabajador</span>
+      <span>Asignar jefe de centro</span>
     </button>
     <a class="btn btn-ghost" routerLink="/SRS/ciudadanos">
       <ca-icon name="filter" aria-hidden="true"></ca-icon>
@@ -16,44 +16,36 @@
   </app-srs-encabezado>
 
   <section class="srs-metricas" aria-label="Resumen del personal">
-    <article class="panel srs-metrica">
-      <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="clipboard"></ca-icon>
-      </span>
-      <span class="srs-metrica__etiqueta">Total en el estado</span>
-      <strong>{{ datos.trabajadores().length }}</strong>
-      <small>Personal tipo 2 registrado en Guárico.</small>
-    </article>
     <article class="panel srs-metrica srs-metrica--ok">
       <span class="srs-metrica__icono" aria-hidden="true">
         <ca-icon name="check"></ca-icon>
       </span>
       <span class="srs-metrica__etiqueta">Jefes de centro</span>
       <strong>{{ conteoJefes() }}</strong>
-      <small>Responsables de la coordinación local.</small>
-    </article>
-    <article class="panel srs-metrica">
-      <span class="srs-metrica__icono" aria-hidden="true">
-        <ca-icon name="feedback"></ca-icon>
-      </span>
-      <span class="srs-metrica__etiqueta">Trabajadores</span>
-      <strong>{{ conteoTrabajadores() }}</strong>
-      <small>Equipo operativo de los centros del estado.</small>
+      <small>Responsables de cada establecimiento en Guárico.</small>
     </article>
     <article class="panel srs-metrica">
       <span class="srs-metrica__icono" aria-hidden="true">
         <ca-icon name="layouts" class="ui-icon ui-icon--layouts"></ca-icon>
       </span>
-      <span class="srs-metrica__etiqueta">Centros con personal</span>
+      <span class="srs-metrica__etiqueta">Centros coordinados</span>
       <strong>{{ datos.centros().length }}</strong>
       <small>Hospital Central y Ambulatorio Rural.</small>
+    </article>
+    <article class="panel srs-metrica">
+      <span class="srs-metrica__icono" aria-hidden="true">
+        <ca-icon name="clipboard"></ca-icon>
+      </span>
+      <span class="srs-metrica__etiqueta">Modalidad de cuenta</span>
+      <strong>1 por centro</strong>
+      <small>Usuario único de jefatura por establecimiento.</small>
     </article>
   </section>
 
   <section class="panel" aria-label="Filtros de personal">
     <header class="srs-panel-cabecera">
       <div>
-        <h2>Filtrar registros</h2>
+        <h2>Filtrar jefes de centro</h2>
         <p>Busca por nombre, cédula, profesión, correo o código profesional.</p>
       </div>
       <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
@@ -63,12 +55,12 @@
 
     <div class="trabajadores-filtros">
       <label class="field trabajadores-busqueda">
-        <span class="field-label">Buscar personal</span>
+        <span class="field-label">Buscar jefe</span>
         <span class="trabajadores-busqueda__control">
           <ca-icon name="filter" aria-hidden="true"></ca-icon>
           <input
             type="search"
-            placeholder="Ej. María, 28456710 o enfermería"
+            placeholder="Ej. Antonio, 24681357 o medicina"
             [value]="termino()"
             (input)="termino.set(valor($event))"
           />
@@ -84,56 +76,23 @@
           }
         </select>
       </label>
-
-      <div class="field trabajadores-rol">
-        <span class="field-label">Rol en el centro</span>
-        <div class="srs-chips" role="group" aria-label="Filtrar por rol">
-          <button
-            type="button"
-            class="srs-chip"
-            [class.is-active]="rol() === 'todos'"
-            [attr.aria-pressed]="rol() === 'todos'"
-            (click)="rol.set('todos')"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="srs-chip"
-            [class.is-active]="rol() === 'jefe'"
-            [attr.aria-pressed]="rol() === 'jefe'"
-            (click)="rol.set('jefe')"
-          >
-            Jefes
-          </button>
-          <button
-            type="button"
-            class="srs-chip"
-            [class.is-active]="rol() === 'trabajador'"
-            [attr.aria-pressed]="rol() === 'trabajador'"
-            (click)="rol.set('trabajador')"
-          >
-            Trabajadores
-          </button>
-        </div>
-      </div>
     </div>
   </section>
 
   <section class="panel" aria-label="Registros de personal">
     <header class="srs-panel-cabecera">
       <div>
-        <h2>Registros encontrados</h2>
-        <p>{{ resultados().length }} de {{ datos.trabajadores().length }} registros visibles.</p>
+        <h2>Jefes registrados</h2>
+        <p>{{ resultados().length }} de {{ datos.trabajadores().length }} jefes visibles.</p>
       </div>
-      <span class="srs-badge srs-badge--info">Solo consulta</span>
+      <span class="srs-badge srs-badge--info">Jefaturas activas</span>
     </header>
 
     @if (resultados().length === 0) {
       <div class="srs-vacio">
         <ca-icon name="filter" aria-hidden="true"></ca-icon>
         <strong>No hay registros con esos filtros</strong>
-        <p>Prueba con otro nombre, centro o rol.</p>
+        <p>Prueba con otro nombre o centro de salud.</p>
         <button type="button" class="btn btn-ghost btn-sm" (click)="limpiar()">
           Restablecer filtros
         </button>
@@ -143,11 +102,11 @@
         <table class="srs-tabla trabajadores-tabla">
           <thead>
             <tr>
-              <th scope="col">Profesional</th>
+              <th scope="col">Jefe encargado</th>
               <th scope="col">Cédula</th>
               <th scope="col">Profesión</th>
               <th scope="col">Centro</th>
-              <th scope="col">Rol</th>
+              <th scope="col">Cargo</th>
               <th scope="col">Ingreso</th>
               <th scope="col">Estado</th>
               <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
@@ -181,9 +140,7 @@
                   </span>
                 </td>
                 <td>
-                  <span class="srs-badge" [class.srs-badge--info]="trabajador.esJefe">
-                    {{ trabajador.esJefe ? 'Jefe' : 'Trabajador' }}
-                  </span>
+                  <span class="srs-badge srs-badge--info">Jefe de centro</span>
                 </td>
                 <td>{{ trabajador.personal.ingreso | date: 'dd/MM/yyyy' }}</td>
                 <td>
@@ -213,14 +170,17 @@
 
   <ca-modal
     [attr.open]="altaAbierta() ? '' : null"
-    backdrop-label="Cerrar formulario de trabajador"
+    backdrop-label="Cerrar formulario de jefe de centro"
     (openchange)="cerrarAlta()"
   >
     <section class="master-modal" role="dialog" aria-modal="true" tabindex="-1">
       <header class="master-modal__cabecera">
         <div>
-          <h2>Registrar trabajador de salud</h2>
-          <p>Crea un nuevo usuario de tipo 2 y asígnalo a un centro de {{ datos.estadoNombre }}.</p>
+          <h2>Asignar jefe de centro</h2>
+          <p>
+            Registra al jefe encargado y asígnalo como titular de un centro de
+            {{ datos.estadoNombre }}.
+          </p>
         </div>
         <ca-modal-close label="Cerrar formulario"></ca-modal-close>
       </header>
@@ -297,14 +257,6 @@
               }
             </select>
           </label>
-
-          <label class="field">
-            <span class="field-label">Rol en el centro</span>
-            <select [value]="alta().tipo" (change)="actualizarAlta('tipo', valor($event))" required>
-              <option value="trabajador">Trabajador</option>
-              <option value="jefe">Jefe de centro</option>
-            </select>
-          </label>
         </div>
 
         @if (errorAlta()) {
@@ -314,7 +266,7 @@
         <div class="master-acciones master-acciones--fin">
           <button type="button" class="btn btn-ghost" (click)="cerrarAlta()">Cancelar</button>
           <button type="submit" class="btn btn-primary" [disabled]="!formularioValido()">
-            Registrar trabajador
+            Asignar jefe
           </button>
         </div>
       </form>

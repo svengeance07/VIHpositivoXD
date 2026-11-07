@@ -19,12 +19,9 @@
       <span class="srs-metrica__icono" aria-hidden="true">
         <ca-icon name="clipboard"></ca-icon>
       </span>
-      <span class="srs-metrica__etiqueta">Personal tipo 2</span>
-      <strong>{{ datos.resumen().trabajadores }}</strong>
-      <small
-        >{{ datos.resumen().jefes }} jefes de centro en
-        {{ datos.resumen().centros }} centros.</small
-      >
+      <span class="srs-metrica__etiqueta">Jefes de centro</span>
+      <strong>{{ datos.resumen().jefes }}</strong>
+      <small>Encargados activos en {{ datos.resumen().centros }} centros del estado.</small>
     </article>
 
     <article class="panel srs-metrica">
@@ -179,9 +176,9 @@
             Cobertura territorial
           </p>
           <h2>Centros del estado</h2>
-          <p>Personal tipo 2 distribuido en la red de Guárico.</p>
+          <p>Jefaturas asignadas en la red asistencial de Guárico.</p>
         </div>
-        <a class="btn btn-ghost btn-sm" routerLink="/SRS/trabajadores">Ver personal</a>
+        <a class="btn btn-ghost btn-sm" routerLink="/SRS/trabajadores">Ver jefes</a>
       </header>
 
       <div class="inicio-centros">
@@ -194,8 +191,8 @@
               <strong>{{ centro.centro.nombre }}</strong>
               <small>{{ centro.municipioNombre }} · {{ centro.parroquiaNombre }}</small>
               <small>
-                Jefe: {{ centro.jefe?.nombre ?? 'Sin asignar' }} ·
-                {{ centro.trabajadores }} trabajador(es)
+                Jefe encargado: {{ centro.jefe?.nombre ?? 'Sin asignar' }} ·
+                {{ centro.jefe?.correo ?? centro.centro.telefono }}
               </small>
             </div>
             <span class="srs-badge srs-badge--ok">{{ centro.centro.codigo }}</span>

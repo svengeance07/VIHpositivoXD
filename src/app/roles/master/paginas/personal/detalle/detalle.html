@@ -36,8 +36,8 @@
             <span class="master-dato__valor">{{ fila.centros }}</span>
           </div>
           <div class="master-dato">
-            <span class="master-dato__etiqueta">Personal de la sede</span>
-            <span class="master-dato__valor">{{ fila.empleados }}</span>
+            <span class="master-dato__etiqueta">Correo del jefe</span>
+            <span class="master-dato__valor">{{ fila.jefe?.correo ?? '—' }}</span>
           </div>
           <div class="master-dato">
             <span class="master-dato__etiqueta">Teléfono</span>
@@ -67,7 +67,7 @@
                 <th>Centro</th>
                 <th>Municipio / parroquia</th>
                 <th>Jefe de centro</th>
-                <th>Personal</th>
+                <th>Contacto</th>
                 <th></th>
               </tr>
             </thead>
@@ -85,7 +85,7 @@
                   </td>
                   <td>{{ centro.municipio?.nombre }} · {{ centro.parroquia?.nombre }}</td>
                   <td>{{ centro.jefe?.nombre ?? 'Sin asignar' }}</td>
-                  <td>{{ centro.empleados }}</td>
+                  <td>{{ centro.jefe?.correo ?? centro.centro.telefono }}</td>
                   <td>
                     <a
                       class="btn btn-ghost btn-compact"
@@ -100,65 +100,34 @@
         </div>
       </section>
 
-      <section class="panel">
-        <header class="detalle__cabecera-tabla">
-          <div>
-            <h2>Personal de la sede</h2>
-            <p>Equipo que trabaja directamente en la subregión.</p>
+      @if (fila.jefe; as jefe) {
+        <section class="panel">
+          <header class="detalle__cabecera-tabla">
+            <div>
+              <h2>Jefe encargado de la subregión</h2>
+              <p>Usuario responsable de la coordinación estadal.</p>
+            </div>
+            <span class="master-badge master-badge--info">Jefe de subregión</span>
+          </header>
+          <div class="master-cuenta">
+            <span class="master-cuenta__avatar" aria-hidden="true">{{
+              jefe.nombre.slice(0, 2)
+            }}</span>
+            <span class="master-cuenta__texto">
+              <strong>{{ jefe.nombre }}</strong>
+              <span>
+                V-{{ jefe.cedula }} · {{ datos.nombreProfesion(jefe.profesionId) }} ·
+                {{ jefe.correo }}
+              </span>
+            </span>
+            <a
+              class="btn btn-ghost btn-compact"
+              [routerLink]="['/master/personal/empleados', jefe.id]"
+              >Ver ficha</a
+            >
           </div>
-          <span class="master-badge master-badge--suave"
-            >{{ personalSubregion().length }} personas</span
-          >
-        </header>
-        <div class="master-tabla-scroll">
-          <table class="master-tabla">
-            <thead>
-              <tr>
-                <th>Persona</th>
-                <th>Cédula</th>
-                <th>Profesión</th>
-                <th>Rol</th>
-                <th>Contacto</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (persona of personalSubregion(); track persona.id) {
-                <tr>
-                  <td>
-                    <a
-                      class="master-tabla__principal master-enlace-fila"
-                      [routerLink]="['/master/personal/empleados', persona.id]"
-                    >
-                      <strong>{{ persona.nombre }}</strong>
-                      <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
-                    </a>
-                  </td>
-                  <td>V-{{ persona.cedula }}</td>
-                  <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
-                  <td>
-                    <span
-                      class="master-badge"
-                      [class.master-badge--info]="persona.id === fila.centro.encargadoId"
-                      [class.master-badge--suave]="persona.id !== fila.centro.encargadoId"
-                    >
-                      {{ persona.id === fila.centro.encargadoId ? 'Jefe' : 'Trabajador' }}
-                    </span>
-                  </td>
-                  <td>{{ persona.correo }}</td>
-                  <td>
-                    <a
-                      class="btn btn-ghost btn-compact"
-                      [routerLink]="['/master/personal/empleados', persona.id]"
-                      >Ver</a
-                    >
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </section>
+        </section>
+      }
     } @else {
       <div class="master-vacio panel">
         <ca-icon name="warning" aria-hidden="true"></ca-icon>
@@ -198,8 +167,8 @@
             }}</span>
           </div>
           <div class="master-dato">
-            <span class="master-dato__etiqueta">Personal activo</span>
-            <span class="master-dato__valor">{{ fila.empleados }}</span>
+            <span class="master-dato__etiqueta">Correo del jefe</span>
+            <span class="master-dato__valor">{{ fila.jefe?.correo ?? '—' }}</span>
           </div>
           <div class="master-dato">
             <span class="master-dato__etiqueta">Parroquia</span>
@@ -216,65 +185,34 @@
         </div>
       </section>
 
-      <section class="panel">
-        <header class="detalle__cabecera-tabla">
-          <div>
-            <h2>Personal del centro</h2>
-            <p>Jefe y trabajadores asignados al establecimiento.</p>
+      @if (fila.jefe; as jefe) {
+        <section class="panel">
+          <header class="detalle__cabecera-tabla">
+            <div>
+              <h2>Jefe encargado del centro</h2>
+              <p>Profesional responsable del establecimiento de salud.</p>
+            </div>
+            <span class="master-badge master-badge--info">Jefe de centro</span>
+          </header>
+          <div class="master-cuenta">
+            <span class="master-cuenta__avatar" aria-hidden="true">{{
+              jefe.nombre.slice(0, 2)
+            }}</span>
+            <span class="master-cuenta__texto">
+              <strong>{{ jefe.nombre }}</strong>
+              <span>
+                V-{{ jefe.cedula }} · {{ datos.nombreProfesion(jefe.profesionId) }} ·
+                {{ jefe.correo }}
+              </span>
+            </span>
+            <a
+              class="btn btn-ghost btn-compact"
+              [routerLink]="['/master/personal/empleados', jefe.id]"
+              >Ver ficha</a
+            >
           </div>
-          <span class="master-badge master-badge--suave"
-            >{{ personalCentro().length }} personas</span
-          >
-        </header>
-        <div class="master-tabla-scroll">
-          <table class="master-tabla">
-            <thead>
-              <tr>
-                <th>Persona</th>
-                <th>Cédula</th>
-                <th>Profesión</th>
-                <th>Rol</th>
-                <th>Contacto</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (persona of personalCentro(); track persona.id) {
-                <tr>
-                  <td>
-                    <a
-                      class="master-tabla__principal master-enlace-fila"
-                      [routerLink]="['/master/personal/empleados', persona.id]"
-                    >
-                      <strong>{{ persona.nombre }}</strong>
-                      <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
-                    </a>
-                  </td>
-                  <td>V-{{ persona.cedula }}</td>
-                  <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
-                  <td>
-                    <span
-                      class="master-badge"
-                      [class.master-badge--info]="persona.id === fila.centro.encargadoId"
-                      [class.master-badge--suave]="persona.id !== fila.centro.encargadoId"
-                    >
-                      {{ persona.id === fila.centro.encargadoId ? 'Jefe' : 'Trabajador' }}
-                    </span>
-                  </td>
-                  <td>{{ persona.correo }}</td>
-                  <td>
-                    <a
-                      class="btn btn-ghost btn-compact"
-                      [routerLink]="['/master/personal/empleados', persona.id]"
-                      >Ver</a
-                    >
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </section>
+        </section>
+      }
 
       <section class="panel">
         <header class="detalle__cabecera-tabla">
@@ -347,18 +285,19 @@
           <p>V-{{ fila.personal.cedula }} · {{ fila.profesion }}</p>
         </div>
         <div class="master-acciones">
-          <span
-            class="master-badge"
-            [class.master-badge--info]="fila.esJefe"
-            [class.master-badge--suave]="!fila.esJefe"
-          >
-            {{ fila.esJefe ? 'Jefe de centro' : 'Trabajador' }}
+          <span class="master-badge master-badge--info">
+            {{ tipoPersonal(fila) }}
           </span>
           <a
             class="btn btn-ghost"
-            [routerLink]="['/master/personal/centros', fila.personal.centroId]"
+            [routerLink]="[
+              fila.personal.tipoCuenta === 3
+                ? '/master/personal/subregiones'
+                : '/master/personal/centros',
+              fila.personal.centroId,
+            ]"
           >
-            Ver centro
+            {{ fila.personal.tipoCuenta === 3 ? 'Ver subregión' : 'Ver centro' }}
           </a>
         </div>
       </header>
@@ -366,7 +305,7 @@
       <section class="panel">
         <div class="master-detalle__datos">
           <div class="master-dato">
-            <span class="master-dato__etiqueta">Centro</span>
+            <span class="master-dato__etiqueta">Entidad asignada</span>
             <span class="master-dato__valor">{{ fila.centro?.nombre ?? 'Sin centro' }}</span>
           </div>
           <div class="master-dato">
@@ -396,7 +335,7 @@
             }}</span>
           </div>
           <div class="master-dato">
-            <span class="master-dato__etiqueta">Ubicación del centro</span>
+            <span class="master-dato__etiqueta">Ubicación</span>
             <span class="master-dato__valor">
               {{ fila.estado?.nombre ?? '—' }} · {{ fila.municipio?.nombre ?? '—' }} ·
               {{ fila.parroquia?.nombre ?? '—' }}
@@ -404,81 +343,6 @@
           </div>
         </div>
       </section>
-
-      @if (fila.esJefe) {
-        <section class="panel">
-          <header class="detalle__cabecera-tabla">
-            <div>
-              <h2>Equipo a cargo</h2>
-              <p>Personas asignadas al centro que dirige.</p>
-            </div>
-            <span class="master-badge master-badge--suave">{{ companeros().length }} personas</span>
-          </header>
-          <div class="master-tabla-scroll">
-            <table class="master-tabla">
-              <thead>
-                <tr>
-                  <th>Persona</th>
-                  <th>Cédula</th>
-                  <th>Profesión</th>
-                  <th>Contacto</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (persona of companeros(); track persona.id) {
-                  <tr>
-                    <td>
-                      <a
-                        class="master-tabla__principal master-enlace-fila"
-                        [routerLink]="['/master/personal/empleados', persona.id]"
-                      >
-                        <strong>{{ persona.nombre }}</strong>
-                        <span class="master-tabla__secundario">{{ persona.idProfesional }}</span>
-                      </a>
-                    </td>
-                    <td>V-{{ persona.cedula }}</td>
-                    <td>{{ datos.nombreProfesion(persona.profesionId) }}</td>
-                    <td>{{ persona.correo }}</td>
-                    <td>
-                      <a
-                        class="btn btn-ghost btn-compact"
-                        [routerLink]="['/master/personal/empleados', persona.id]"
-                        >Ver</a
-                      >
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </section>
-      } @else {
-        @if (jefeEmpleado(); as jefe) {
-          <section class="panel">
-            <header class="detalle__cabecera-tabla">
-              <div>
-                <h2>Jefe inmediato</h2>
-                <p>Responsable del centro donde trabaja.</p>
-              </div>
-            </header>
-            <div class="master-cuenta">
-              <span class="master-cuenta__avatar" aria-hidden="true">{{
-                jefe.nombre.slice(0, 2)
-              }}</span>
-              <span class="master-cuenta__texto">
-                <strong>{{ jefe.nombre }}</strong>
-                <span>{{ jefe.correo }}</span>
-              </span>
-              <a
-                class="btn btn-ghost btn-compact"
-                [routerLink]="['/master/personal/empleados', jefe.id]"
-                >Ver ficha</a
-              >
-            </div>
-          </section>
-        }
-      }
     } @else {
       <div class="master-vacio panel">
         <ca-icon name="warning" aria-hidden="true"></ca-icon>

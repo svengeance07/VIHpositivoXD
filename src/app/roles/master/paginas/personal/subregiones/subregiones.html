@@ -20,7 +20,7 @@
 
   <section class="master-grid master-grid--tarjetas" aria-label="Resumen de subregiones">
     <article class="panel subregion-metrica">
-      <span>Subregiones</span>
+      <span>Subregiones activas</span>
       <strong>{{ datos.subregiones().length }}</strong>
     </article>
     <article class="panel subregion-metrica">
@@ -28,8 +28,8 @@
       <strong>{{ totalCentros() }}</strong>
     </article>
     <article class="panel subregion-metrica">
-      <span>Personal en subregiones</span>
-      <strong>{{ totalEmpleados() }}</strong>
+      <span>Estados disponibles</span>
+      <strong>{{ estadosDisponibles().length }}</strong>
     </article>
   </section>
 
@@ -61,8 +61,8 @@
               <th>Subregión</th>
               <th>Estado</th>
               <th>Jefe de subregión</th>
+              <th>Contacto</th>
               <th>Centros</th>
-              <th>Personal</th>
               <th></th>
             </tr>
           </thead>
@@ -87,8 +87,8 @@
                     </span>
                   </div>
                 </td>
+                <td>{{ fila.jefe?.correo ?? '—' }}</td>
                 <td>{{ fila.centros }}</td>
-                <td>{{ fila.empleados }}</td>
                 <td>
                   <a
                     class="btn btn-ghost btn-compact"

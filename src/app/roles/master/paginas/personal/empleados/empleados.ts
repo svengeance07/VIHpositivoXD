@@ -40,7 +40,7 @@ const ALTA_VACIA: AltaEmpleado = {
   telefono: '',
   profesionId: '',
   centroId: '',
-  tipo: 'trabajador',
+  tipo: 'jefe',
 };
 
 @Component({
@@ -85,10 +85,10 @@ export class MasterEmpleados {
       if (cedula && !this.normalizar(fila.personal.cedula).includes(cedula)) {
         return false;
       }
-      if (filtros.tipo === 'jefe' && !fila.esJefe) {
+      if (filtros.tipo === '2' && fila.personal.tipoCuenta !== 2) {
         return false;
       }
-      if (filtros.tipo === 'trabajador' && fila.esJefe) {
+      if (filtros.tipo === '3' && fila.personal.tipoCuenta !== 3) {
         return false;
       }
       if (filtros.centroId && fila.personal.centroId !== filtros.centroId) {
@@ -172,7 +172,7 @@ export class MasterEmpleados {
   }
 
   protected tipo(fila: PersonalVista): string {
-    return fila.esJefe ? 'Jefe' : 'Trabajador';
+    return fila.personal.tipoCuenta === 3 ? 'Jefe de subregión' : 'Jefe de centro';
   }
 
   private normalizar(valor: string): string {

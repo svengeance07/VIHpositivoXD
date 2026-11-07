@@ -56,16 +56,11 @@ export class PersonalSaludShell {
     () => this.sesion.sesion()?.entidad ?? this.datosPS.centroNombre,
   );
 
-  protected readonly nombreUsuario = computed(() => {
-    if (this.esJefe()) {
-      return this.sesion.sesion()?.perfil?.nombre ?? 'Dra. María Pérez';
-    }
-    return this.datosPS.enfermeroActual().nombre;
-  });
+  protected readonly nombreUsuario = computed(
+    () => this.sesion.sesion()?.nombre ?? this.datosPS.enfermeroActual().nombre,
+  );
 
-  protected readonly cargoUsuario = computed(() => {
-    return this.esJefe() ? 'Jefe de Centro' : 'Enfermero Operativo';
-  });
+  protected readonly cargoUsuario = computed(() => 'Jefe de Centro');
 
   protected readonly iniciales = computed(() => {
     const limpio = this.nombreUsuario().replace(
@@ -81,7 +76,7 @@ export class PersonalSaludShell {
   });
 
   /**
-   * Navegación completa adaptada a los requerimientos del Centro de Salud.
+   * Navegación completa del Jefe del Centro de Salud.
    */
   protected readonly navegacion: readonly ItemNavegacionPS[] = [
     { etiqueta: 'Centro de Control', ruta: '/PS', icono: 'layouts', exacto: true },
@@ -89,41 +84,13 @@ export class PersonalSaludShell {
     { etiqueta: 'Nuevo Paciente', ruta: '/PS/pacientes/nuevo', icono: 'plus' },
     { etiqueta: 'Reportes de Incidencias', ruta: '/PS/reportes', icono: 'warning', badge: 'ESAVI' },
     { etiqueta: 'Historial de Dosis', ruta: '/PS/historial', icono: 'calendar' },
-    { etiqueta: 'Equipo de Enfermeros', ruta: '/PS/personal', icono: 'clipboard', soloJefe: false },
+    { etiqueta: 'Mi Credencial Digital', ruta: '/PS/personal', icono: 'clipboard' },
   ];
 
-  /** Ítems de navegación adaptados al perfil activo (Jefe vs Enfermero) */
-  protected readonly navegacionFiltrada = computed<readonly ItemNavegacionPS[]>(() => {
-    if (this.esJefe()) {
-      return [
-        { etiqueta: 'Centro de Control', ruta: '/PS', icono: 'layouts', exacto: true },
-        { etiqueta: 'Consultar y Vacunar', ruta: '/PS/pacientes', icono: 'filter', exacto: true },
-        { etiqueta: 'Nuevo Paciente', ruta: '/PS/pacientes/nuevo', icono: 'plus' },
-        {
-          etiqueta: 'Reportes de Incidencias',
-          ruta: '/PS/reportes',
-          icono: 'warning',
-          badge: 'ESAVI',
-        },
-        { etiqueta: 'Historial de Dosis', ruta: '/PS/historial', icono: 'calendar' },
-        { etiqueta: 'Equipo de Enfermeros', ruta: '/PS/personal', icono: 'clipboard' },
-      ];
-    }
-
-    return [
-      { etiqueta: 'Estación de Vacunación', ruta: '/PS/estacion', icono: 'layouts', exacto: true },
-      { etiqueta: 'Consultar y Vacunar', ruta: '/PS/pacientes', icono: 'filter', exacto: true },
-      { etiqueta: 'Nuevo Paciente', ruta: '/PS/pacientes/nuevo', icono: 'plus' },
-      {
-        etiqueta: 'Reportar Incidencia',
-        ruta: '/PS/reportes',
-        icono: 'warning',
-        badge: 'ESAVI',
-      },
-      { etiqueta: 'Historial de Dosis', ruta: '/PS/historial', icono: 'calendar' },
-      { etiqueta: 'Mi Perfil Profesional', ruta: '/PS/personal', icono: 'clipboard' },
-    ];
-  });
+  /** Ítems de navegación del Centro de Salud */
+  protected readonly navegacionFiltrada = computed<readonly ItemNavegacionPS[]>(
+    () => this.navegacion,
+  );
 
   // Métodos de interacción del menú lateral
   protected abrirHover(): void {

@@ -23,7 +23,7 @@
 - The database schema is **design only**: `docs/referencias/db_schema.sql` is the working schema (16 received tables plus proposed extensions) and `docs/diseno/modelo-datos.md` explains it. The received copy is frozen in `docs/referencias/db_schema_original_2026-10-25.sql`. Do not create migrations, ORM models, connections, or seeders yet.
 - Each role owns its folder under `src/app/roles/`: `master` (`/master`), `personal-salud` (`/PS`), `subregion-salud` (`/SRS`), each with `shell/` and `paginas/`.
 - Shared code lives in `src/app/nucleo` (models, mock data, services) and `src/app/compartido` (reusable UI); `src/app/publico` holds landing, login and consulta.
-- `/login` simulates authentication against `nucleo/datos/cuentas-acceso.ts` through `SesionService`. Roles 2 and 3 validate the entity account and then the jefe/trabajador profile. There is no backend and credentials are fake; see `docs/diseno/credenciales-demo.md`. The two-level flow is kept: `cuentas_entidad` (proposed in the working schema) would hold entity credentials and `jefe_id`, while profiles remain rows of `personal` with `tipo_cuenta` (2/3).
+- `/login` simulates direct authentication in two steps (choose role 1/2/3 → enter email and password) against `nucleo/datos/cuentas-acceso.ts` through `SesionService`. Neither Subregión de Salud (`SRS`, role 3) nor Centro de Salud (`PS`, role 2) has sub-users assigned; each entity consists solely of its single Jefe / Encargado user (`centros_salud.encargado_id`), who logs in directly via `personal` (`tipo_cuenta = 2` or `3`). See `docs/diseno/credenciales-demo.md`.
 - Hardcoded data belongs in `nucleo/datos`, exposed through signal-based services in `nucleo/servicios`. Components never import mock arrays directly.
 - `app.routes.ts` is composition only, using lazy `loadChildren` per role.
 - Details and pending decisions: `docs/arquitectura.md`.
@@ -31,9 +31,9 @@
 ## Data model (reference, not implemented)
 
 - Source of truth: `docs/referencias/db_schema.sql` (working schema: 16 received tables plus proposed extensions). Reading, flows and gaps: `docs/diseno/modelo-datos.md`. The old `docs/diseno/modelo-datos-preliminar.md` is historical.
-- `usuarios` = citizens, not accounts. Internal accounts are `personal` (roles 2/3) and `master` (role 1). `cuentas_entidad` is proposed for the entity-level login; it is not in the received script.
-- A subregion is a `centros_salud` row with `tipo` (2 = centro, 3 = subregion; one per state), not a separate table. Its staff are `personal` with `tipo_cuenta = 3`. The establishment type (hospital, ambulatory, CDI) is expressed in the name, not in a column.
-- Jefe/trabajador is not a column: there is one jefe per center, derived from `centros_salud.encargado_id` (jefe = encargado). `usuarios.sexo`, `usuarios.creado_en`, `usuarios.activo` and `centros_salud.tipo` are agreed additions.
+- `usuarios` = citizens, not accounts. Internal accounts are `personal` (roles 2/3, corresponding to the single Jefe of each center or subregion) and `master` (role 1).
+- A subregion is a `centros_salud` row with `tipo` (2 = centro, 3 = subregion; one per state), not a separate table. Its Jefe is a `personal` row with `tipo_cuenta = 3`. The establishment type (hospital, ambulatory, CDI) is expressed in the name, not in a column.
+- Single user per entity: there are no subordinate worker sub-accounts in `PS` or `SRS`; each center or subregion has one Jefe (`centros_salud.encargado_id`). `usuarios.sexo`, `usuarios.creado_en`, `usuarios.activo` and `centros_salud.tipo` are agreed additions.
 - `certificados_salud`, `notificaciones_srs` and `certificado_envios` are proposed. The SRS inbox only gets requests whose requirements are complete; no expiry/ESAVI/system notifications. Certificate email is simulated and has no verification code.
 - Still missing: lotes/stock, movimientos, búsquedas históricas and incidencias. Do not design their final columns or implement them yet.
 - Keep `db_schema_original_2026-10-25.sql` untouched. Add reviewed changes to `db_schema.sql` and document them in `docs/diseno/modelo-datos.md`.

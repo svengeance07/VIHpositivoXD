@@ -112,20 +112,10 @@
 
       <span class="barra-superior__titulo">
         <strong>{{ nombreCentro() }}</strong>
-        <span class="barra-superior__badge" [class.barra-superior__badge--jefe]="esJefe()">
-          {{ esJefe() ? 'Jefe' : 'Enfermero' }}
-        </span>
+        <span class="barra-superior__badge barra-superior__badge--jefe"> Jefe de Centro </span>
       </span>
 
       <div class="barra-superior__acciones">
-        <button
-          type="button"
-          class="btn btn-sm btn-ghost"
-          (click)="conmutarModo()"
-          [title]="'Cambiar a ' + (esJefe() ? 'Enfermero' : 'Jefe')"
-        >
-          <ca-icon name="reload" aria-hidden="true"></ca-icon>
-        </button>
         <button
           type="button"
           class="btn btn-sm btn-ghost"

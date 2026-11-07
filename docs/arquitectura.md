@@ -12,7 +12,7 @@
 - Los datos se simulan con mocks tipados expuestos por servicios con `signal`. La futura API reemplazará el origen
   de esos servicios; las vistas que dependen de datos todavía ausentes (lotes, stock, movimientos e incidencias) se
   ajustarán cuando llegue el esquema completo.
-- Ya están construidos la landing (`/`), el login en tres pasos (`/login`), la consulta pública (`/consulta`), las
+- Ya están construidos la landing (`/`), el login en dos pasos (`/login`), la consulta pública (`/consulta`), las
   vistas del master (`/master` y sus rutas hijas), las del personal de salud (`/PS` y sus rutas hijas) y las de la
   subregión de salud (`/SRS` y sus rutas hijas) con datos mock. El certificado de la subregión se emite como vista
   simulada y el envío desde la consulta pública también es simulado; no hay correo real.
@@ -28,62 +28,52 @@
 - Cada rol tiene su propio shell (layout, navegación y funciones visibles) porque la información y los permisos difieren.
 - Páginas, rutas y alcance de cada rol: ver `docs/diseno/vistas.md`. Quedan decisiones abiertas, listadas en su sección 10.
 - La **subregión (rol 3)** no tiene tabla propia: es una sede dentro de `centros_salud` con `tipo` (2 = centro,
-  3 = sede de subregión; el nombre indica si es hospital, ambulatorio o CDI), una por estado. Su personal son filas de
-  `personal` con `tipo_cuenta = 3` y `centro_id` apuntando a esa sede. Hay un solo jefe por centro, derivado de
-  `centros_salud.encargado_id`. El login debe validar que el tipo elegido coincida con el tipo de cuenta y de centro.
+  3 = sede de subregión; el nombre indica si es hospital, ambulatorio o CDI), una por estado.
+- **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro de salud (`tipo = 2`) y cada subregión de salud (`tipo = 3`) cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id` → fila de `personal` con `tipo_cuenta = 2` o `3`).
 - Los segmentos `PS` y `SRS` van en mayúsculas literales tanto en `path` como en los `routerLink`. Angular distingue mayúsculas: no mezclar `/PS` con `/ps`.
 
 ## Login
 
-- Hoy `/login` tiene tres pasos: **tipo de cuenta** (roles 1–3), **credenciales de acceso** (de la entidad en los
-  roles 2 y 3) y, solo para esos dos roles, **perfil de trabajo** (jefe o trabajador).
-- El esquema recibido no trae credenciales de entidad. Para conservar el flujo se propone `cuentas_entidad`
-  (credenciales, `centro_id` y `jefe_id`), ya agregada al **esquema de trabajo** pero no implementada. El segundo nivel
-  sigue validando el correo y la contraseña de `personal`; el jefe se deriva de `jefe_id`/`encargado_id`.
-- El login de dos niveles se mantiene: `cuentas_entidad` abre la entidad y `personal` abre el perfil. El master
-  entra directo con `master`. Ver `modelo-datos.md` §5.1.
-- La validación es simulada con `SesionService`; las cuentas y perfiles creados en caliente se persisten en `localStorage` (`vih_cuentas_acceso_v1`), mientras que la sesión activa vive en memoria y se reinicia al recargar.
-- Los formularios de los pasos 2 y 3 incluyen un `<button type="submit" class="visualmente-oculto">` junto al `<ca-button>` para garantizar el envío nativo con la tecla `Enter`.
-- Credenciales de prueba: `docs/diseno/credenciales-demo.md`. En desarrollo, el login muestra el listado vivo de `SesionService.cuentasDemo()`, incluyendo los centros y trabajadores dados de alta desde `/master` o `/SRS`.
+- `/login` tiene **dos pasos** para todos los roles: **Paso 1 — Tipo de cuenta** (roles 1–3) y **Paso 2 — Credenciales de acceso** (correo y contraseña del usuario).
+- Al no existir sub-usuarios en los roles 2 y 3, no hace falta una tabla intermedia de cuentas de entidad: el esquema original recibido ya resuelve la autenticación directamente contra `master` (rol 1) y `personal` (roles 2 y 3, donde cada fila corresponde al Jefe encargado de su centro o subregión). Ver `modelo-datos.md` §5.1.
+- La validación es simulada con `SesionService`; las cuentas de los jefes creados o reasignados en caliente se persisten en `localStorage` (`vih_cuentas_acceso_v2`), mientras que la sesión activa vive en memoria y se reinicia al recargar.
+- El formulario del paso 2 incluye un `<button type="submit" class="visualmente-oculto">` junto al `<ca-button>` para garantizar el envío nativo con la tecla `Enter`.
+- Credenciales de prueba: `docs/diseno/credenciales-demo.md`. En desarrollo, el login muestra el listado vivo de `SesionService.cuentasDemo()`, incluyendo los jefes de centros y subregiones dados de alta desde `/master` o `/SRS`.
 - El login pide **correo y contraseña** para todos los roles (decisión 16 de `vistas.md`). El esquema ya incluye
   `master.nombre_usuario`; el dashboard usa ese valor para el saludo. La UI de login conserva el correo y el backend
   podrá aceptar también el nombre de usuario del master.
-- Al entrar se navega al prefijo del rol. Los guards y el refresco de sesión son trabajo pendiente.
+- Al entrar se navega directamente al prefijo del rol (`/master`, `/PS` o `/SRS`). Los guards y el refresco de sesión son trabajo pendiente.
 
 ## Datos mock
 
 - `src/app/nucleo/modelos/`: interfaces del dominio (`Persona`, `Usuario`, etc.), todavía provisionales.
 - `src/app/nucleo/datos/`: arrays hardcodeados.
 - `src/app/nucleo/datos/catalogos.ts`: catálogos temporales (vacunas, exámenes, profesiones, grados de instrucción, grupos étnicos, tipos de establecimiento, tipos de sangre), expuestos por `CatalogosService`. Cuando exista backend se reemplazan por las tablas `vacunas`, `profesiones`, `etnias`, `tipoSangre` y las que falten. El catálogo de tipos de establecimiento no tendrá columna: sirve solo para sugerir el nombre del centro.
-- `src/app/nucleo/datos/cuentas-acceso.ts`: cuentas de prueba iniciales con sus perfiles jefe/trabajador; replica el futuro
-  `cuentas_entidad` + `personal` y las valida `SesionService` con persistencia en `localStorage` (`vih_cuentas_acceso_v1`).
+- `src/app/nucleo/datos/cuentas-acceso.ts`: cuentas directas de prueba (Master, Jefe de Centro y Jefe de Subregión); replica las tablas `master` y `personal` y las valida `SesionService` con persistencia en `localStorage` (`vih_cuentas_acceso_v2`).
 - `src/app/nucleo/datos/subregion-salud.ts`: ámbito de la subregión de Guárico, solicitudes de certificado y
-  notificaciones propias del rol 3. Solo las solicitudes completas generan notificación. Los ciudadanos y el personal
-  tipo 2 se reutilizan de `master.ts` a través de `DatosMasterService`.
+  notificaciones propias del rol 3. Solo las solicitudes completas generan notificación. Los ciudadanos y los jefes de centro (`tipo_cuenta = 2`) se reutilizan de `master.ts` a través de `DatosMasterService`.
 - `src/app/nucleo/servicios/datos-master.service.ts`: administra el catálogo reactivo de estados, municipios, parroquias,
-  centros/subregiones (`vih_centros_master_v1`) y personal (`vih_personal_master_v1`). Sincroniza automáticamente las
-  altas (`crearSubregion`, `crearCentro`, `crearEmpleado`) con `SesionService` para habilitar el login inmediato de las
-  nuevas cuentas y perfiles.
+  centros/subregiones (`vih_centros_master_v2`) y jefes encargados (`vih_personal_master_v2`). Cada centro o subregión tiene exactamente 1 jefe encargado; `crearSubregion`, `crearCentro` y `crearEmpleado` sincronizan automáticamente la cuenta directa del jefe en `SesionService` (`registrarCuentaCentro`).
 - `src/app/nucleo/servicios/datos-subregion-salud.service.ts`: consolida las fichas ciudadanas (vacunas, exámenes,
   requisitos y línea de tiempo), acota los datos al estado de la sesión y orquesta el alta de centros (`crearCentro`) y
-  trabajadores tipo 2 (`crearTrabajador`), además de las solicitudes, decisiones, emisiones, notificaciones y el envío
+  la asignación de jefes de centro (`crearTrabajador`), además de las solicitudes, decisiones, emisiones, notificaciones y el envío
   simulado del certificado con `signal`. También expone la búsqueda pública por cédula sin el filtro territorial del rol 3.
-- `src/app/nucleo/servicios/datos-personal-salud.service.ts`: gestiona el estado reactivo del Centro de Salud (`/PS`) con
-  persistencia en `localStorage` para enfermeros (`vih_enfermeros_centro_v1`), pacientes (`vih_pacientes_centro_v1`),
-  aplicaciones de vacunas (`vih_aplicaciones_centro_v1`) y reportes de incidencias ESAVI (`vih_reportes_centro_v1`).
+- `src/app/nucleo/servicios/datos-personal-salud.service.ts`: gestiona el estado reactivo del Centro de Salud (`/PS`) operado por su Jefe de Centro, con
+  persistencia en `localStorage` para el perfil del jefe (`vih_enfermeros_centro_v2`), pacientes (`vih_pacientes_centro_v2`),
+  aplicaciones de vacunas (`vih_aplicaciones_centro_v2`) y reportes de incidencias ESAVI (`vih_reportes_centro_v2`).
 - `src/app/nucleo/servicios/`: servicios con `signal` que leen y mutan los mocks (y exponen `limpiarAlmacenamiento()` para aislar las pruebas unitarias).
 - Las vistas consumen servicios; nunca importan los arrays mock directamente.
 - El esquema de trabajo está en `docs/referencias/db_schema.sql` y su lectura en `docs/diseno/modelo-datos.md`. **No se ha implementado**: los mocks siguen siendo la fuente de datos de la app.
-- Correspondencia rápida: **ciudadano** → `usuarios` + teléfonos + residencias + catálogos; **personal** → `personal` + `centros_salud` + `profesiones`; **cuenta de entidad** → `cuentas_entidad` + `centros_salud`; **master** → `master`; **subregión** → `centros_salud` con `tipo = 3`; **certificado** → `certificados_salud` + `certificado_envios`; **notificación** → `notificaciones_srs`. Lotes, movimientos e incidencias todavía no tienen tabla.
+- Correspondencia rápida: **ciudadano** → `usuarios` + teléfonos + residencias + catálogos; **jefe de centro / subregión** → `personal` + `centros_salud` + `profesiones`; **master** → `master`; **subregión** → `centros_salud` con `tipo = 3`; **certificado** → `certificados_salud` + `certificado_envios`; **notificación** → `notificaciones_srs`. Lotes, movimientos e incidencias todavía no tienen tabla.
 - Los IDs reales serán enteros y los mocks usan strings. El mapeo futuro se concentra en `nucleo/servicios`; ningún componente debe depender de los nombres de columnas.
 
 ## Flujo de datos previsto
 
 - **Consulta pública**: cédula → `usuarios` → ficha con residencia, teléfonos, conteos de vacunas/exámenes y estado del certificado. En esta etapa no pide código. Si el certificado está `autorizado` o `emitido`, permite marcar un envío simulado (`correoEnviado`); el esquema propone registrarlo en `certificado_envios` y auditar la consulta en `consultas_publicas`, pero esas escrituras quedan pendientes.
-- **Login**: `master` para el rol 1; `cuentas_entidad` (propuesta) para el primer nivel de los roles 2 y 3, y `personal` para el perfil, validando `tipo_cuenta` y el `tipo` del centro. La subregión es una sede de `centros_salud`, no una tabla aparte.
+- **Login**: `master` para el rol 1; `personal` directamente para los roles 2 (jefe de centro, `tipo_cuenta = 2`) y 3 (jefe de subregión, `tipo_cuenta = 3`), validando que `personal.id = centros_salud.encargado_id` y que el `tipo` del centro coincida con el rol elegido. La subregión es una sede de `centros_salud`, no una tabla aparte.
 - **Dashboard master**: implementado con mocks; el top 10 semanal por estado se podrá calcular con `usuario_vacunas` + `centros_salud.estado_id`, mientras que los lotes y los movimientos esperan sus tablas. El mapa usa la jerarquía `estado → mcpo → parroquia`.
-- **Personal de salud**: centro de la sesión, trabajadores del centro y vacunaciones por centro. Los exámenes no están asociados a un centro.
-- **Subregión**: implementado con mocks para consultar personal tipo 2, fichas ciudadanas del estado, certificados y
+- **Personal de salud**: operado directamente por el Jefe de Centro de la sesión; gestiona pacientes del centro, vacunaciones, reportes ESAVI y su credencial digital oficial. Los exámenes no están asociados a un centro.
+- **Subregión**: operado directamente por el Jefe de Subregión; implementado con mocks para consultar y asignar jefes de centro (`tipo_cuenta = 2`), fichas ciudadanas del estado, certificados y
   notificaciones. La evaluación de requisitos usa la vigencia del catálogo de vacunas y una vigencia provisional de
   exámenes. Solo las solicitudes completas generan una notificación; revisar, autorizar, descartar o emitir no crea
   avisos nuevos. Las tablas de certificados, notificaciones y envíos están propuestas; stock, movimientos e incidencias
@@ -146,8 +136,8 @@ src/app/
 
 ## Pendientes
 
-- **Esquema de base de datos**: el esquema de trabajo ya incluye certificados, notificaciones y envíos, además de las columnas acordadas (`usuarios.sexo`, `usuarios.creado_en`, `centros_salud.tipo`) y `cuentas_entidad`. Siguen faltando lotes/stock, movimientos, búsquedas e incidencias. No implementar hasta cerrar las preguntas de `docs/diseno/modelo-datos.md` §8.
-- **Login**: se conserva el flujo de dos niveles; `cuentas_entidad` (propuesta) resuelve el primero y `personal` el segundo. Falta que el equipo de BD confirme la tabla y su nombre.
+- **Esquema de base de datos**: el esquema de trabajo ya incluye certificados, notificaciones y envíos, además de las columnas acordadas (`usuarios.sexo`, `usuarios.creado_en`, `centros_salud.tipo`). Al operar con un único usuario (Jefe) por centro o subregión, `personal` resuelve directamente el login de los roles 2 y 3 sin requerir tablas adicionales de cuentas de entidad. Siguen faltando lotes/stock, movimientos, búsquedas e incidencias. No implementar hasta cerrar las preguntas de `docs/diseno/modelo-datos.md` §8.
+- **Login**: flujo directo de dos pasos (elección de rol + correo y contraseña de `master` o `personal`). Falta implementar hashing, bloqueo por intentos y sesión real cuando exista backend.
 - Decisiones que siguen abiertas en `docs/diseno/vistas.md` §10: vigencia de exámenes y vacunas, credenciales reales y geodatos del mapa.
 - Permisos por rol: el alcance funcional está descrito, falta la implementación (incluidos guards de ruta y persistencia de sesión).
 - Bocetos originales de `/SRS`: no existen. Las vistas se diseñaron a partir del alcance del rol y ya están implementadas

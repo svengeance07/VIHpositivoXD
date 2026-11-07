@@ -118,14 +118,18 @@
   flex-direction: column;
   gap: 0.35rem;
   flex: 1;
+  min-width: 0;
 }
 
 .barra__item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
   padding: 0.65rem 0.75rem;
   border-radius: 0.75rem;
+  overflow: hidden;
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
@@ -152,13 +156,15 @@
 }
 
 .barra__icono {
-  width: 1.5rem;
+  width: 1.95rem;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
 .barra__item-etiqueta {
+  min-width: 0;
+  overflow: hidden;
   opacity: 0;
   transition: opacity 160ms ease;
 }

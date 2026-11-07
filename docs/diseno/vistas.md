@@ -46,32 +46,29 @@ dependa de una ruta local. Peso total: ~4.9 MB.
 ```mermaid
 flowchart TD
     index["/ · Landing (index)"]
-    login["/login · tres pasos"]
+    login["/login · dos pasos (rol + credenciales)"]
     consulta["/consulta · cédula, datos y estado del certificado"]
     correo["envío simulado al correo registrado"]
     otp["/consulta/verificacion · fase futura"]
 
     master["/master · centro de control"]
-    ps["/PS · centro de control"]
-    srs["/SRS · centro de control"]
+    ps["/PS · centro de control (Jefe de Centro)"]
+    srs["/SRS · centro de control (Jefe de Subregión)"]
 
     index --> login
     index --> consulta
     consulta -->|certificado aprobado| correo
     consulta -.->|código de verificación| otp
     login --> master
-    login --> perfil["perfil jefe / trabajador · roles 2 y 3"]
-    perfil --> ps
-    perfil --> srs
+    login --> ps
+    login --> srs
 ```
 
 - `index` es la **landing page** y convive con dos accesos: login (roles 1–3) y consulta pública (rol 0).
 - El ciudadano **no pasa por `/login`**: entra por `/consulta`, busca su cédula y ve el resultado en la misma
   página. En esta etapa **no se pide código de verificación**; el envío del certificado es simulado. El paso por
   `/consulta/verificacion` queda como fase futura.
-- Los roles 2 y 3 pasan por **dos niveles de credenciales**: primero la cuenta de la entidad (centro o subregión) y
-  después el perfil de trabajo (jefe o trabajador). El master entra directo con su cuenta. La cuenta de entidad se
-  resuelve con la tabla propuesta `cuentas_entidad`; los perfiles son filas de `personal`. Ver
+- **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro o subregión cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente en el paso 2 de `/login` con su correo y contraseña registrados en `personal`. El master entra directo con su cuenta en `master`. Ver
   [`modelo-datos.md`](./modelo-datos.md) §5.1.
 - Los tres roles internos aterrizan en un "centro de control" (dashboard). Es el mismo concepto con datos distintos.
 
@@ -132,7 +129,7 @@ Observaciones:
 | `/consulta`                    | Buscar por cédula, datos y certificado             | público | `estructura-inicial`                      | implementado (mock) |
 | `/consulta/verificacion`       | Código enviado al correo (fase futura)             | público | `estructura-inicial`                      | no implementado     |
 | `/consulta/:cedula`            | Ficha pública del ciudadano (fase futura)          | público | `estructura-inicial`, `diagrama-usuarios` | no implementado     |
-| `/login`                       | Login en tres pasos                                | público | `estructura-inicial`                      | implementado        |
+| `/login`                       | Login directo en dos pasos                         | público | `estructura-inicial`                      | implementado        |
 | `/master`                      | Centro de control                                  | 1       | `vista-inicial`                           | implementado (mock) |
 | `/master/busqueda`             | Búsqueda global con filtros                        | 1       | `vista-busqueda`                          | implementado (mock) |
 | `/master/vacunas`              | Control de vacunas                                 | 1       | `vista-controlVacunas`                    | implementado (mock) |
@@ -140,20 +137,19 @@ Observaciones:
 | `/master/personal`             | Administración de personal (switch)                | 1       | `…-default`                               | implementado (mock) |
 | `/master/personal/subregiones` | Tabla de subregiones                               | 1       | `…-subregiones`                           | implementado (mock) |
 | `/master/personal/centros`     | Búsqueda de centros                                | 1       | `…-buscarCentros`                         | implementado (mock) |
-| `/master/personal/empleados`   | Búsqueda de empleados                              | 1       | `…-buscarEmpleados`                       | implementado (mock) |
+| `/master/personal/empleados`   | Búsqueda de jefes encargados                       | 1       | `…-buscarEmpleados`                       | implementado (mock) |
 | `/master/movimientos`          | Registro de movimientos (logs)                     | 1       | `diagrama-autoridades`, sidebar           | implementado (mock) |
 | `/master/busquedas`            | Auditoría de búsquedas de usuarios                 | 1       | `diagrama-autoridades`                    | implementado (mock) |
 | `/PS`                          | Centro de control (Jefe de Centro)                 | 2       | —                                         | implementado (mock) |
-| `/PS/estacion`                 | Estación de vacunación (Enfermero operativo)       | 2       | —                                         | implementado (mock) |
 | `/PS/pacientes`                | Consultar y vacunar pacientes                      | 2       | —                                         | implementado (mock) |
 | `/PS/pacientes/nuevo`          | Registro de nuevo paciente (adulto o menor)        | 2       | —                                         | implementado (mock) |
 | `/PS/reportes`                 | Reportes de incidencias (ESAVI)                    | 2       | —                                         | implementado (mock) |
 | `/PS/historial`                | Historial cronológico de dosis aplicadas           | 2       | —                                         | implementado (mock) |
-| `/PS/personal`                 | Gestión y métricas del equipo de enfermeros        | 2       | —                                         | implementado (mock) |
-| `/SRS`                         | Centro de control                                  | 3       | —                                         | implementado (mock) |
+| `/PS/personal`                 | Credencial digital y métricas del Jefe de Centro   | 2       | —                                         | implementado (mock) |
+| `/SRS`                         | Centro de control (Jefe de Subregión)              | 3       | —                                         | implementado (mock) |
 | `/SRS/centros`                 | Gestión y alta de centros de salud del estado      | 3       | —                                         | implementado (mock) |
-| `/SRS/trabajadores`            | Gestión y alta del personal tipo 2 del estado      | 3       | —                                         | implementado (mock) |
-| `/SRS/trabajadores/:id`        | Ficha del trabajador                               | 3       | —                                         | implementado (mock) |
+| `/SRS/trabajadores`            | Gestión y asignación de jefes de centro del estado | 3       | —                                         | implementado (mock) |
+| `/SRS/trabajadores/:id`        | Ficha del jefe de centro                           | 3       | —                                         | implementado (mock) |
 | `/SRS/ciudadanos`              | Búsqueda de ciudadanos del estado                  | 3       | —                                         | implementado (mock) |
 | `/SRS/ciudadanos/:id`          | Ficha ciudadana con vacunas, exámenes y requisitos | 3       | —                                         | implementado (mock) |
 | `/SRS/certificados`            | Bandeja de certificados                            | 3       | —                                         | implementado (mock) |
@@ -224,26 +220,18 @@ actualizada).
 
 Origen: `estructura-inicial.png`. Implementado en `publico/login/`.
 
-Flujo en tres pasos:
+Flujo directo en **dos pasos**:
 
 1. **Tipo de cuenta** (roles 1, 2 y 3). No muestra el rol 0.
-2. **Credenciales de la entidad**: correo y contraseña. En el master se usa la tabla `master`; en los roles 2 y 3
-   valida la tabla propuesta `cuentas_entidad`, que identifica al centro o a la subregión.
-3. **Perfil de trabajo** (solo roles 2 y 3): se elige jefe o trabajador entre las filas de `personal` del centro y se
-   validan las credenciales propias de ese perfil. La sesión no se crea hasta completar este paso.
+2. **Credenciales de acceso**: correo electrónico y contraseña del usuario.
+   - En el **rol 1 (Master)** valida contra la tabla `master`.
+   - En el **rol 2 (Jefe de Centro de Salud)** y **rol 3 (Jefe de Subregión de Salud)** valida directamente contra la fila del jefe encargado en la tabla `personal` (`tipo_cuenta = 2` o `3` y `centros_salud.encargado_id = personal.id`), sin sub-usuarios intermedios.
 
-- Jefes y trabajadores existen en los **dos roles con cuenta de entidad**: centros de salud y subregiones
-  (decisión 15). Hay un solo jefe por centro, marcado por `cuentas_entidad.jefe_id` y `centros_salud.encargado_id`.
 - No valida contra backend: usa las cuentas de prueba de `docs/diseno/credenciales-demo.md` y `SesionService`.
 - El formulario pide **correo y contraseña** (decisión 16). El esquema ya incluye `master.nombre_usuario`, pero el
   login actual sigue usando el correo; el nombre de usuario queda como alternativa para el backend.
-- Al entrar, cada rol navega a su prefijo (`/master`, `/PS`, `/SRS`); los tres roles ya tienen sus vistas mock.
-- En desarrollo, el propio login muestra un panel con las credenciales de prueba.
-
-> **Esquema real parcial:** `cuentas_entidad` es una **propuesta** y no está en el script. Conserva el login de dos
-> niveles: el primero valida la entidad y el segundo el perfil de `personal`; `tipo_cuenta` (2 o 3) debe coincidir con
-> el tipo elegido y `centros_salud.tipo` (a agregar) distingue un centro normal de una sede de subregión. Ver
-> [`modelo-datos.md`](./modelo-datos.md) §5.1.
+- Al entrar, cada rol navega directamente a su prefijo (`/master`, `/PS`, `/SRS`).
+- En desarrollo, el propio login muestra un panel con las credenciales de prueba actualizadas en tiempo real.
 
 ### 6.4 Centro de control del master `/master`
 
@@ -407,18 +395,15 @@ lo que falta hasta recibirlo; el detalle está en [`modelo-datos.md`](./modelo-d
 ### 6.10 Subregión de salud `/SRS`
 
 Implementación mock posterior a los bocetos, con el mismo lenguaje visual y flujo del master y `/PS`. Todo el rol está
-acotado al estado **Guárico** (`srs-guarico`) y consume `DatosSubregionSaludService`.
+acotado al estado **Guárico** (`srs-guarico`), es operado por su **Jefe de Subregión** y consume `DatosSubregionSaludService`.
 
 - **Shell** (`shell/`): sidebar colapsable y móvil, badges de certificados pendientes y notificaciones sin leer,
-  cabecera de sesión y cierre de sesión.
+  cabecera de sesión del Jefe de Subregión y cierre de sesión.
 - **`/SRS`**: panel con métricas del estado, solicitudes por atender, notificaciones recientes, centros y flujo del
   certificado.
 - **`/SRS/centros`**: catálogo filtrable de los centros de salud (`tipo = 2`) adscritos al estado, con modal de alta
-  para registrar un nuevo centro junto con su jefe encargado inicial (sincronizado con `DatosMasterService` y `SesionService`).
-- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: listado y alta del personal tipo 2 de los centros
-  del estado, con búsqueda, filtros por centro/rol, modal de registro de nuevos trabajadores (jefe o trabajador operativo)
-  y ficha individual de adscripción. Al registrar un trabajador, se actualiza reactivamente la lista, se persiste en
-  `localStorage` y se habilita su perfil de acceso en `/login`.
+  para registrar un nuevo centro junto con su jefe encargado único (sincronizado con `DatosMasterService` y `SesionService`).
+- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: listado y asignación de los **Jefes de Centro** (`tipo_cuenta = 2`) de los establecimientos del estado, con búsqueda, filtro por centro, modal de asignación de nuevo jefe encargado y ficha individual de adscripción. Al asignar un jefe a un centro, se actualiza `centros_salud.encargado_id`, se persiste en `localStorage` y se habilita su cuenta directa en `/login`.
 - **`/SRS/ciudadanos`** y **`/SRS/ciudadanos/:id`**: búsqueda de fichas del estado; la ficha muestra todas las vacunas
   y exámenes (vigentes y vencidos), los requisitos del certificado, una línea de tiempo de hasta ocho hitos y el
   historial de solicitudes.
@@ -440,15 +425,14 @@ nuevas.
 
 ### 6.11 Personal de salud `/PS`
 
-Implementación operativa para el Centro de Salud (rol 2), consumiendo `DatosPersonalSaludService` y `SesionService`:
+Implementación operativa para el Centro de Salud (rol 2), operada exclusivamente por su **Jefe de Centro** (sin sub-usuarios de enfermería) y consumiendo `DatosPersonalSaludService` y `SesionService`:
 
-- **Shell** (`shell/`): barra lateral colapsable Liquid Glass con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), conmutador rápido de modo (`Jefe de Centro` vs `Enfermero Operativo`) para pruebas en caliente y menú móvil.
-- **`/PS` (`inicio`)**: centro de control para el Jefe de Centro con buscador rápido por cédula, métricas del día (`tabular-nums`), distribución de biológicos aplicados, tabla en vivo de inmunizaciones y alertas ESAVI.
-- **`/PS/estacion` (`estacion-enfermero`)**: vista de trabajo para el perfil de enfermero con métricas de su turno y accesos directos de atención clínica.
+- **Shell** (`shell/`): barra lateral colapsable Liquid Glass con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), identificación del Jefe de Centro y menú móvil.
+- **`/PS` (`inicio`)**: centro de control para el Jefe de Centro con buscador rápido por cédula, métricas del día (`tabular-nums`), pacientes registrados, tabla en vivo de inmunizaciones y alertas ESAVI.
 - **`/PS/pacientes`** y **`/PS/pacientes/nuevo`**: búsqueda y ficha clínica de pacientes (adultos y menores con representante), aplicación múltiple de vacunas y alta de nuevos pacientes.
 - **`/PS/reportes`**: registro y consulta de reportes de eventos adversos (ESAVI) con fichas clínicas estilizadas mediante bordes perimetrales tintados (`color-mix`) según severidad (`leve`, `moderado`, `severo`).
-- **`/PS/historial`**: bitácora filtrable de todas las dosis aplicadas en el centro.
-- **`/PS/personal`**: gestión del equipo de enfermeros del centro (alta de perfiles, activación/suspensión de permisos y métricas individuales).
+- **`/PS/historial`**: bitácora filtrable de todas las dosis aplicadas y reportes emitidos en el centro.
+- **`/PS/personal`**: credencial digital institucional oficial (MPPS) del Jefe de Centro con vista anverso/reverso, código QR de validación, métricas de actividad y bitácora de dosis asentadas.
 
 ## 7. Patrones de UI recurrentes
 

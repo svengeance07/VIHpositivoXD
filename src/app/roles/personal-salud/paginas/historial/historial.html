@@ -93,7 +93,7 @@
         <input
           type="search"
           class="ui-input"
-          placeholder="Buscar por paciente, cédula, vacuna, lote o enfermero..."
+          placeholder="Buscar por paciente, cédula, vacuna, lote o jefe de centro..."
           [ngModel]="busqueda()"
           (ngModelChange)="busqueda.set($event)"
           aria-label="Buscar en la bitácora"
@@ -360,7 +360,7 @@
             <div class="firma-caja">
               <div class="linea-firma"></div>
               <strong>{{ it.profesionalNombre }}</strong>
-              <small>Profesional de Enfermería Responsable</small>
+              <small>Jefe de Centro Responsable</small>
             </div>
             <div class="timbre-digital">
               <span class="timbre-digital__check">✓ REGISTRO VALIDADO EN SISTEMA V</span>

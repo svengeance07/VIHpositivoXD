@@ -2,7 +2,7 @@
   <app-srs-encabezado
     eyebrow="Administración de personal"
     titulo="Centros de salud"
-    descripcion="Centros registrados dentro de la subregión. Al crear un centro se solicita el perfil inicial del jefe de centro, que podrá luego agregar trabajadores."
+    descripcion="Centros registrados dentro de la subregión. Al crear un centro se asigna directamente al jefe encargado del establecimiento."
   >
     <button type="button" class="btn btn-primary" (click)="abrirAlta()">
       <ca-icon name="plus" aria-hidden="true"></ca-icon>
@@ -10,7 +10,7 @@
     </button>
     <a class="btn btn-ghost" routerLink="/SRS/trabajadores">
       <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
-      <span>Ver trabajadores</span>
+      <span>Ver jefes de centro</span>
     </a>
   </app-srs-encabezado>
 
@@ -77,8 +77,8 @@
             <tr>
               <th>Centro</th>
               <th>Ubicación</th>
-              <th>Jefe</th>
-              <th>Trabajadores</th>
+              <th>Jefe encargado</th>
+              <th>Contacto</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +92,7 @@
                   <strong>{{ fila.municipioNombre }}</strong> · {{ fila.parroquiaNombre }}
                 </td>
                 <td>{{ fila.jefe?.nombre ?? 'Sin jefe asignado' }}</td>
-                <td>{{ fila.trabajadores }}</td>
+                <td>{{ fila.jefe?.correo ?? fila.centro.telefono }}</td>
               </tr>
             }
           </tbody>
@@ -110,7 +110,7 @@
       <header class="master-modal__cabecera">
         <div>
           <h2>Agregar centro de salud</h2>
-          <p>Crea el centro y su jefe inicial. El jefe podrá agregar trabajadores después.</p>
+          <p>Registra el establecimiento y el usuario único de su jefe encargado.</p>
         </div>
         <ca-modal-close label="Cerrar"></ca-modal-close>
       </header>

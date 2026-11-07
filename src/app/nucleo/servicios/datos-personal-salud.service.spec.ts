@@ -18,12 +18,10 @@ describe('DatosPersonalSaludService', () => {
     expect(metricas.dosisMenoresHoy + metricas.dosisAdultosHoy).toBe(metricas.vacunasHoy);
   });
 
-  it('permite alternar entre el modo Jefe de Centro y el modo Enfermero', () => {
-    service.setModoManual('jefe');
+  it('opera siempre con el usuario único Jefe de Centro', () => {
     expect(service.esJefe()).toBe(true);
-
-    service.setModoManual('enfermero');
-    expect(service.esJefe()).toBe(false);
+    expect(service.perfilEfectivo()).toBe('jefe');
+    expect(service.enfermeroActual().nombre).toContain('María Pérez');
   });
 
   it('registra una nueva aplicación de vacuna e incrementa las métricas operativas', () => {

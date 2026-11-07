@@ -35,8 +35,8 @@ import type {
 import { CatalogosService } from './catalogos.service';
 import { SesionService } from './sesion.service';
 
-const CLAVE_STORAGE_CENTROS = 'vih_centros_master_v1';
-const CLAVE_STORAGE_PERSONAL = 'vih_personal_master_v1';
+const CLAVE_STORAGE_CENTROS = 'vih_centros_master_v2';
+const CLAVE_STORAGE_PERSONAL = 'vih_personal_master_v2';
 
 function cargarCentros(): readonly CentroSalud[] {
   try {
@@ -132,8 +132,6 @@ export class DatosMasterService {
         centro,
         estado: this.buscarEstado(centro.estadoId),
         jefe: personal.find((persona) => persona.id === centro.encargadoId) ?? null,
-        empleados: personal.filter((persona) => persona.centroId === centro.id && persona.activo)
-          .length,
         centros: centros.filter(
           (candidato) =>
             candidato.tipo === 2 && candidato.estadoId === centro.estadoId && candidato.activo,
@@ -152,8 +150,6 @@ export class DatosMasterService {
         municipio: this.buscarMunicipio(centro.municipioId),
         parroquia: this.buscarParroquia(centro.parroquiaId),
         jefe: personal.find((persona) => persona.id === centro.encargadoId) ?? null,
-        empleados: personal.filter((persona) => persona.centroId === centro.id && persona.activo)
-          .length,
       }));
   });
 
@@ -544,8 +540,6 @@ export class DatosMasterService {
       return null;
     }
 
-    const jefeActual = this.jefeDeCentro(centro.id);
-
     const empleado: PersonalSalud = {
       id: this.generarId('p'),
       nombre: datos.nombre,
@@ -561,44 +555,38 @@ export class DatosMasterService {
     };
 
     this._personal.update((personal) => {
-      const actual = [...personal, empleado];
+      const actual = [...personal.filter((p) => p.centroId !== centro.id), empleado];
       guardarPersonal(actual);
       return actual;
     });
 
-    if (datos.tipo === 'jefe') {
-      this._centros.update((centros) => {
-        const actual = centros.map((candidato) =>
-          candidato.id === centro.id ? { ...candidato, encargadoId: empleado.id } : candidato,
-        );
-        guardarCentros(actual);
-        return actual;
-      });
-    }
+    this._centros.update((centros) => {
+      const actual = centros.map((candidato) =>
+        candidato.id === centro.id ? { ...candidato, encargadoId: empleado.id } : candidato,
+      );
+      guardarCentros(actual);
+      return actual;
+    });
 
-    this.sesion.registrarPerfilEnCentro(
-      centro.id,
+    this.sesion.registrarCuentaCentro(
       {
-        id: empleado.id,
-        nombre: empleado.nombre,
-        tipo: datos.tipo,
-        correo: empleado.correo,
-        clave: datos.tipo === 'jefe' ? 'jefe123' : 'trabajador123',
-      },
-      {
+        id: centro.id,
         nombre: centro.nombre,
         codigo: centro.codigo,
         rol: centro.tipo,
-        jefe: jefeActual
-          ? { id: jefeActual.id, nombre: jefeActual.nombre, correo: jefeActual.correo }
-          : null,
+      },
+      {
+        id: empleado.id,
+        nombre: empleado.nombre,
+        correo: empleado.correo,
+        clave: 'jefe123',
       },
     );
 
     this.registrarMovimiento(
-      'creacion',
+      'actualizacion',
       'Personal',
-      `Registró a ${datos.nombre} en ${centro.nombre}.`,
+      `Asignó a ${datos.nombre} como jefe encargado de ${centro.nombre}.`,
       centro.nombre,
     );
 

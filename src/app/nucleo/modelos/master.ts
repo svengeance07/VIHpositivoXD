@@ -157,7 +157,6 @@ export interface SubregionVista {
   readonly centro: CentroSalud;
   readonly estado: Estado | null;
   readonly jefe: PersonalSalud | null;
-  readonly empleados: number;
   readonly centros: number;
 }
 
@@ -167,7 +166,6 @@ export interface CentroVista {
   readonly municipio: Municipio | null;
   readonly parroquia: Parroquia | null;
   readonly jefe: PersonalSalud | null;
-  readonly empleados: number;
 }
 
 export interface PersonalVista {
@@ -206,5 +204,5 @@ export interface AltaEmpleado {
   readonly telefono: string;
   readonly profesionId: string;
   readonly centroId: string;
-  readonly tipo: 'jefe' | 'trabajador';
+  readonly tipo?: 'jefe' | 'trabajador';
 }

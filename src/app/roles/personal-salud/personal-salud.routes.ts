@@ -19,11 +19,8 @@ export const PERSONAL_SALUD_ROUTES: Routes = [
       },
       {
         path: 'estacion',
-        title: 'Estación de Vacunación · Personal de Enfermería',
-        loadComponent: () =>
-          import('./paginas/estacion-enfermero/estacion-enfermero').then(
-            (m) => m.PersonalSaludEstacionEnfermero,
-          ),
+        redirectTo: '',
+        pathMatch: 'full',
       },
       {
         path: 'pacientes',
@@ -53,7 +50,7 @@ export const PERSONAL_SALUD_ROUTES: Routes = [
       },
       {
         path: 'personal',
-        title: 'Equipo de Enfermeros · Centro de Salud',
+        title: 'Mi Credencial y Perfil · Centro de Salud',
         loadComponent: () =>
           import('./paginas/personal/personal').then((m) => m.PersonalSaludPersonal),
       },

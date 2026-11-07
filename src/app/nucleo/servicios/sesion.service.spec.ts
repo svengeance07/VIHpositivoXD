@@ -22,7 +22,7 @@ describe('SesionService', () => {
   it('valida al master y crea la sesión sin entidad', () => {
     const cuenta = requerir(service.validarCuenta(1, 'MASTER@vih.gob.ve ', 'master123'));
 
-    const sesion = service.entrar(cuenta, null);
+    const sesion = service.entrar(cuenta);
 
     expect(sesion.rol).toBe(1);
     expect(sesion.nombre).toBe('Ana Rodríguez');
@@ -36,57 +36,46 @@ describe('SesionService', () => {
     expect(service.validarCuenta(2, 'master@vih.gob.ve', 'master123')).toBeNull();
   });
 
-  it('exige validar el sub-perfil en los roles 2 y 3', () => {
-    const centro = requerir(service.validarCuenta(2, 'centro@vih.gob.ve', 'centro123'));
-    expect(centro.perfiles.length).toBeGreaterThan(1);
+  it('valida directamente al jefe de centro de salud (rol 2) sin sub-usuarios', () => {
+    expect(service.validarCuenta(2, 'jefe.centro@vih.gob.ve', 'otra')).toBeNull();
 
-    expect(
-      service.validarPerfil(centro, 'centro-jefe', 'jefe.centro@vih.gob.ve', 'otra'),
-    ).toBeNull();
+    const centro = requerir(service.validarCuenta(2, 'jefe.centro@vih.gob.ve', 'jefe123'));
+    const sesion = service.entrar(centro);
 
-    const perfil = requerir(
-      service.validarPerfil(centro, 'centro-jefe', 'jefe.centro@vih.gob.ve', 'jefe123'),
-    );
-    expect(perfil.tipo).toBe('jefe');
-
-    const sesion = service.entrar(centro, perfil);
+    expect(sesion.rol).toBe(2);
     expect(sesion.entidad).toBe('Centro de Salud La Pastora');
     expect(sesion.nombre).toBe('Dra. María Pérez');
+    expect(sesion.correo).toBe('jefe.centro@vih.gob.ve');
   });
 
-  it('registra un perfil nuevo solo en la cuenta del centro indicado', () => {
-    service.registrarPerfilEnCentro('centro-la-pastora', {
-      id: 'enf-nuevo',
-      nombre: 'Enf. Nuevo',
-      tipo: 'trabajador',
-      correo: 'nuevo@vih.gob.ve',
-      clave: 'nuevo123',
-    });
-
-    const centro = requerir(service.validarCuenta(2, 'centro@vih.gob.ve', 'centro123'));
-    const perfil = requerir(
-      service.validarPerfil(centro, 'enf-nuevo', 'nuevo@vih.gob.ve', 'nuevo123'),
+  it('registra o actualiza la cuenta directa del jefe de un centro o subregión', () => {
+    service.registrarCuentaCentro(
+      {
+        id: 'cs-nuevo-test',
+        nombre: 'Ambulatorio Nuevo Test',
+        rol: 2,
+      },
+      {
+        id: 'p-jefe-test',
+        nombre: 'Dra. Nueva Jefe',
+        correo: 'nueva.jefe@vih.gob.ve',
+        clave: 'clave789',
+      },
     );
-    expect(perfil.tipo).toBe('trabajador');
 
-    const subregion = requerir(service.validarCuenta(3, 'subregion@vih.gob.ve', 'subregion123'));
-    expect(subregion.perfiles.some((p) => p.correo === 'nuevo@vih.gob.ve')).toBe(false);
+    const cuenta = requerir(service.validarCuenta(2, 'nueva.jefe@vih.gob.ve', 'clave789'));
+    expect(cuenta.nombre).toBe('Dra. Nueva Jefe');
+    expect(cuenta.entidad).toBe('Ambulatorio Nuevo Test');
+    expect(cuenta.centroId).toBe('cs-nuevo-test');
   });
 
-  it('permite sub-perfiles en la subregión y cierra la sesión', () => {
-    const subregion = requerir(service.validarCuenta(3, 'subregion@vih.gob.ve', 'subregion123'));
-    const perfil = requerir(
-      service.validarPerfil(
-        subregion,
-        'subregion-analista',
-        'analista.subregion@vih.gob.ve',
-        'analista123',
-      ),
-    );
+  it('valida directamente al jefe de subregión (rol 3) y cierra la sesión', () => {
+    const subregion = requerir(service.validarCuenta(3, 'jefe.subregion@vih.gob.ve', 'jefe123'));
 
-    expect(perfil.tipo).toBe('trabajador');
-    service.entrar(subregion, perfil);
+    service.entrar(subregion);
     expect(service.sesion()?.rol).toBe(3);
+    expect(service.sesion()?.nombre).toBe('Lic. Carlos Rojas');
+    expect(service.sesion()?.entidad).toBe('Subregión de Salud Guárico');
 
     service.salir();
     expect(service.sesion()).toBeNull();

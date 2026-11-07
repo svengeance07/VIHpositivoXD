@@ -47,15 +47,13 @@ export class SubregionSaludShell {
 
   protected readonly nombreSubregion = this.datos.subregionNombre;
   protected readonly estadoNombre = this.datos.estadoNombre;
-  protected readonly esJefe = computed(() => this.sesion.sesion()?.perfil?.tipo === 'jefe');
+  protected readonly esJefe = computed(() => true);
 
   protected readonly nombreUsuario = computed(
-    () => this.sesion.sesion()?.perfil?.nombre ?? 'Lic. Carlos Rojas',
+    () => this.sesion.sesion()?.nombre ?? 'Lic. Carlos Rojas',
   );
 
-  protected readonly cargoUsuario = computed(() =>
-    this.esJefe() ? 'Jefe de subregión' : 'Analista de subregión',
-  );
+  protected readonly cargoUsuario = computed(() => 'Jefe de subregión');
 
   protected readonly iniciales = computed(() => this.calcularIniciales(this.nombreUsuario()));
 
@@ -70,7 +68,7 @@ export class SubregionSaludShell {
         icono: 'layouts',
         exacto: true,
       },
-      { etiqueta: 'Personal de salud', ruta: '/SRS/trabajadores', icono: 'clipboard' },
+      { etiqueta: 'Jefes de centro', ruta: '/SRS/trabajadores', icono: 'clipboard' },
       { etiqueta: 'Ciudadanos', ruta: '/SRS/ciudadanos', icono: 'filter' },
       {
         etiqueta: 'Centros',

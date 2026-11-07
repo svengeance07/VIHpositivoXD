@@ -9,12 +9,12 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
-import type { CuentaAcceso, PerfilAcceso, RolInterno } from '../../nucleo/modelos/cuenta-acceso';
-import type { RolUsuario, TipoEmpleado } from '../../nucleo/modelos/enumeraciones';
+import type { CuentaAcceso, RolInterno } from '../../nucleo/modelos/cuenta-acceso';
+import type { RolUsuario } from '../../nucleo/modelos/enumeraciones';
 import { CatalogosService } from '../../nucleo/servicios/catalogos.service';
 import { SesionService } from '../../nucleo/servicios/sesion.service';
 
-type PasoLogin = 1 | 2 | 3;
+type PasoLogin = 1 | 2;
 
 @Component({
   selector: 'app-login',
@@ -36,15 +36,8 @@ export class Login {
 
   protected readonly paso = signal<PasoLogin>(1);
   protected readonly rolElegido = signal<RolInterno | null>(null);
-  protected readonly cuenta = signal<CuentaAcceso | null>(null);
-  protected readonly perfilElegido = signal<PerfilAcceso | null>(null);
   protected readonly error = signal('');
 
-  protected readonly perfiles = computed<readonly PerfilAcceso[]>(() => {
-    const c = this.cuenta();
-    if (!c) return [];
-    return this.sesion.obtenerPerfilesDeCuenta(c.id);
-  });
   protected readonly rolActual = computed(() =>
     this.roles().find((rol) => rol.id === this.rolElegido()),
   );
@@ -53,16 +46,16 @@ export class Login {
       case 1:
         return 'Credenciales de acceso';
       case 2:
-        return 'Credenciales del centro de salud';
+        return 'Acceso de jefe de centro de salud';
       case 3:
-        return 'Credenciales de la subregión';
+        return 'Acceso de jefe de subregión';
       default:
         return 'Credenciales';
     }
   });
 
   constructor() {
-    // Al acceder a la página de login, se cierra cualquier sesión anterior para permitir seleccionar perfil
+    // Al acceder a la página de login, se cierra cualquier sesión anterior
     if (this.sesion.sesion()) {
       this.sesion.salir();
     }
@@ -74,8 +67,6 @@ export class Login {
     }
 
     this.rolElegido.set(rol);
-    this.cuenta.set(null);
-    this.perfilElegido.set(null);
     this.error.set('');
     this.paso.set(2);
   }
@@ -100,59 +91,12 @@ export class Login {
     }
 
     this.error.set('');
-
-    if (rol === 1) {
-      this.entrar(cuenta, null);
-      return;
-    }
-
-    this.cuenta.set(cuenta);
-    this.paso.set(3);
-  }
-
-  protected elegirPerfil(perfil: PerfilAcceso): void {
-    this.perfilElegido.set(perfil);
-    this.error.set('');
-  }
-
-  protected entrarPerfil(evento: Event, correo: string, clave: string): void {
-    evento.preventDefault();
-
-    const cuenta = this.cuenta();
-    const perfil = this.perfilElegido();
-
-    if (!cuenta || !perfil) {
-      this.error.set('Selecciona un perfil para continuar.');
-      return;
-    }
-
-    if (!correo.trim() || !clave) {
-      this.error.set('Completa el correo y la contraseña del perfil.');
-      return;
-    }
-
-    const validado = this.sesion.validarPerfil(cuenta, perfil.id, correo, clave);
-    if (!validado) {
-      this.error.set('El correo o la contraseña no corresponden a este perfil.');
-      return;
-    }
-
-    this.entrar(cuenta, validado);
+    this.entrar(cuenta);
   }
 
   protected volver(): void {
     this.error.set('');
-
-    if (this.paso() === 3) {
-      this.cuenta.set(null);
-      this.perfilElegido.set(null);
-      this.paso.set(2);
-      return;
-    }
-
     this.rolElegido.set(null);
-    this.cuenta.set(null);
-    this.perfilElegido.set(null);
     this.paso.set(1);
   }
 
@@ -161,24 +105,16 @@ export class Login {
       case 1:
         return 'Vigilancia y administración general del sistema.';
       case 2:
-        return 'Jefes y trabajadores de un centro de salud.';
+        return 'Jefatura y atención clínica del centro de salud.';
       case 3:
-        return 'Coordinación estadal y gestión de centros.';
+        return 'Jefatura estadal y coordinación de centros de salud.';
       default:
         return '';
     }
   }
 
-  protected etiquetaTipo(tipo: TipoEmpleado): string {
-    return tipo === 'jefe' ? 'Jefe' : 'Trabajador';
-  }
-
-  private entrar(cuenta: CuentaAcceso, perfil: PerfilAcceso | null): void {
-    this.sesion.entrar(cuenta, perfil);
-    if (cuenta.rol === 2 && perfil?.tipo === 'trabajador') {
-      void this.router.navigateByUrl('/PS/estacion');
-      return;
-    }
+  private entrar(cuenta: CuentaAcceso): void {
+    this.sesion.entrar(cuenta);
     void this.router.navigateByUrl(this.prefijoDe(cuenta.rol));
   }
 

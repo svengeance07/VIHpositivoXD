@@ -46,9 +46,7 @@ export class SubregionSaludCertificadoDetalle {
   protected readonly error = signal('');
   protected readonly exito = signal('');
 
-  protected readonly revisor = computed(
-    () => this.sesion.sesion()?.perfil?.nombre ?? 'Lic. Carlos Rojas',
-  );
+  protected readonly revisor = computed(() => this.sesion.sesion()?.nombre ?? 'Lic. Carlos Rojas');
 
   protected valor(event: Event): string {
     return (event.target as HTMLTextAreaElement).value;

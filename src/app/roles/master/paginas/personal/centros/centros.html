@@ -88,7 +88,7 @@
               <th>Centro</th>
               <th>Ubicación</th>
               <th>Jefe de centro</th>
-              <th>Personal</th>
+              <th>Contacto</th>
               <th></th>
             </tr>
           </thead>
@@ -120,7 +120,7 @@
                     </span>
                   </div>
                 </td>
-                <td>{{ fila.empleados }}</td>
+                <td>{{ fila.jefe?.correo ?? fila.centro.telefono }}</td>
                 <td>
                   <a
                     class="btn btn-ghost btn-compact"

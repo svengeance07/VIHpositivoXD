@@ -18,10 +18,11 @@ Estado: **esquema de trabajo, todavía no implementado**.
 
 - Motor probable: MySQL o MariaDB (`AUTO_INCREMENT`, `JSON`, `TEXT`, `ENUM`).
 - **16 tablas recibidas** de ciudadanía, personal, centros, geografía y catálogos clínicos.
-- **5 tablas propuestas** para completar los flujos de esta etapa: `cuentas_entidad`,
-  `certificados_salud`, `notificaciones_srs`, `certificado_envios` y `consultas_publicas`.
+- **4 tablas propuestas** para completar los flujos de esta etapa: `certificados_salud`,
+  `notificaciones_srs`, `certificado_envios` y `consultas_publicas`.
 - **`usuarios` es la tabla de ciudadanos**, no la de cuentas. Las cuentas internas están en
-  `personal` (roles 2 y 3), `master` (rol 1) y `cuentas_entidad`.
+  `personal` (roles 2 y 3) y `master` (rol 1).
+- **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro (`tipo = 2`) y cada subregión (`tipo = 3`) cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente con su fila de `personal`.
 - **No existe una tabla `ciudadano`**: la ficha se arma con `usuarios` + `usuario_telefonos` +
   `usuario_residencias` + catálogos clínicos.
 - **No existe una tabla `subregion`**: la sede de subregión es una fila de `centros_salud` con
@@ -37,19 +38,19 @@ Estado: **esquema de trabajo, todavía no implementado**.
 
 ### Decisiones confirmadas el 2026-10-25
 
-| Tema                    | Decisión                                                                                                                               |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Alcance del script      | Es **parcial**. Faltan tablas que se agregarán después.                                                                                |
-| Subregión               | Es una sede dentro de `centros_salud` con `tipo = 3`; una por estado.                                                                  |
-| Tipo de centro          | `centros_salud.tipo` solo vale **2 (centro)** o **3 (sede de subregión)**. No se modela hospital/ambulatorio/CDI: el nombre lo indica. |
-| Personal de subregión   | Es `personal` con `tipo_cuenta = 3` y `centro_id` apuntando a la sede de subregión.                                                    |
-| Validación del login    | El tipo de cuenta elegido debe coincidir con `personal.tipo_cuenta`; el master se valida aparte.                                       |
-| Login de entidad        | Dos niveles: `cuentas_entidad` (credenciales de la entidad) y el perfil de `personal` elegido.                                         |
-| Jefe del centro         | Hay **un solo jefe por centro o sede**. Se deriva de `centros_salud.encargado_id`.                                                     |
-| Sexo del ciudadano      | Se agrega a `usuarios` como `ENUM('F','M','otro')`.                                                                                    |
-| Fecha de registro       | Se agrega `usuarios.creado_en` para el filtro del master.                                                                              |
-| Profesión del ciudadano | Se pide en el alta. Si no tiene, se selecciona **"Desempleado"**; `profesion_id` sigue siendo obligatorio.                             |
-| Saludo del master       | El dashboard saluda con `master.nombre_usuario`; no se agrega `master.nombre`.                                                         |
+| Tema                    | Decisión                                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Alcance del script      | Es **parcial**. Faltan tablas que se agregarán después.                                                                                       |
+| Subregión               | Es una sede dentro de `centros_salud` con `tipo = 3`; una por estado.                                                                         |
+| Tipo de centro          | `centros_salud.tipo` solo vale **2 (centro)** o **3 (sede de subregión)**. No se modela hospital/ambulatorio/CDI: el nombre lo indica.        |
+| Personal de subregión   | Es `personal` con `tipo_cuenta = 3` y `centro_id` apuntando a la sede de subregión.                                                           |
+| Validación del login    | El tipo de cuenta elegido debe coincidir con `personal.tipo_cuenta`; el master se valida aparte.                                              |
+| Login directo           | Dos pasos: elegir el tipo de cuenta (1, 2 o 3) e ingresar directamente correo y contraseña de `master` o `personal` (sin sub-usuarios).       |
+| Usuario único / Jefe    | Cada centro (`tipo = 2`) y cada subregión (`tipo = 3`) consiste únicamente del usuario de su Jefe / Encargado (`centros_salud.encargado_id`). |
+| Sexo del ciudadano      | Se agrega a `usuarios` como `ENUM('F','M','otro')`.                                                                                           |
+| Fecha de registro       | Se agrega `usuarios.creado_en` para el filtro del master.                                                                                     |
+| Profesión del ciudadano | Se pide en el alta. Si no tiene, se selecciona **"Desempleado"**; `profesion_id` sigue siendo obligatorio.                                    |
+| Saludo del master       | El dashboard saluda con `master.nombre_usuario`; no se agrega `master.nombre`.                                                                |
 
 ### Decisiones confirmadas el 2026-10-29
 
@@ -66,7 +67,7 @@ Estado: **esquema de trabajo, todavía no implementado**.
 | Tema                                  | Decisión                                                                                                                                                                                                           |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Persistencia de prototipo (`signal`)  | Los servicios `DatosMasterService`, `DatosSubregionSaludService`, `DatosPersonalSaludService` y `SesionService` persisten las altas y cambios en `localStorage` para mantener coherencia entre vistas.             |
-| Sincronización de cuentas (`rol 2/3`) | Dar de alta un centro, subregión o trabajador desde `/master` o `/SRS` provisiona automáticamente su `CuentaAcceso` y `PerfilAcceso` en `SesionService`, replicando la relación `cuentas_entidad` + `personal`.    |
+| Usuario único por entidad (`rol 2/3`) | Ni `SRS` ni `PS` tienen sub-usuarios asignados; solo existe el usuario del Jefe encargado de cada centro o subregión. Dar de alta o reasignar un jefe sincroniza su cuenta directa en `SesionService`.             |
 | Preparación para integración con BD   | La arquitectura desacopla las vistas de los mocks mediante servicios de dominio; cuando se integre el backend (p. ej. NestJS + Drizzle ORM / Prisma sobre MySQL 8.4 o MariaDB 11.4), solo cambiarán los servicios. |
 
 ## 2. Diagrama del esquema y la propuesta
@@ -87,9 +88,6 @@ erDiagram
     centros_salud ||--o{ personal : adscribe
     profesiones ||--o{ personal : clasifica
     centros_salud ||--o| personal : encargado
-
-    centros_salud ||--o| cuentas_entidad : credenciales
-    cuentas_entidad }o--|| personal : jefe
 
     tipoSangre ||--o{ usuarios : clasifica
     etnias ||--o{ usuarios : clasifica
@@ -304,31 +302,6 @@ fuente oficial y cargarse una sola vez.
 No tiene nombre visible ni cédula. El dashboard saluda con `nombre_usuario`; no se agrega
 `master.nombre`.
 
-#### `cuentas_entidad` (propuesta)
-
-| Campo       | Tipo         | Nulo | Relación / nota                                    |
-| ----------- | ------------ | ---- | -------------------------------------------------- |
-| `id`        | INT UNSIGNED | NO   | PK                                                 |
-| `centro_id` | INT UNSIGNED | NO   | FK `centros_salud.id`; **UNIQUE**: una por entidad |
-| `correo`    | VARCHAR(255) | NO   | Login de la entidad; **UNIQUE**                    |
-| `password`  | VARCHAR(255) | NO   | Hash, nunca texto plano                            |
-| `jefe_id`   | INT UNSIGNED | NO   | FK `personal.id`; distingue al jefe de los demás   |
-| `activo`    | TINYINT(1)   | NO   | Baja lógica                                        |
-| `creado_en` | DATETIME     | NO   | Fecha de creación                                  |
-
-Resuelve el primer nivel del login de los roles 2 y 3 sin convertir al centro en una cuenta de
-persona:
-
-- Una fila por centro o sede de subregión. El rol no se guarda: se deriva de
-  `centros_salud.tipo` (2 o 3) y debe coincidir con `personal.tipo_cuenta`.
-- **No duplica la lista de perfiles**: los trabajadores son las filas de `personal` con el mismo
-  `centro_id`.
-- `jefe_id` debe coincidir con `centros_salud.encargado_id`; la aplicación o un trigger valida
-  la coincidencia.
-- El segundo nivel valida el correo y la contraseña de la fila de `personal` elegida. El jefe se
-  marca comparando con `jefe_id` o `encargado_id`.
-- Siguen pendientes recuperación, último acceso y bloqueo por intentos.
-
 ### 3.5 Certificados, notificaciones y consulta pública
 
 #### `certificados_salud`
@@ -445,9 +418,7 @@ No se inventan columnas definitivas para estas tablas. Las vistas usan mocks y l
 | `Master`                           | `master`                                                                                           | Resuelto: saluda con `nombre_usuario`       |
 | `CentroSalud`                      | `centros_salud` + geografía + `personal` del encargado                                             | Resuelto: `tipo` 2/3                        |
 | `Subregión`                        | `centros_salud` con `tipo = 3` + `estado` + `personal` del encargado                               | Resuelto                                    |
-| Cuenta de entidad (roles 2 y 3)    | `cuentas_entidad` + `centros_salud` + `personal`                                                   | Propuesta                                   |
-| Rol 2 / Rol 3                      | `personal.tipo_cuenta` + `centros_salud.tipo` + `cuentas_entidad`                                  | Confirmado; falta implementar               |
-| Perfil jefe / trabajador           | Derivado de `centros_salud.encargado_id`; un solo jefe por centro                                  | Confirmado                                  |
+| Rol 2 / Rol 3 (Jefe encargado)     | `personal.tipo_cuenta` + `centros_salud.tipo` + `centros_salud.encargado_id`                       | Confirmado; un único usuario por entidad    |
 | `Catálogos`                        | `tipoSangre`, `etnias`, `vacunas`, `examenes`, `profesiones`                                       | Disponibles; IDs enteros                    |
 | `VacunaCatalogo`                   | `vacunas`                                                                                          | Resuelto: dosis, vigencia y obligatoriedad  |
 | `SolicitudCertificado`             | `certificados_salud`                                                                               | Propuesta                                   |
@@ -465,28 +436,18 @@ No se inventan columnas definitivas para estas tablas. Las vistas usan mocks y l
 
 ```mermaid
 flowchart TD
-    A["Tipo de cuenta: 1, 2 o 3"] --> B{"¿Master?"}
-    B -->|Sí| C["master: correo o nombre_usuario + password"]
-    C --> I["Sesión: master"]
-    B -->|No| D["cuentas_entidad: centro del tipo elegido + correo + password"]
-    D --> E{"¿Cuenta válida y centro.tipo = tipo?"}
+    A["Paso 1 · Tipo de cuenta: 1, 2 o 3"] --> B{"¿Master (rol 1)?"}
+    B -->|Sí| C["Paso 2 · master: correo o nombre_usuario + password"]
+    C --> I["Sesión activa: Master"]
+    B -->|No| D["Paso 2 · personal: correo + password"]
+    D --> E{"¿Cuenta válida, tipo_cuenta = rol y centro.tipo = rol?"}
     E -->|No| F["Rechazar"]
-    E -->|Sí| G["personal con centro_id = cuenta.centro_id"]
-    G --> H["Elegir perfil; jefe = jefe_id / encargado_id"]
-    H --> J["Validar personal.correo + password"]
-    J --> K{"tipo_cuenta = tipo y centro coherente"}
-    K -->|No| F
-    K -->|Sí| L["Sesión: personal + centro + esJefe"]
+    E -->|Sí| L["Sesión activa: Jefe de Centro (rol 2) o Jefe de Subregión (rol 3)"]
 ```
 
-- **Master**: se busca en `master` por correo (o `nombre_usuario`) y contraseña. No puede entrar
+- **Master (rol 1)**: se busca en `master` por correo (o `nombre_usuario`) y contraseña. No puede entrar
   por el login de centro/subregión.
-- **Primer nivel (roles 2 y 3)**: se busca la fila de `cuentas_entidad` por correo y contraseña, y
-  se comprueba que `centro_id` apunte a un `centros_salud.tipo` coherente: centro normal para 2,
-  sede de subregión para 3.
-- **Segundo nivel**: se listan las filas de `personal` con ese `centro_id`. El jefe coincide con
-  `cuentas_entidad.jefe_id` (y con `centros_salud.encargado_id`); el resto son trabajadores. Se
-  validan el correo y la contraseña de la fila elegida.
+- **Jefe de Centro (rol 2) y Jefe de Subregión (rol 3)**: como no existen sub-usuarios asignados a los centros ni a las subregiones, se valida directamente la fila de `personal` por correo y contraseña, comprobando que `personal.tipo_cuenta` coincida con el rol elegido (2 o 3), que `centros_salud.tipo` sea coherente (2 = centro, 3 = sede de subregión) y que sea el encargado titular (`centros_salud.encargado_id = personal.id`).
 - **Seguridad pendiente**: hash, bloqueo por intentos, recuperación y registro de último acceso.
 
 ### 5.2 Consulta pública
@@ -576,22 +537,15 @@ sobre personal ni centros.
 ### 5.8 Administración de personal del master
 
 - **Subregiones**: filas de `centros_salud` con `tipo = 3`, unidas a `estado` y a `personal` por
-  `encargado_id`. Columnas: nombre de la sede, estado y nombre del administrador.
-- **Centros**: filas de `centros_salud` con `tipo = 2`, unidas a geografía y al encargado.
-- **Empleados**: `personal` unido a `centros_salud`; la ubicación se deriva del centro. El filtro
-  jefe/trabajador se deriva de `encargado_id`; hay un solo jefe por centro. El tipo de
-  establecimiento se expresa en el nombre.
-- **Formularios de alta**: no dibujados; dependen de cerrar los campos obligatorios y las reglas
-  de contraseña.
+  `encargado_id`. Columnas: nombre de la sede, estado y nombre del jefe encargado.
+- **Centros**: filas de `centros_salud` con `tipo = 2`, unidas a geografía y al jefe encargado.
+- **Empleados (Jefes)**: `personal` unido a `centros_salud`; la ubicación se deriva del centro. Al no existir sub-usuarios asignados, cada fila de `personal` corresponde al único Jefe encargado (`encargado_id`) de su centro (`tipo_cuenta = 2`) o subregión (`tipo_cuenta = 3`). El tipo de establecimiento se expresa en el nombre.
+- **Formularios de alta**: implementados en el prototipo para dar de alta subregiones, centros y asignar o reemplazar jefes encargados.
 
 ### 5.9 Personal de salud y subregión
 
-- **Rol 2 (centro)**: el centro de la sesión es `personal.centro_id`. Las filas de `personal` con
-  ese `centro_id` son el equipo; el jefe es `encargado_id`. Las métricas de vacunación se filtran
-  por `usuario_vacunas.centro_id`.
-- **Rol 3 (subregión)**: la sede es el `centros_salud` tipo 3 de la sesión; su estado es
-  `estado_id`. Los centros del estado son las filas tipo 2 con ese `estado_id`; el personal se
-  obtiene por `centro_id`.
+- **Rol 2 (centro)**: el centro de la sesión es `personal.centro_id`. El usuario de la sesión es el único Jefe encargado (`encargado_id`) de ese centro. Las métricas de vacunación se filtran por `usuario_vacunas.centro_id`.
+- **Rol 3 (subregión)**: la sede es el `centros_salud` tipo 3 de la sesión; su estado es `estado_id`. El usuario de la sesión es el único Jefe encargado de la subregión. Los centros del estado son las filas tipo 2 con ese `estado_id`, y la sección de jefes de centro obtiene sus respectivos `encargado_id`.
 - Los certificados y las notificaciones ya tienen tablas propuestas; el stock sigue bloqueado.
 - La bandeja de notificaciones **no** incluye vencimientos: solo solicitudes completas listas
   para revisión.
@@ -646,8 +600,6 @@ sobre personal ni centros.
 - `centros_salud`: `tipo`, `telefono`, `direccion`, `activo`, `UNIQUE` en `codigo`.
 - `personal`: `telefono`, `direccion`, `activo`, `UNIQUE` en `cedula` y `correo`.
 - `master`: `activo`, `creado_en`, `UNIQUE` en `nombre_usuario` y `correo`.
-- `cuentas_entidad`: tabla propuesta con `centro_id`, `correo`, `password`, `jefe_id`, `activo` y
-  `creado_en`.
 - `certificados_salud`, `notificaciones_srs`, `certificado_envios` y `consultas_publicas`: tablas
   propuestas.
 - Índices por cédula, correo, estado de certificado, bandeja de notificaciones, envíos, personal

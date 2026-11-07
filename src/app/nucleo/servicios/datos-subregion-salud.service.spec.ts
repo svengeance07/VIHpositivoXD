@@ -152,29 +152,30 @@ describe('DatosSubregionSaludService', () => {
     expect(service.notificacionesNoLeidas()).toBe(0);
   });
 
-  it('crea un trabajador tipo 2 desde la SRS y se refleja inmediatamente en trabajadores()', () => {
+  it('asigna un nuevo jefe de centro tipo 2 desde la SRS y se refleja inmediatamente en trabajadores()', () => {
     const conteoAntes = service.trabajadores().length;
     const centroGuarico = service.centros()[0].centro.id;
 
     const creado = service.crearTrabajador({
-      nombre: 'Lic. Nuevo Enfermero',
+      nombre: 'Dr. Nuevo Jefe Guárico',
       cedula: '31999000',
-      correo: 'nuevo.enfermero@vih.gob.ve',
+      correo: 'nuevo.jefe.guarico@vih.gob.ve',
       telefono: '0424-000-0000',
-      profesionId: 'prof-enf',
+      profesionId: 'prof-med',
       centroId: centroGuarico,
-      tipo: 'trabajador',
+      tipo: 'jefe',
     });
 
     expect(creado).not.toBeNull();
     expect(creado?.tipoCuenta).toBe(2);
     expect(creado?.activo).toBe(true);
-    expect(service.trabajadores().length).toBe(conteoAntes + 1);
+    // Reemplaza al jefe anterior del centro manteniendo 1 jefe por centro
+    expect(service.trabajadores().length).toBe(conteoAntes);
 
     const encontrado = service.trabajadores().find((t) => t.personal.cedula === '31999000');
     expect(encontrado).toBeDefined();
-    expect(encontrado?.personal.nombre).toBe('Lic. Nuevo Enfermero');
-    expect(encontrado?.esJefe).toBe(false);
+    expect(encontrado?.personal.nombre).toBe('Dr. Nuevo Jefe Guárico');
+    expect(encontrado?.esJefe).toBe(true);
     expect(encontrado?.estadoNombre).toBe('Guárico');
   });
 

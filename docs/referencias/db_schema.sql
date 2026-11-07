@@ -293,27 +293,10 @@ ADD COLUMN `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD UNIQUE KEY `uq_master_nombre_usuario` (`nombre_usuario`),
 ADD UNIQUE KEY `uq_master_correo` (`correo`);
 
--- Login de dos niveles para roles 2 y 3. La propuesta no estaba en el
--- script recibido: una cuenta por centro/sede y su jefe asociado.
-CREATE TABLE IF NOT EXISTS `cuentas_entidad` (
-	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`centro_id` INTEGER UNSIGNED NOT NULL,
-	`correo` VARCHAR(255) NOT NULL,
-	`password` VARCHAR(255) NOT NULL,
-	`jefe_id` INTEGER UNSIGNED NOT NULL,
-	`activo` TINYINT(1) NOT NULL DEFAULT 1,
-	`creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY(`id`),
-	UNIQUE KEY `uq_cuentas_entidad_centro` (`centro_id`),
-	UNIQUE KEY `uq_cuentas_entidad_correo` (`correo`),
-	KEY `idx_cuentas_entidad_jefe` (`jefe_id`),
-	CONSTRAINT `fk_cuentas_entidad_centro`
-		FOREIGN KEY (`centro_id`) REFERENCES `centros_salud` (`id`)
-		ON UPDATE NO ACTION ON DELETE NO ACTION,
-	CONSTRAINT `fk_cuentas_entidad_jefe`
-		FOREIGN KEY (`jefe_id`) REFERENCES `personal` (`id`)
-		ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+-- Login directo de 1 usuario por centro/subregión (roles 2 y 3).
+-- Cada centro de salud (`tipo = 2`) y cada sede de subregión (`tipo = 3`)
+-- cuenta únicamente con su Jefe / Encargado en `personal` (`centros_salud.encargado_id`),
+-- quien inicia sesión directamente con su correo y contraseña sin sub-usuarios.
 
 -- Solicitudes y emisión del certificado de salud.
 CREATE TABLE IF NOT EXISTS `certificados_salud` (

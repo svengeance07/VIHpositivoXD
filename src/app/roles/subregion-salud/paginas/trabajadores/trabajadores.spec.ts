@@ -4,14 +4,12 @@ import { provideRouter } from '@angular/router';
 import { SubregionSaludTrabajadores } from './trabajadores';
 import { DatosSubregionSaludService } from '../../../../nucleo/servicios/datos-subregion-salud.service';
 import { DatosMasterService } from '../../../../nucleo/servicios/datos-master.service';
-import { SesionService } from '../../../../nucleo/servicios/sesion.service';
 
 describe('SubregionSaludTrabajadores', () => {
   let fixture: ComponentFixture<SubregionSaludTrabajadores>;
   let component: SubregionSaludTrabajadores;
   let datosSRS: DatosSubregionSaludService;
   let datosMaster: DatosMasterService;
-  let sesion: SesionService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -23,38 +21,26 @@ describe('SubregionSaludTrabajadores', () => {
     datosMaster.limpiarAlmacenamiento();
 
     datosSRS = TestBed.inject(DatosSubregionSaludService);
-    sesion = TestBed.inject(SesionService);
 
     fixture = TestBed.createComponent(SubregionSaludTrabajadores);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('muestra la lista inicial de trabajadores tipo 2 y métricas de Guárico', () => {
+  it('muestra la lista inicial de jefes de centro tipo 2 y métricas de Guárico', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(datosSRS.trabajadores().length).toBeGreaterThan(0);
-    expect(el.textContent).toContain('Trabajadores tipo 2');
-    expect(el.textContent).toContain('Personal de salud · Guárico');
+    expect(el.textContent).toContain('Jefes de centro');
+    expect(el.textContent).toContain('Jefaturas de salud · Guárico');
   });
 
-  it('permite filtrar trabajadores por rol y por término de búsqueda', () => {
-    const el = fixture.nativeElement as HTMLElement;
+  it('permite filtrar jefes de centro por centro y por término de búsqueda', () => {
     const initialCount = component['resultados']().length;
     expect(initialCount).toBeGreaterThan(0);
-
-    // Filtrar por jefe
-    component['rol'].set('jefe');
-    fixture.detectChanges();
     expect(component['resultados']().every((t) => t.esJefe)).toBe(true);
-
-    // Filtrar por trabajador
-    component['rol'].set('trabajador');
-    fixture.detectChanges();
-    expect(component['resultados']().every((t) => !t.esJefe)).toBe(true);
 
     // Filtrar por término
     const primerTrabajador = datosSRS.trabajadores()[0];
-    component['rol'].set('todos');
     component['termino'].set(primerTrabajador.personal.cedula);
     fixture.detectChanges();
     expect(
@@ -67,9 +53,8 @@ describe('SubregionSaludTrabajadores', () => {
     expect(component['resultados']().length).toBe(initialCount);
   });
 
-  it('permite registrar un nuevo trabajador tipo 2 mediante el formulario modal y se refleja inmediatamente', () => {
+  it('permite asignar un nuevo jefe de centro tipo 2 mediante el formulario modal y se refleja inmediatamente', () => {
     const conteoInicial = datosSRS.trabajadores().length;
-    const conteoTrabajadoresInicial = component['conteoTrabajadores']();
 
     // Abrir modal
     component['abrirAlta']();
@@ -79,12 +64,11 @@ describe('SubregionSaludTrabajadores', () => {
     const centroGuarico = datosSRS.centros()[0].centro.id;
 
     // Completar datos
-    component['actualizarAlta']('nombre', 'Lic. Roberto Enfermero');
+    component['actualizarAlta']('nombre', 'Dr. Roberto Jefe');
     component['actualizarAlta']('cedula', '27999888');
-    component['actualizarAlta']('correo', 'roberto.enfermero@vih.gob.ve');
-    component['actualizarAlta']('profesionId', 'prof-enf');
+    component['actualizarAlta']('correo', 'roberto.jefe@vih.gob.ve');
+    component['actualizarAlta']('profesionId', 'prof-med');
     component['actualizarAlta']('centroId', centroGuarico);
-    component['actualizarAlta']('tipo', 'trabajador');
     fixture.detectChanges();
 
     expect(component['formularioValido']()).toBe(true);
@@ -97,21 +81,20 @@ describe('SubregionSaludTrabajadores', () => {
     expect(component['altaAbierta']()).toBe(false);
     expect(component['errorAlta']()).toBe('');
 
-    // Verificar en SRS
-    expect(datosSRS.trabajadores().length).toBe(conteoInicial + 1);
-    expect(component['conteoTrabajadores']()).toBe(conteoTrabajadoresInicial + 1);
+    // Reemplaza al jefe anterior del centro manteniendo 1 usuario por centro
+    expect(datosSRS.trabajadores().length).toBe(conteoInicial);
 
     const encontrado = datosSRS.trabajadores().find((t) => t.personal.cedula === '27999888');
     expect(encontrado).toBeDefined();
-    expect(encontrado?.personal.nombre).toBe('Lic. Roberto Enfermero');
-    expect(encontrado?.esJefe).toBe(false);
+    expect(encontrado?.personal.nombre).toBe('Dr. Roberto Jefe');
+    expect(encontrado?.esJefe).toBe(true);
 
     // Verificar que aparece en resultados()
     expect(component['resultados']().some((t) => t.personal.cedula === '27999888')).toBe(true);
 
     // Verificar en el DOM renderizado
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.textContent).toContain('Lic. Roberto Enfermero');
+    expect(el.textContent).toContain('Dr. Roberto Jefe');
     expect(el.textContent).toContain('27999888');
   });
 });

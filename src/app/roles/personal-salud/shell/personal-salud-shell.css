@@ -184,14 +184,19 @@
   flex-direction: column;
   gap: 0.35rem;
   flex: 1;
+  min-width: 0;
 }
 
 .barra__item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
   padding: 0.65rem 0.75rem;
   border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid transparent;
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
@@ -199,6 +204,7 @@
   white-space: nowrap;
   transition:
     background 160ms ease,
+    border-color 160ms ease,
     color 160ms ease;
   position: relative;
 }
@@ -212,17 +218,19 @@
   background: rgba(16, 185, 129, 0.15);
   color: #059669;
   font-weight: 650;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.25);
 }
 
 .barra__icono {
-  width: 1.5rem;
+  width: 1.95rem;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
 .barra__item-etiqueta {
+  min-width: 0;
+  overflow: hidden;
   opacity: 0;
   transition: opacity 160ms ease;
 }
