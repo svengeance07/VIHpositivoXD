@@ -420,10 +420,47 @@ input[inputmode='numeric'] {
   -webkit-mask-image: url('/icons/arrow-up.svg');
   mask-image: url('/icons/arrow-up.svg');
 }
+.ui-icon[data-icon='edit'],
+.ui-icon--edit {
+  -webkit-mask-image: url('/icons/edit.svg');
+  mask-image: url('/icons/edit.svg');
+}
+.ui-icon[data-icon='search'],
+.ui-icon[data-icon='buscar'],
+.ui-icon[data-icon='busqueda'],
+.ui-icon--search {
+  -webkit-mask-image: url('/icons/search.svg');
+  mask-image: url('/icons/search.svg');
+}
+.ui-icon[data-icon='help'],
+.ui-icon[data-icon='help-circle'],
+.ui-icon[data-icon='ayuda'],
+.ui-icon[data-icon='atajos'],
+.ui-icon--help {
+  -webkit-mask-image: url('/icons/help.svg');
+  mask-image: url('/icons/help.svg');
+}
+.ui-icon[data-icon='keyboard'],
+.ui-icon--keyboard {
+  -webkit-mask-image: url('/icons/keyboard.svg');
+  mask-image: url('/icons/keyboard.svg');
+}
+.ui-icon[data-icon='activity'],
+.ui-icon[data-icon='telemetria'],
+.ui-icon--activity {
+  -webkit-mask-image: url('/icons/activity.svg');
+  mask-image: url('/icons/activity.svg');
+}
+.ui-icon[data-icon='zap'],
+.ui-icon[data-icon='acciones'],
+.ui-icon--zap {
+  -webkit-mask-image: url('/icons/zap.svg');
+  mask-image: url('/icons/zap.svg');
+}
 .ui-icon[data-icon='feedback'],
 .ui-icon--feedback {
-  -webkit-mask-image: url('/icons/chat.svg');
-  mask-image: url('/icons/chat.svg');
+  -webkit-mask-image: url('/icons/feedback.svg');
+  mask-image: url('/icons/feedback.svg');
 }
 
 /* ==========================================================================

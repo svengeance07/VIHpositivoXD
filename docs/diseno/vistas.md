@@ -70,30 +70,46 @@ flowchart TD
   `/consulta/verificacion` queda como fase futura.
 - **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro o subregión cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente en el paso 2 de `/login` con su correo y contraseña registrados en `personal`. El master entra directo con su cuenta en `master`. Ver
   [`modelo-datos.md`](./modelo-datos.md) §5.1.
-- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética y disposición unificada **Spartan / shadcn / Vercel (Obsidian Dark Mode)**: barra de comando superior en dos niveles (breadcrumbs `V / Rol / Contexto` + botones de acción rápida + pestañas horizontales con indicador activo blanco) combinada con barra lateral fija/colapsable `#050507`, tarjetas oscuras `#09090b` sobre lienzo negro `#000000`, bordes de `1px solid #27272a`, tiras de métricas bento unidas por divisores de `1px`, botones primarios blancos (`#fafafa` con texto `#09090b`) y tablas oscuras con números tabulares.
+- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética y disposición unificada **Spartan / shadcn / Vercel (Obsidian Dark Mode)** basada en la **separación estricta de propósitos entre barras para eliminar redundancias**:
+  - **Barra Superior (Navegación Estructural y Contexto de Sesión)**:
+    - *Fila 1*: Identidad institucional y breadcrumbs (`V / Rol / Contexto`), indicador de telemetría en vivo (`● Red en línea`), disparador de búsqueda rápida (`Ctrl+K`), pastilla de usuario y botón único de salida (`Salir`). **Sin botones de acción duplicados** que compitan con las pestañas.
+    - *Fila 2*: Pestañas horizontales de navegación por módulos con indicador activo blanco inferior. Es el **único lugar** donde el usuario conmuta de vista dentro del rol.
+  - **Barra Lateral (Consola Operativa y Telemetría en Vivo)**:
+    - No repite los enlaces de las pestañas ni el botón de logout.
+    - Funciona como un dock operativo de supervisión en tiempo real con 4 herramientas:
+      1. 📡 **Telemetría**: Nodos activos, cobertura, cadena de frío y sincronización en tiempo real.
+      2. 🔔 **Alertas e Incidencias**: Lotes observados, casos ESAVI y certificados pendientes con acceso directo.
+      3. ⚡ **Acciones Rápidas**: Descarga de auditoría/censo en JSON y sincronización local.
+      4. ⌨️ **Atajos de Teclado**: Guía interactiva (`Ctrl+K`, `Esc`, `Tab`).
+    - Colapsable a un dock minimalista de `3.5rem` y expandible a `18.5rem` con fijación (`pin`).
+  - Tarjetas oscuras `#09090b` sobre lienzo negro `#000000`, bordes de `1px solid #27272a`, tiras de métricas bento unidas por divisores de `1px`, botones primarios blancos (`#fafafa` con texto `#09090b`) y números tabulares.
 
 ### 3.1 Navegación interna del master
 
 ```mermaid
 flowchart TD
-    dash["/master · dashboard"]
-    sidebar["Sidebar colapsable"]
-    busqueda["/master/busqueda · búsqueda global"]
-    sub["/master/personal/subregiones"]
-    cen["/master/personal/centros"]
-    emp["/master/personal/empleados"]
-    vac["/master/vacunas · control de lotes"]
-    mov["/master/movimientos · registro de movimientos"]
-    bus["/master/busquedas · auditoría de búsquedas"]
+    subgraph BarraSuperior["Barra Superior (Navegación Estructural)"]
+      tabs["Pestañas horizontales"]
+      dash["/master · panel"]
+      busqueda["/master/busqueda · búsqueda global"]
+      pers["/master/personal · personal y centros"]
+      vac["/master/vacunas · control de lotes"]
+      mov["/master/movimientos · registro de movimientos"]
+      bus["/master/busquedas · auditoría de búsquedas"]
+      tabs --> dash
+      tabs --> busqueda
+      tabs --> pers
+      tabs --> vac
+      tabs --> mov
+      tabs --> bus
+    end
 
-    dash --- sidebar
-    sidebar --> busqueda
-    sidebar --> sub
-    sidebar --> vac
-    sidebar --> mov
-    sidebar --> bus
-    sub --- cen
-    cen --- emp
+    subgraph BarraLateral["Barra Lateral (Consola Operativa)"]
+      tele["Telemetría de Red"]
+      alert["Alertas prioritarias"]
+      acc["Exportar JSON / Sincronizar"]
+      atajos["Atajos Ctrl+K / Esc"]
+    end
 ```
 
 Las tres pestañas de administración de personal son **vistas distintas bajo la misma pantalla** (switch), no

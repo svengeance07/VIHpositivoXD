@@ -59,7 +59,10 @@
 
 ## UI rules
 
-- Follow the **Spartan / shadcn / Vercel (Obsidian Dark Mode)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): predominant `#000000` / `#09090b` dark surfaces, crisp `#fafafa` white and `#a1a1aa` zinc-gray typography, `1px solid #27272a` hairline borders, stark white `#fafafa` primary buttons (`color: #09090b`), dark zinc `#18181b` secondary buttons, flush `1px` bento metric strips, two-tier Vercel top command header + horizontal navigation bar alongside the collapsible left rail, and zero decorative blur/glass or neon gradients.
+- Follow the **Spartan / shadcn / Vercel (Obsidian Dark Mode)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): predominant `#000000` / `#09090b` dark surfaces, crisp `#fafafa` white and `#a1a1aa` zinc-gray typography, `1px solid #27272a` hairline borders, stark white `#fafafa` primary buttons (`color: #09090b`), dark zinc `#18181b` secondary buttons, flush `1px` bento metric strips, and zero decorative blur/glass or neon gradients.
+- **Evitar redundancia en botones y navegación**:
+  - La **Barra Superior** (`.barra-superior`) es el **único canal de navegación entre módulos** (fila 2 de pestañas horizontales), además de albergar en fila 1 el contexto, telemetría en línea (`● En línea`), disparador de búsqueda rápida (`Ctrl+K`), identidad y botón único de salida (`Salir`). No colocar botones de acción en fila 1 que dupliquen las pestañas de abajo.
+  - La **Barra Lateral** (`aside.barra`) es la **Consola Operativa y Telemetría en Vivo** (no repite enlaces de navegación ni botón de salida): proporciona telemetría en tiempo real, centro de alertas e incidencias críticas, acciones rápidas (exportación de auditoría/censo JSON, sincronización local) y atajos de teclado (`Ctrl+K`, `Esc`).
 - Reuse semantic tokens from `src/styles.css` (`--background`, `--card`, `--border`, `--primary`, `--primary-foreground`, `--secondary`, `--muted-foreground`). See the `spartan-shadcn-ui` and `impeccable` skills.
 
 ## OpenCode setup

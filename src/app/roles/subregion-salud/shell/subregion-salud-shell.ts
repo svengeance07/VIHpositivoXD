@@ -3,6 +3,7 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   computed,
+  HostListener,
   inject,
   signal,
 } from '@angular/core';
@@ -19,14 +20,9 @@ interface ItemNavegacionSrs {
   readonly badge?: string;
 }
 
-/**
- * Marco de navegación de la Subregión de Salud (/SRS).
- *
- * Reutiliza el comportamiento del shell de /PS: barra lateral Liquid Glass
- * expansible, foco accesible, menú móvil con velo y cierre de sesión. La
- * navegación incorpora los contadores de certificados pendientes y
- * notificaciones sin leer.
- */
+export type HerramientaLateralSrs = 'telemetria' | 'urgencias' | 'acciones' | 'atajos';
+
+/** Marco de navegación y consola operativa de la Subregión de Salud (/SRS). */
 @Component({
   selector: 'app-subregion-salud-shell',
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
@@ -45,6 +41,13 @@ export class SubregionSaludShell {
   protected readonly menuMovil = signal(false);
   protected readonly expandido = computed(() => this.menuMovil() || this.fijado() || this.hover());
 
+  /** Herramienta seleccionada en la consola operativa lateral */
+  protected readonly herramientaActiva = signal<HerramientaLateralSrs>('telemetria');
+
+  /** Estados para la acción de sincronización de datos mock */
+  protected readonly sincronizando = signal(false);
+  protected readonly sincroExito = signal(false);
+
   protected readonly nombreSubregion = this.datos.subregionNombre;
   protected readonly estadoNombre = this.datos.estadoNombre;
   protected readonly esJefe = computed(() => true);
@@ -57,9 +60,20 @@ export class SubregionSaludShell {
 
   protected readonly iniciales = computed(() => this.calcularIniciales(this.nombreUsuario()));
 
+  /** Métricas operativas en tiempo real */
+  protected readonly pendientes = computed(() => this.datos.resumen().solicitudesPendientes);
+  protected readonly noLeidas = computed(() => this.datos.notificacionesNoLeidas());
+  protected readonly totalCentros = computed(() => this.datos.centros().length);
+  protected readonly totalTrabajadores = computed(() => this.datos.trabajadores().length);
+  protected readonly totalAlertas = computed(() => this.pendientes() + this.noLeidas());
+
+  /**
+   * Navegación horizontal de la barra superior.
+   * La barra superior es el ÚNICO lugar para la navegación de módulos.
+   */
   protected readonly navegacion = computed<readonly ItemNavegacionSrs[]>(() => {
-    const pendientes = this.datos.resumen().solicitudesPendientes;
-    const noLeidas = this.datos.notificacionesNoLeidas();
+    const p = this.pendientes();
+    const n = this.noLeidas();
 
     return [
       {
@@ -69,7 +83,7 @@ export class SubregionSaludShell {
         exacto: true,
       },
       { etiqueta: 'Jefes de centro', ruta: '/SRS/trabajadores', icono: 'clipboard' },
-      { etiqueta: 'Ciudadanos', ruta: '/SRS/ciudadanos', icono: 'filter' },
+      { etiqueta: 'Ciudadanos', ruta: '/SRS/ciudadanos', icono: 'search' },
       {
         etiqueta: 'Centros',
         ruta: '/SRS/centros',
@@ -79,16 +93,74 @@ export class SubregionSaludShell {
         etiqueta: 'Certificados',
         ruta: '/SRS/certificados',
         icono: 'check',
-        badge: pendientes > 0 ? String(pendientes) : undefined,
+        badge: p > 0 ? String(p) : undefined,
       },
       {
         etiqueta: 'Notificaciones',
         ruta: '/SRS/notificaciones',
         icono: 'warning',
-        badge: noLeidas > 0 ? String(noLeidas) : undefined,
+        badge: n > 0 ? String(n) : undefined,
       },
     ];
   });
+
+  @HostListener('window:keydown', ['$event'])
+  protected onKeyDown(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.irABusqueda();
+    } else if (event.key === 'Escape' && this.expandido()) {
+      this.cerrarTodo();
+    }
+  }
+
+  protected seleccionarHerramienta(herramienta: HerramientaLateralSrs): void {
+    this.herramientaActiva.set(herramienta);
+    if (!this.expandido()) {
+      this.fijado.set(true);
+    }
+  }
+
+  protected irABusqueda(): void {
+    void this.router.navigateByUrl('/SRS/ciudadanos');
+  }
+
+  protected irACertificados(): void {
+    void this.router.navigateByUrl('/SRS/certificados');
+    if (!this.fijado()) {
+      this.cerrarHover();
+    }
+  }
+
+  protected exportarSnapshot(): void {
+    const data = {
+      subregion: this.nombreSubregion,
+      estado: this.estadoNombre,
+      jefe: this.nombreUsuario(),
+      fecha: new Date().toISOString(),
+      centrosActivos: this.totalCentros(),
+      jefesCentro: this.totalTrabajadores(),
+      certificadosPendientes: this.pendientes(),
+      notificacionesSinLeer: this.noLeidas(),
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sistema-v-censo-subregion-${this.estadoNombre.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  protected sincronizarMock(): void {
+    this.sincronizando.set(true);
+    setTimeout(() => {
+      this.sincronizando.set(false);
+      this.sincroExito.set(true);
+      setTimeout(() => this.sincroExito.set(false), 2500);
+    }, 600);
+  }
 
   protected abrirHover(): void {
     this.hover.set(true);
@@ -101,12 +173,16 @@ export class SubregionSaludShell {
   protected cerrarEnfoque(event: FocusEvent): void {
     const barra = event.currentTarget as HTMLElement;
     const siguiente = event.relatedTarget as Node | null;
-    if (siguiente && barra.contains(siguiente)) return;
+
+    if (siguiente && barra.contains(siguiente)) {
+      return;
+    }
+
     this.hover.set(false);
   }
 
   protected alternarFijado(): void {
-    this.fijado.update((valor) => !valor);
+    this.fijado.update((v) => !v);
   }
 
   protected abrirMenu(): void {
@@ -125,12 +201,6 @@ export class SubregionSaludShell {
     this.fijado.set(false);
   }
 
-  protected alNavegar(): void {
-    if (this.menuMovil()) {
-      this.cerrarTodo();
-    }
-  }
-
   protected cerrarSesion(): void {
     this.sesion.salir();
     void this.router.navigateByUrl('/login');
@@ -141,8 +211,11 @@ export class SubregionSaludShell {
       /^(lic\.|dra\.|dr\.|enf\.|tsu|téc\.|tec\.|bioanalista|analista|ing\.)\s+/i,
       '',
     );
-    const partes = limpio.split(/\s+/).filter(Boolean);
-
-    return `${partes[0]?.[0] ?? ''}${partes[1]?.[0] ?? ''}`.toUpperCase();
+    return limpio
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p) => p[0]?.toUpperCase() ?? '')
+      .join('');
   }
 }

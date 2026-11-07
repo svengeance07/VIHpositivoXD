@@ -241,7 +241,7 @@
           [disabled]="!puedeBuscar()"
           (click)="buscar()"
         >
-          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+          <span class="ui-icon" data-icon="search" aria-hidden="true"></span>
           <span>Buscar</span>
         </button>
       </div>
@@ -251,7 +251,7 @@
   @if (!busquedaHecha()) {
     <section class="panel">
       <div class="master-vacio">
-        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+        <span class="ui-icon" data-icon="search" aria-hidden="true"></span>
         <strong>Prepara tu búsqueda</strong>
         <p>Activa al menos dos filtros y pulsa Buscar para consultar los expedientes.</p>
       </div>
@@ -273,7 +273,7 @@
 
       @if (resultados().length === 0) {
         <div class="master-vacio">
-          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+          <span class="ui-icon" data-icon="search" aria-hidden="true"></span>
           <strong>No hay coincidencias</strong>
           <p>Prueba quitando un filtro o cambiando el rango de edad o la ubicación.</p>
         </div>

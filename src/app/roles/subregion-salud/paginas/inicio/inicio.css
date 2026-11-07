@@ -245,7 +245,7 @@
     margin-left: 2.85rem;
   }
 
-  .inicio-solicitud>.ui-icon {
+  .inicio-solicitud > .ui-icon {
     display: none;
   }
 }

@@ -3,6 +3,7 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   computed,
+  HostListener,
   inject,
   signal,
 } from '@angular/core';
@@ -17,20 +18,12 @@ interface ItemNavegacionPS {
   readonly ruta: string;
   readonly icono: string;
   readonly exacto?: boolean;
-  /** Si es true, solo se muestra al Jefe del Centro (ej: Gestión de perfiles de enfermeros). */
-  readonly soloJefe?: boolean;
   readonly badge?: string;
 }
 
-/**
- * Shell / Layout del rol Personal de Salud (Centro de Salud - /PS).
- *
- * Ofrece:
- * - Barra lateral colapsable / expandible con efectos Liquid Glass (Caustica Design).
- * - Cabecera superior adaptativa con datos del centro de salud ("La Pastora") y perfil activo.
- * - Conmutador rápido de modo (Jefe vs Enfermero) para facilitar pruebas y desarrollo en vivo.
- * - Menú responsive para móviles con velo translúcido.
- */
+export type HerramientaLateralPS = 'telemetria' | 'alertas' | 'acciones' | 'atajos';
+
+/** Shell / Layout del rol Personal de Salud (Centro de Salud - /PS). */
 @Component({
   selector: 'app-personal-salud-shell',
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
@@ -49,6 +42,13 @@ export class PersonalSaludShell {
   protected readonly fijado = signal(false);
   protected readonly menuMovil = signal(false);
   protected readonly expandido = computed(() => this.menuMovil() || this.fijado() || this.hover());
+
+  /** Herramienta seleccionada en la consola operativa lateral */
+  protected readonly herramientaActiva = signal<HerramientaLateralPS>('telemetria');
+
+  /** Estados para la acción de sincronización de datos mock */
+  protected readonly sincronizando = signal(false);
+  protected readonly sincroExito = signal(false);
 
   /** Datos del usuario y centro activo */
   protected readonly esJefe = this.datosPS.esJefe;
@@ -75,24 +75,87 @@ export class PersonalSaludShell {
       .join('');
   });
 
+  /** Métricas operativas en tiempo real para el centro */
+  protected readonly totalPacientes = computed(() => this.datosPS.pacientes().length);
+  protected readonly totalAplicaciones = computed(() => this.datosPS.aplicaciones().length);
+  protected readonly totalReportes = computed(() => this.datosPS.reportes().length);
+  protected readonly vacunasEnTermo = computed(() => this.datosPS.vacunasDisponibles().length);
+
   /**
-   * Navegación completa del Jefe del Centro de Salud.
+   * Navegación horizontal de la barra superior.
+   * La barra superior es el ÚNICO lugar para la navegación de módulos.
    */
   protected readonly navegacion: readonly ItemNavegacionPS[] = [
     { etiqueta: 'Centro de Control', ruta: '/PS', icono: 'layouts', exacto: true },
-    { etiqueta: 'Consultar y Vacunar', ruta: '/PS/pacientes', icono: 'filter', exacto: true },
+    { etiqueta: 'Consultar y Vacunar', ruta: '/PS/pacientes', icono: 'search', exacto: true },
     { etiqueta: 'Nuevo Paciente', ruta: '/PS/pacientes/nuevo', icono: 'plus' },
     { etiqueta: 'Reportes de Incidencias', ruta: '/PS/reportes', icono: 'warning', badge: 'ESAVI' },
     { etiqueta: 'Historial de Dosis', ruta: '/PS/historial', icono: 'calendar' },
     { etiqueta: 'Mi Credencial Digital', ruta: '/PS/personal', icono: 'clipboard' },
   ];
 
-  /** Ítems de navegación del Centro de Salud */
   protected readonly navegacionFiltrada = computed<readonly ItemNavegacionPS[]>(
     () => this.navegacion,
   );
 
-  // Métodos de interacción del menú lateral
+  @HostListener('window:keydown', ['$event'])
+  protected onKeyDown(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.irABusqueda();
+    } else if (event.key === 'Escape' && this.expandido()) {
+      this.cerrarTodo();
+    }
+  }
+
+  protected seleccionarHerramienta(herramienta: HerramientaLateralPS): void {
+    this.herramientaActiva.set(herramienta);
+    if (!this.expandido()) {
+      this.fijado.set(true);
+    }
+  }
+
+  protected irABusqueda(): void {
+    void this.router.navigateByUrl('/PS/pacientes');
+  }
+
+  protected irAReportes(): void {
+    void this.router.navigateByUrl('/PS/reportes');
+    if (!this.fijado()) {
+      this.cerrarHover();
+    }
+  }
+
+  protected exportarSnapshot(): void {
+    const data = {
+      centro: this.nombreCentro(),
+      jefe: this.nombreUsuario(),
+      fecha: new Date().toISOString(),
+      termoTemperatura: '4.2 °C',
+      cadenaFrio: 'Óptima (2°C a 8°C)',
+      totalPacientes: this.totalPacientes(),
+      totalDosisAplicadas: this.totalAplicaciones(),
+      incidenciasReportadas: this.totalReportes(),
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sistema-v-censo-centro-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  protected sincronizarMock(): void {
+    this.sincronizando.set(true);
+    setTimeout(() => {
+      this.sincronizando.set(false);
+      this.sincroExito.set(true);
+      setTimeout(() => this.sincroExito.set(false), 2500);
+    }, 600);
+  }
+
   protected abrirHover(): void {
     this.hover.set(true);
   }
@@ -104,7 +167,11 @@ export class PersonalSaludShell {
   protected cerrarEnfoque(event: FocusEvent): void {
     const barra = event.currentTarget as HTMLElement;
     const siguiente = event.relatedTarget as Node | null;
-    if (siguiente && barra.contains(siguiente)) return;
+
+    if (siguiente && barra.contains(siguiente)) {
+      return;
+    }
+
     this.hover.set(false);
   }
 
@@ -128,23 +195,6 @@ export class PersonalSaludShell {
     this.fijado.set(false);
   }
 
-  protected alNavegar(): void {
-    if (this.menuMovil()) {
-      this.cerrarTodo();
-    }
-  }
-
-  /**
-   * Conmuta dinámicamente entre modo Jefe y Enfermero para pruebas.
-   */
-  protected conmutarModo(): void {
-    const nuevoModo = this.esJefe() ? 'enfermero' : 'jefe';
-    this.datosPS.setModoManual(nuevoModo);
-  }
-
-  /**
-   * Cierra sesión y retorna al login.
-   */
   protected cerrarSesion(): void {
     this.sesion.salir();
     void this.router.navigateByUrl('/login');
