@@ -45,6 +45,7 @@
 - Build/typecheck: `pnpm build` (production config; budgets are 500 kB warning / 1 MB error, current bundle ~296 kB).
 - All tests: `pnpm test --watch=false`. `--watch` defaults to true only in a TTY.
 - Single test file: `pnpm test --watch=false --include app/app.spec.ts` (path is relative to `src/`). Filter by suite/test name with `--filter "^App"`.
+- Visual review & screenshots: `pnpm visual:capture` (or `node scripts/visual-capture.mjs`). Captures all key views with Playwright across desktop and mobile, outputting to `.visual-review/captures/`.
 - Format: `pnpm format`; verify with `pnpm format:check`. No linter is configured, so `pnpm build` is the typecheck gate.
 
 ## UI & Spartan / shadcn / Vercel (Obsidian Dark Mode) Design System (verified)
@@ -59,7 +60,12 @@
 
 ## UI rules
 
-- Follow the **Spartan / shadcn / Vercel (Obsidian Dark Mode)** design philosophy (`spartan-shadcn-ui` + `impeccable` skills): predominant `#000000` / `#09090b` dark surfaces, crisp `#fafafa` white and `#a1a1aa` zinc-gray typography, `1px solid #27272a` hairline borders, stark white `#fafafa` primary buttons (`color: #09090b`), dark zinc `#18181b` secondary buttons, flush `1px` bento metric strips, and zero decorative blur/glass or neon gradients.
+- Follow the **Spartan / shadcn / Vercel (Obsidian Dark Mode)** design philosophy (`spartan-shadcn-ui`, `impeccable`, `taste`, `emil-kowalski-animations` skills): predominant `#000000` / `#09090b` dark surfaces, crisp `#fafafa` white and `#a1a1aa` zinc-gray typography, `1px solid #27272a` hairline borders, stark white `#fafafa` primary buttons (`color: #09090b`), dark zinc `#18181b` secondary buttons, flush `1px` bento metric strips, and zero decorative blur/glass or neon gradients.
+- **Micro-interacciones y física (Emil Kowalski & Taste)**:
+  - Curva de desaceleración unificada: `--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`.
+  - Compresión táctil física: `.btn:active`, pestañas y disparadores de búsqueda comprimen sutilmente a `scale(0.975)` en 60ms.
+  - Telemetría en vivo: pulso sutil `livePulseGlow` en `.punto-verde`.
+  - Cuidado de valores por defecto del navegador: scrollbars oscuros finos, color de cursor `#fafafa`, `::selection` en alto contraste y respeto estricto de `@media (prefers-reduced-motion: reduce)`.
 - **Evitar redundancia en botones y navegación**:
   - La **Barra Superior** (`.barra-superior`) es el **único canal de navegación entre módulos** (fila 2 de pestañas horizontales), además de albergar en fila 1 el contexto, telemetría en línea (`● En línea`), disparador de búsqueda rápida (`Ctrl+K`), identidad y botón único de salida (`Salir`). No colocar botones de acción en fila 1 que dupliquen las pestañas de abajo.
   - La **Barra Lateral** (`aside.barra`) es la **Consola Operativa y Telemetría en Vivo** (no repite enlaces de navegación ni botón de salida): proporciona telemetría en tiempo real, centro de alertas e incidencias críticas, acciones rápidas (exportación de auditoría/censo JSON, sincronización local) y atajos de teclado (`Ctrl+K`, `Esc`).
@@ -68,6 +74,6 @@
 ## OpenCode setup
 
 - Project config is `.opencode/opencode.json` (JSON/JSONC); `.opencode/config.json` is not recognized.
-- Skills load from `.opencode/skills/<id>/SKILL.md` and `.agents/skills/<id>/SKILL.md`; the ID is the directory name. Current: `spartan-shadcn-ui`, `angular-best-practices`, `impeccable`.
+- Skills load from `.opencode/skills/<id>/SKILL.md` and `.agents/skills/<id>/SKILL.md`; the ID is the directory name. Current: `spartan-shadcn-ui`, `angular-best-practices`, `impeccable`, `emil-kowalski-animations`, `taste`, `playwright-visual-review`.
 - Custom agents, if added, go in `.opencode/agents/<name>.md`; `.opencode/agents.md` is ignored.
 - V2 loads `AGENTS.md` only — it does not fall back to `CLAUDE.md`.

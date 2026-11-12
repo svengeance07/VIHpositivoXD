@@ -41,8 +41,16 @@
             <span class="consulta-buscador__etiqueta">Cédula de identidad</span>
             <span class="consulta-buscador__control">
               <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
-              <input id="cedula-consulta" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 15324687"
-                [value]="cedula()" (input)="actualizarCedula($event)" aria-describedby="consulta-ayuda" />
+              <input
+                id="cedula-consulta"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Ej. 15324687"
+                [value]="cedula()"
+                (input)="actualizarCedula($event)"
+                aria-describedby="consulta-ayuda"
+              />
             </span>
           </label>
 
@@ -55,10 +63,10 @@
         <div class="consulta__ejemplos" aria-label="Cédulas de ejemplo">
           <span class="consulta__ejemplos-label">Cédulas de prueba:</span>
           @for (ejemplo of ejemplos; track ejemplo.cedula) {
-          <button type="button" class="consulta__ejemplo" (click)="usarEjemplo(ejemplo.cedula)">
-            <strong>{{ ejemplo.nombre }}</strong>
-            <small>V-{{ ejemplo.cedula }}</small>
-          </button>
+            <button type="button" class="consulta__ejemplo" (click)="usarEjemplo(ejemplo.cedula)">
+              <strong>{{ ejemplo.nombre }}</strong>
+              <small>V-{{ ejemplo.cedula }}</small>
+            </button>
           }
         </div>
 
@@ -100,249 +108,262 @@
     </section>
 
     @if (error(); as mensaje) {
-    <div class="consulta-error" role="alert" aria-live="polite">
-      <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
-      <span>{{ mensaje }}</span>
-    </div>
+      <div class="consulta-error" role="alert" aria-live="polite">
+        <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
+        <span>{{ mensaje }}</span>
+      </div>
     }
 
     @if (ficha(); as ficha) {
-    <section class="consulta-resultado" aria-label="Resultado de la consulta" aria-live="polite">
-      <article class="panel consulta-identidad">
-        <div class="consulta-identidad__izq">
-          <span class="consulta-identidad__avatar" aria-hidden="true">{{ ficha.iniciales }}</span>
-          <div class="consulta-identidad__texto">
-            <div class="consulta-identidad__tags">
-              <span class="srs-badge srs-badge--info">Ciudadano · Rol 0</span>
-              <span class="srs-badge" [class.srs-badge--ok]="ficha.aptoCertificado"
-                [class.srs-badge--warn]="!ficha.aptoCertificado">
-                {{ ficha.aptoCertificado ? 'Requisitos completos' : 'Requisitos pendientes' }}
-              </span>
+      <section class="consulta-resultado" aria-label="Resultado de la consulta" aria-live="polite">
+        <article class="panel consulta-identidad">
+          <div class="consulta-identidad__izq">
+            <span class="consulta-identidad__avatar" aria-hidden="true">{{ ficha.iniciales }}</span>
+            <div class="consulta-identidad__texto">
+              <div class="consulta-identidad__tags">
+                <span class="srs-badge srs-badge--info">Ciudadano · Rol 0</span>
+                <span
+                  class="srs-badge"
+                  [class.srs-badge--ok]="ficha.aptoCertificado"
+                  [class.srs-badge--warn]="!ficha.aptoCertificado"
+                >
+                  {{ ficha.aptoCertificado ? 'Requisitos completos' : 'Requisitos pendientes' }}
+                </span>
+              </div>
+              <h2>{{ ficha.nombre }}</h2>
+              <p>
+                V-{{ ficha.ciudadano.cedula }} · {{ ficha.edad }} años · {{ ficha.sexo }} ·
+                {{ ficha.ubicacion }}
+              </p>
             </div>
-            <h2>{{ ficha.nombre }}</h2>
-            <p>
-              V-{{ ficha.ciudadano.cedula }} · {{ ficha.edad }} años · {{ ficha.sexo }} ·
-              {{ ficha.ubicacion }}
-            </p>
           </div>
-        </div>
-        <div class="consulta-identidad__acciones">
-          <button type="button" class="btn btn-secondary btn-sm" (click)="limpiar()">
-            <span class="ui-icon" data-icon="reload" aria-hidden="true"></span>
-            <span>Nueva consulta</span>
-          </button>
-        </div>
-      </article>
-
-      <section class="panel consulta-resumen" aria-label="Resumen de salud">
-        <header class="srs-panel-cabecera">
-          <div>
-            <h2>Resumen de salud y vigencia</h2>
-            <p>Conteos del expediente; no se exponen resultados clínicos sensibles.</p>
+          <div class="consulta-identidad__acciones">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="limpiar()">
+              <span class="ui-icon" data-icon="reload" aria-hidden="true"></span>
+              <span>Nueva consulta</span>
+            </button>
           </div>
-          <span class="srs-badge srs-badge--info">
-            {{ ficha.porcentajeRequisitos }}% completado
-          </span>
-        </header>
-
-        <div class="consulta-resumen__grid">
-          <div class="consulta-resumen__dato">
-            <span class="consulta-resumen__icono" aria-hidden="true">
-              <span class="ui-icon" data-icon="check"></span>
-            </span>
-            <span>Vacunas registradas</span>
-            <strong>{{ ficha.vacunas.length }}</strong>
-          </div>
-          <div class="consulta-resumen__dato">
-            <span class="consulta-resumen__icono" aria-hidden="true">
-              <span class="ui-icon" data-icon="clipboard"></span>
-            </span>
-            <span>Exámenes registrados</span>
-            <strong>{{ ficha.examenes.length }}</strong>
-          </div>
-          <div class="consulta-resumen__dato">
-            <span class="consulta-resumen__icono" aria-hidden="true">
-              <span class="ui-icon" data-icon="filter"></span>
-            </span>
-            <span>Requisitos vigentes</span>
-            <strong>{{ ficha.requisitosCumplidos }}/{{ ficha.requisitosTotales }}</strong>
-          </div>
-        </div>
-
-        <div class="srs-progreso consulta-resumen__progreso" [class.srs-progreso--alerta]="!ficha.aptoCertificado">
-          <span [style.width.%]="ficha.porcentajeRequisitos" aria-hidden="true"></span>
-        </div>
-        <p class="consulta-resumen__nota">
-          La evaluación de requisitos es una regla provisional del prototipo y debe validarse con
-          el equipo de salud antes de usarse para emitir certificados reales.
-        </p>
-      </section>
-
-      <div class="consulta-grid">
-        <article class="panel consulta-datos">
-          <header class="srs-panel-cabecera">
-            <div>
-              <h2>Datos personales</h2>
-              <p>Información filiatoria registrada en tu expediente.</p>
-            </div>
-            <span class="srs-badge srs-badge--info">Expediente activo</span>
-          </header>
-
-          <dl class="consulta-datos__grid">
-            <div>
-              <dt>Nombre completo</dt>
-              <dd>{{ ficha.nombre }}</dd>
-            </div>
-            <div>
-              <dt>Cédula de identidad</dt>
-              <dd>V-{{ ficha.ciudadano.cedula }}</dd>
-            </div>
-            <div>
-              <dt>Fecha de nacimiento</dt>
-              <dd>
-                {{ ficha.ciudadano.nacimiento | date: 'dd/MM/yyyy' }} ({{ ficha.edad }} años)
-              </dd>
-            </div>
-            <div>
-              <dt>Sexo</dt>
-              <dd>{{ ficha.sexo }}</dd>
-            </div>
-            <div>
-              <dt>Etnia</dt>
-              <dd>{{ maestro.nombreEtnia(ficha.ciudadano.etniaId) }}</dd>
-            </div>
-            <div class="consulta-datos__ancho">
-              <dt>Correo electrónico</dt>
-              <dd>{{ ficha.correo }}</dd>
-            </div>
-            <div>
-              <dt>Teléfono</dt>
-              <dd>{{ ficha.telefono }}</dd>
-            </div>
-            <div>
-              <dt>Residencia</dt>
-              <dd>{{ ficha.ubicacion }}</dd>
-            </div>
-            <div>
-              <dt>Expediente desde</dt>
-              <dd>{{ ficha.ciudadano.creadoEn | date: 'dd/MM/yyyy' }}</dd>
-            </div>
-          </dl>
         </article>
 
-        <article class="panel consulta-certificado">
+        <section class="panel consulta-resumen" aria-label="Resumen de salud">
           <header class="srs-panel-cabecera">
             <div>
-              <h2>Certificado de salud</h2>
-              <p>Estado de tu solicitud en la subregión.</p>
+              <h2>Resumen de salud y vigencia</h2>
+              <p>Conteos del expediente; no se exponen resultados clínicos sensibles.</p>
             </div>
-            @if (certificado(); as certificado) {
-            <span [class]="'srs-badge ' + claseEstado(certificado.estado)">
-              {{ etiquetaEstado(certificado.estado) }}
+            <span class="srs-badge srs-badge--info">
+              {{ ficha.porcentajeRequisitos }}% completado
             </span>
-            }
           </header>
 
-          @if (certificado(); as certificado) {
-          <div [class]="'consulta-certificado__resumen ' + claseEstado(certificado.estado)">
-            <span class="consulta-certificado__icono" aria-hidden="true">
-              <span class="ui-icon" [attr.data-icon]="
+          <div class="consulta-resumen__grid">
+            <div class="consulta-resumen__dato">
+              <span class="consulta-resumen__icono" aria-hidden="true">
+                <span class="ui-icon" data-icon="check"></span>
+              </span>
+              <span>Vacunas registradas</span>
+              <strong>{{ ficha.vacunas.length }}</strong>
+            </div>
+            <div class="consulta-resumen__dato">
+              <span class="consulta-resumen__icono" aria-hidden="true">
+                <span class="ui-icon" data-icon="clipboard"></span>
+              </span>
+              <span>Exámenes registrados</span>
+              <strong>{{ ficha.examenes.length }}</strong>
+            </div>
+            <div class="consulta-resumen__dato">
+              <span class="consulta-resumen__icono" aria-hidden="true">
+                <span class="ui-icon" data-icon="filter"></span>
+              </span>
+              <span>Requisitos vigentes</span>
+              <strong>{{ ficha.requisitosCumplidos }}/{{ ficha.requisitosTotales }}</strong>
+            </div>
+          </div>
+
+          <div
+            class="srs-progreso consulta-resumen__progreso"
+            [class.srs-progreso--alerta]="!ficha.aptoCertificado"
+          >
+            <span [style.width.%]="ficha.porcentajeRequisitos" aria-hidden="true"></span>
+          </div>
+          <p class="consulta-resumen__nota">
+            La evaluación de requisitos es una regla provisional del prototipo y debe validarse con
+            el equipo de salud antes de usarse para emitir certificados reales.
+          </p>
+        </section>
+
+        <div class="consulta-grid">
+          <article class="panel consulta-datos">
+            <header class="srs-panel-cabecera">
+              <div>
+                <h2>Datos personales</h2>
+                <p>Información filiatoria registrada en tu expediente.</p>
+              </div>
+              <span class="srs-badge srs-badge--info">Expediente activo</span>
+            </header>
+
+            <dl class="consulta-datos__grid">
+              <div>
+                <dt>Nombre completo</dt>
+                <dd>{{ ficha.nombre }}</dd>
+              </div>
+              <div>
+                <dt>Cédula de identidad</dt>
+                <dd>V-{{ ficha.ciudadano.cedula }}</dd>
+              </div>
+              <div>
+                <dt>Fecha de nacimiento</dt>
+                <dd>
+                  {{ ficha.ciudadano.nacimiento | date: 'dd/MM/yyyy' }} ({{ ficha.edad }} años)
+                </dd>
+              </div>
+              <div>
+                <dt>Sexo</dt>
+                <dd>{{ ficha.sexo }}</dd>
+              </div>
+              <div>
+                <dt>Etnia</dt>
+                <dd>{{ maestro.nombreEtnia(ficha.ciudadano.etniaId) }}</dd>
+              </div>
+              <div class="consulta-datos__ancho">
+                <dt>Correo electrónico</dt>
+                <dd>{{ ficha.correo }}</dd>
+              </div>
+              <div>
+                <dt>Teléfono</dt>
+                <dd>{{ ficha.telefono }}</dd>
+              </div>
+              <div>
+                <dt>Residencia</dt>
+                <dd>{{ ficha.ubicacion }}</dd>
+              </div>
+              <div>
+                <dt>Expediente desde</dt>
+                <dd>{{ ficha.ciudadano.creadoEn | date: 'dd/MM/yyyy' }}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="panel consulta-certificado">
+            <header class="srs-panel-cabecera">
+              <div>
+                <h2>Certificado de salud</h2>
+                <p>Estado de tu solicitud en la subregión.</p>
+              </div>
+              @if (certificado(); as certificado) {
+                <span [class]="'srs-badge ' + claseEstado(certificado.estado)">
+                  {{ etiquetaEstado(certificado.estado) }}
+                </span>
+              }
+            </header>
+
+            @if (certificado(); as certificado) {
+              <div [class]="'consulta-certificado__resumen ' + claseEstado(certificado.estado)">
+                <span class="consulta-certificado__icono" aria-hidden="true">
+                  <span
+                    class="ui-icon"
+                    [attr.data-icon]="
                       certificado.estado === 'descartado'
                         ? 'warning'
                         : certificado.estado === 'solicitado'
                           ? 'clipboard'
                           : 'check'
-                    "></span>
-            </span>
-            <div>
-              <strong>{{ certificado.codigo }}</strong>
-              <p>
-                Solicitado el
-                {{ certificado.fechaSolicitud | date: 'dd/MM/yyyy' }}
-                @if (certificado.fechaRevision) {
-                · revisado el {{ certificado.fechaRevision | date: 'dd/MM/yyyy' }}
-                }
-              </p>
-            </div>
-          </div>
-
-          @switch (certificado.estado) {
-          @case ('solicitado') {
-          <p class="consulta-certificado__detalle">
-            Tu solicitud está en revisión. La subregión recibe el aviso cuando el expediente
-            reúne todos los requisitos del certificado.
-          </p>
-          }
-          @case ('autorizado') {
-          <p class="consulta-certificado__detalle">
-            La subregión aprobó tu solicitud. El certificado está pendiente de emisión, pero
-            ya puedes pedir el envío a tu correo.
-          </p>
-          }
-          @case ('emitido') {
-          <p class="consulta-certificado__detalle">
-            Tu certificado fue emitido
-            @if (certificado.fechaEmision) {
-            el {{ certificado.fechaEmision | date: 'dd/MM/yyyy' }}
-            }
-            y ya puedes pedir el envío a tu correo.
-          </p>
-          }
-          @case ('descartado') {
-          <p class="consulta-certificado__detalle">
-            La solicitud fue descartada. Motivo registrado:
-            <strong>{{ certificado.motivo }}</strong>
-          </p>
-          }
-          }
-
-          <div class="consulta-certificado__correo">
-            <div class="consulta-certificado__correo-cabecera">
-              <span class="consulta-certificado__correo-icono" aria-hidden="true">
-                <span class="ui-icon" data-icon="send"></span>
-              </span>
-              <div>
-                <h3>Envío al correo registrado</h3>
-                <p>{{ ficha.correo }}</p>
+                    "
+                  ></span>
+                </span>
+                <div>
+                  <strong>{{ certificado.codigo }}</strong>
+                  <p>
+                    Solicitado el
+                    {{ certificado.fechaSolicitud | date: 'dd/MM/yyyy' }}
+                    @if (certificado.fechaRevision) {
+                      · revisado el {{ certificado.fechaRevision | date: 'dd/MM/yyyy' }}
+                    }
+                  </p>
+                </div>
               </div>
-            </div>
 
-            @if (certificadoAprobado()) {
-            @if (certificado.correoEnviado) {
-            <div class="consulta-envio-ok" role="status">
-              <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
-              <span>
-                Envío registrado. En este prototipo no se genera un correo real.
-              </span>
-            </div>
+              @switch (certificado.estado) {
+                @case ('solicitado') {
+                  <p class="consulta-certificado__detalle">
+                    Tu solicitud está en revisión. La subregión recibe el aviso cuando el expediente
+                    reúne todos los requisitos del certificado.
+                  </p>
+                }
+                @case ('autorizado') {
+                  <p class="consulta-certificado__detalle">
+                    La subregión aprobó tu solicitud. El certificado está pendiente de emisión, pero
+                    ya puedes pedir el envío a tu correo.
+                  </p>
+                }
+                @case ('emitido') {
+                  <p class="consulta-certificado__detalle">
+                    Tu certificado fue emitido
+                    @if (certificado.fechaEmision) {
+                      el {{ certificado.fechaEmision | date: 'dd/MM/yyyy' }}
+                    }
+                    y ya puedes pedir el envío a tu correo.
+                  </p>
+                }
+                @case ('descartado') {
+                  <p class="consulta-certificado__detalle">
+                    La solicitud fue descartada. Motivo registrado:
+                    <strong>{{ certificado.motivo }}</strong>
+                  </p>
+                }
+              }
+
+              <div class="consulta-certificado__correo">
+                <div class="consulta-certificado__correo-cabecera">
+                  <span class="consulta-certificado__correo-icono" aria-hidden="true">
+                    <span class="ui-icon" data-icon="send"></span>
+                  </span>
+                  <div>
+                    <h3>Envío al correo registrado</h3>
+                    <p>{{ ficha.correo }}</p>
+                  </div>
+                </div>
+
+                @if (certificadoAprobado()) {
+                  @if (certificado.correoEnviado) {
+                    <div class="consulta-envio-ok" role="status">
+                      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                      <span>
+                        Envío registrado. En este prototipo no se genera un correo real.
+                      </span>
+                    </div>
+                  } @else {
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-block"
+                      (click)="enviarCertificado()"
+                    >
+                      <span class="ui-icon" data-icon="send" aria-hidden="true"></span>
+                      <span>Enviar certificado a mi correo</span>
+                    </button>
+                    <small class="consulta-certificado__nota">
+                      El envío es simulado y no requiere código de verificación en esta versión.
+                    </small>
+                  }
+                } @else {
+                  <p class="consulta-certificado__nota">
+                    El botón de envío aparecerá cuando la subregión apruebe tu certificado.
+                  </p>
+                }
+              </div>
             } @else {
-            <button type="button" class="btn btn-primary btn-block" (click)="enviarCertificado()">
-              <span class="ui-icon" data-icon="send" aria-hidden="true"></span>
-              <span>Enviar certificado a mi correo</span>
-            </button>
-            <small class="consulta-certificado__nota">
-              El envío es simulado y no requiere código de verificación en esta versión.
-            </small>
+              <div class="consulta-certificado__vacio">
+                <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+                <strong>Aún no hay un certificado registrado</strong>
+                <p>
+                  Cuando la subregión registre y apruebe una solicitud, aquí verás su estado y
+                  podrás pedir el envío a tu correo.
+                </p>
+              </div>
             }
-            } @else {
-            <p class="consulta-certificado__nota">
-              El botón de envío aparecerá cuando la subregión apruebe tu certificado.
-            </p>
-            }
-          </div>
-          } @else {
-          <div class="consulta-certificado__vacio">
-            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
-            <strong>Aún no hay un certificado registrado</strong>
-            <p>
-              Cuando la subregión registre y apruebe una solicitud, aquí verás su estado y
-              podrás pedir el envío a tu correo.
-            </p>
-          </div>
-          }
-        </article>
-      </div>
-    </section>
+          </article>
+        </div>
+      </section>
     }
   </main>
 

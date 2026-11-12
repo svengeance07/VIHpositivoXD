@@ -234,11 +234,18 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background-color 120ms ease;
+  transition:
+    background-color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
 }
 
 .rol:hover {
   background-color: #121215;
+}
+
+.rol:active {
+  transform: scale(0.985);
+  transition: transform 60ms var(--ease-out);
 }
 
 .rol__num {

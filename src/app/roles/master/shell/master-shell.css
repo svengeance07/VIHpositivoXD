@@ -142,6 +142,12 @@
   border-color: var(--border-strong);
 }
 
+.barra__pin:active,
+.barra__cerrar:active {
+  transform: scale(0.95);
+  transition: transform 60ms var(--ease-out);
+}
+
 /* Herramientas Selector Strip */
 .barra__herramientas {
   display: grid;
@@ -167,9 +173,15 @@
   cursor: pointer;
   overflow: hidden;
   transition:
-    background-color 120ms ease,
-    color 120ms ease,
-    border-color 120ms ease;
+    background-color 140ms var(--ease-out),
+    color 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
+}
+
+.barra__herramienta-btn:active {
+  transform: scale(0.975);
+  transition: transform 60ms var(--ease-out);
 }
 
 .barra.is-expandida .barra__herramienta-btn {
@@ -384,6 +396,11 @@
   padding: 0.2rem 0.5rem !important;
 }
 
+.alerta-card__accion:active {
+  transform: scale(0.975);
+  transition: transform 60ms var(--ease-out);
+}
+
 .panel-operativo__acciones {
   display: grid;
   gap: 0.45rem;
@@ -591,12 +608,25 @@ kbd {
   color: var(--muted-foreground);
 }
 
+@keyframes livePulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
 .punto-verde {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 9999px;
   background-color: var(--ok);
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+  animation: livePulseGlow 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 /* Disparador de búsqueda tipo Vercel / Linear (Ctrl+K) */
@@ -614,8 +644,14 @@ kbd {
   font-size: 0.76rem;
   cursor: pointer;
   transition:
-    border-color 120ms ease,
-    color 120ms ease;
+    border-color 140ms var(--ease-out),
+    color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
+}
+
+.barra-superior__buscador:active {
+  transform: scale(0.975);
+  transition: transform 60ms var(--ease-out);
 }
 
 .barra-superior__buscador:hover {
@@ -691,8 +727,14 @@ kbd {
   text-decoration: none;
   border-bottom: 2px solid transparent;
   transition:
-    color 120ms ease,
-    border-color 120ms ease;
+    color 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
+}
+
+.barra-superior__tab:active {
+  transform: scale(0.975);
+  transition: transform 60ms var(--ease-out);
 }
 
 .barra-superior__tab:hover {

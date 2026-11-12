@@ -72,8 +72,8 @@ flowchart TD
   [`modelo-datos.md`](./modelo-datos.md) §5.1.
 - Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética y disposición unificada **Spartan / shadcn / Vercel (Obsidian Dark Mode)** basada en la **separación estricta de propósitos entre barras para eliminar redundancias**:
   - **Barra Superior (Navegación Estructural y Contexto de Sesión)**:
-    - *Fila 1*: Identidad institucional y breadcrumbs (`V / Rol / Contexto`), indicador de telemetría en vivo (`● Red en línea`), disparador de búsqueda rápida (`Ctrl+K`), pastilla de usuario y botón único de salida (`Salir`). **Sin botones de acción duplicados** que compitan con las pestañas.
-    - *Fila 2*: Pestañas horizontales de navegación por módulos con indicador activo blanco inferior. Es el **único lugar** donde el usuario conmuta de vista dentro del rol.
+    - _Fila 1_: Identidad institucional y breadcrumbs (`V / Rol / Contexto`), indicador de telemetría en vivo (`● Red en línea`), disparador de búsqueda rápida (`Ctrl+K`), pastilla de usuario y botón único de salida (`Salir`). **Sin botones de acción duplicados** que compitan con las pestañas.
+    - _Fila 2_: Pestañas horizontales de navegación por módulos con indicador activo blanco inferior. Es el **único lugar** donde el usuario conmuta de vista dentro del rol.
   - **Barra Lateral (Consola Operativa y Telemetría en Vivo)**:
     - No repite los enlaces de las pestañas ni el botón de logout.
     - Funciona como un dock operativo de supervisión en tiempo real con 4 herramientas:
@@ -83,6 +83,12 @@ flowchart TD
       4. ⌨️ **Atajos de Teclado**: Guía interactiva (`Ctrl+K`, `Esc`, `Tab`).
     - Colapsable a un dock minimalista de `3.5rem` y expandible a `18.5rem` con fijación (`pin`).
   - Tarjetas oscuras `#09090b` sobre lienzo negro `#000000`, bordes de `1px solid #27272a`, tiras de métricas bento unidas por divisores de `1px`, botones primarios blancos (`#fafafa` con texto `#09090b`) y números tabulares.
+  - **Física y micro-interacciones (Emil Kowalski & Taste)**:
+    - Curva de desaceleración unificada: `--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`.
+    - Compresión física al interactuar: botones (`.btn`), pestañas (`.barra-superior__tab`), disparadores (`.barra-superior__buscador`) y accesos de rol comprimen a `scale(0.975)` en 60ms al presionarse (`:active`).
+    - Animaciones de modales (fundido de telón de fondo y escalado suave de contenedor) y colapsables con revelación de panel.
+    - Telemetría viva con pulso sutil `livePulseGlow` en el indicador `.punto-verde`.
+    - Valores por defecto cuidados: barras de scroll ultra-delgadas oscuras, `caret-color: #fafafa`, `::selection` en alto contraste y anulación completa cuando el usuario activa `prefers-reduced-motion`.
 
 ### 3.1 Navegación interna del master
 
