@@ -7,12 +7,13 @@ Estado: **esquema de trabajo, todavía no implementado**.
 > parte de las **16 tablas recibidas el 2026-10-25** y agrega, al final, las extensiones
 > propuestas por el prototipo. La copia fiel del script recibido se conserva en
 > [`db_schema_original_2026-10-25.sql`](../referencias/db_schema_original_2026-10-25.sql).
+> Asimismo, el script referencial de 17 tablas con llaves foráneas se encuentra en
+> [`docs/referencias/example.sql`](../referencias/example.sql).
 >
-> No hay backend, migraciones, ORM, conexión a base de datos ni datos reales. Este documento
-> describe el diseño objetivo y la correspondencia con los mocks; no se ejecuta nada todavía.
->
-> Las tablas de lotes/stock, movimientos e incidencias siguen sin recibirse. No se inventan
-> sus columnas definitivas.
+> Los modelos de TypeScript mapeados directamente a estas tablas y sus DTOs relacionales
+> se encuentran organizados en [`src/app/nucleo/modelos/sql/`](../../src/app/nucleo/modelos/sql/index.ts)
+> (`tablas-sql.model.ts`, `ps/`, `srs/`, `master/`), desacoplados de los modelos de vista/mock
+> de frontend en `src/app/nucleo/modelos/*.ts`.
 
 ## 1. Resumen
 

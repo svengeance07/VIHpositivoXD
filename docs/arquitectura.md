@@ -136,7 +136,7 @@ src/app/
 
 ## Pendientes
 
-- **Esquema de base de datos**: el esquema de trabajo ya incluye certificados, notificaciones y envíos, además de las columnas acordadas (`usuarios.sexo`, `usuarios.creado_en`, `centros_salud.tipo`). Al operar con un único usuario (Jefe) por centro o subregión, `personal` resuelve directamente el login de los roles 2 y 3 sin requerir tablas adicionales de cuentas de entidad. Siguen faltando lotes/stock, movimientos, búsquedas e incidencias. No implementar hasta cerrar las preguntas de `docs/diseno/modelo-datos.md` §8.
+- **Esquema de base de datos**: el esquema de trabajo ya incluye certificados, notificaciones y envíos, además de las columnas acordadas (`usuarios.sexo`, `usuarios.creado_en`, `centros_salud.tipo`). Al operar con un único usuario (Jefe) por centro o subregión, `personal` resuelve directamente el login de los roles 2 y 3 sin requerir tablas adicionales de cuentas de entidad. Siguen faltando lotes/stock, movimientos, búsquedas e incidencias. No implementar hasta cerrar las preguntas de `docs/diseno/modelo-datos.md` §8. El servidor backend de preparación y los scripts SQL desacoplados se encuentran en `server/` y están documentados en `docs/diseno/backend-y-consultas-sql.md`.
 - **Login**: flujo directo de dos pasos (elección de rol + correo y contraseña de `master` o `personal`). Falta implementar hashing, bloqueo por intentos y sesión real cuando exista backend.
 - Decisiones que siguen abiertas en `docs/diseno/vistas.md` §10: vigencia de exámenes y vacunas, credenciales reales y geodatos del mapa.
 - Permisos por rol: el alcance funcional está descrito, falta la implementación (incluidos guards de ruta y persistencia de sesión).
