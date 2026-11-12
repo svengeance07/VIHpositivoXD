@@ -1,0 +1,427 @@
+<div class="ps-pagina">
+  <!-- Cabecera de Credencial Digital del Jefe de Centro -->
+  <app-ps-encabezado
+    [eyebrow]="
+      'Credencial Institucional · ' + nombreCentro() + ' (' + miPerfil().codigoCentro + ')'
+    "
+    titulo="Credencial Digital y Ficha de Autoridad (Tabla autoridades)"
+    descripcion="Acreditación oficial del Jefe de Centro (tipo_usuario = 'centro_salud_jefe'), datos de centro_salud y registro de actividad en inmunizacion."
+  >
+    <div class="badge-perfil-activo">
+      <span class="badge-perfil-activo__dot"></span>
+      <span>tipo_usuario: {{ miPerfil().tipoUsuario }}</span>
+    </div>
+  </app-ps-encabezado>
+
+  <div class="ps-perfil-enfermero">
+    <!-- Mensaje temporal de descarga o copia de validación -->
+    @if (mensajeCredencial()) {
+      <aside class="panel alerta-exito" role="status">
+        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+        <div class="alerta-exito__texto">
+          <strong>Credencial Oficial</strong>
+          <p>{{ mensajeCredencial() }}</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm"
+          (click)="mensajeCredencial.set('')"
+          aria-label="Cerrar aviso"
+        >
+          <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+        </button>
+      </aside>
+    }
+
+    <!-- SECCIÓN PRINCIPAL: CREDENCIAL DIGITAL INSTITUCIONAL (TABLA autoridades + centro_salud) -->
+    <section class="panel ps-credencial-contenedor" aria-label="Credencial digital institucional">
+      <!-- Barra de herramientas superior de la credencial -->
+      <header class="ps-credencial-toolbar">
+        <div class="ps-credencial-toolbar__info">
+          <span class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Tablas autoridades · centro_salud · profesiones · usuarios
+          </span>
+          <h3>Credencial Digital de Jefatura de Centro</h3>
+          <p>
+            Datos filiatorios, colegiatura (<code>n_impre</code>), profesión
+            (<code>profesion_id</code>) y establecimiento asignado (<code>id_jefe_centro</code>).
+          </p>
+        </div>
+
+        <div class="ps-credencial-toolbar__acciones">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            (click)="voltearCredencial()"
+            title="Alternar entre anverso y reverso"
+          >
+            <span class="ui-icon" data-icon="reload" aria-hidden="true"></span>
+            <span>Ver {{ caraCredencial() === 'frente' ? 'Reverso' : 'Anverso' }}</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            (click)="copiarEnlaceVerificacion()"
+            title="Copiar código de validación"
+          >
+            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+            <span>Copiar Validación</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- TARJETA FÍSICA / LAMINADA DE LA CREDENCIAL -->
+      <div class="credencial-escena">
+        <div class="credencial-tarjeta" [class.is-reverso]="caraCredencial() === 'reverso'">
+          <!-- ============================================== -->
+          <!-- CARA 1: ANVERSO (FRENTE DE LA CREDENCIAL)      -->
+          <!-- ============================================== -->
+          <article class="credencial-cara credencial-cara--frente">
+            <!-- Cinta tricolor institucional -->
+            <div class="credencial-cinta-tricolor" aria-hidden="true">
+              <span class="cinta-amarilla"></span>
+              <span class="cinta-azul"></span>
+              <span class="cinta-roja"></span>
+            </div>
+
+            <!-- Cabecera institucional del carnet -->
+            <div class="credencial-cabecera">
+              <div class="credencial-escudo" aria-hidden="true">
+                <span class="escudo-icono">🏛️</span>
+              </div>
+              <div class="credencial-entidad">
+                <span class="credencial-republica">REPÚBLICA BOLIVARIANA DE VENEZUELA</span>
+                <span class="credencial-ministerio"
+                  >MINISTERIO DEL PODER POPULAR PARA LA SALUD</span
+                >
+                <span class="credencial-sistema"
+                  >SISTEMA PÚBLICO NACIONAL DE SALUD · SISTEMA V</span
+                >
+              </div>
+              <div
+                class="credencial-chip"
+                aria-hidden="true"
+                title="Chip de Seguridad Criptográfica"
+              >
+                <div class="chip-lineas"></div>
+              </div>
+            </div>
+
+            <!-- Cuerpo de la credencial -->
+            <div class="credencial-cuerpo">
+              <!-- Foto / Avatar profesional con sello -->
+              <div class="credencial-foto-columna">
+                <div class="credencial-foto-marco">
+                  <div class="credencial-avatar" aria-hidden="true">
+                    {{ inicialesPerfil() }}
+                  </div>
+                  <div class="credencial-sello-verificado" title="Validado en Sistema Nacional">
+                    <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                    <span>MPPS</span>
+                  </div>
+                </div>
+                <span class="credencial-codigo-seguridad">
+                  ID_AUT #{{ miPerfil().idAutoridades }}
+                </span>
+              </div>
+
+              <!-- Datos de autoridades y centro_salud -->
+              <div class="credencial-datos-columna">
+                <div class="credencial-nombre-bloque">
+                  <span class="credencial-etiqueta-cargo">
+                    JEFE DE CENTRO ({{ miPerfil().tipoUsuario }}) · {{ miPerfil().nombreProfesion }}
+                  </span>
+                  <h2 class="credencial-nombre">
+                    {{ miPerfil().primerNombre }} {{ miPerfil().segundoNombre }}
+                    {{ miPerfil().primerApellido }} {{ miPerfil().segundoApellido }}
+                  </h2>
+                </div>
+
+                <div class="credencial-grilla-datos">
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label">Cédula de Identidad (c_i)</span>
+                    <strong class="credencial-dato__valor">V-{{ miPerfil().cedula }}</strong>
+                  </div>
+
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label">N° Inpre / Colegiado (n_impre)</span>
+                    <strong class="credencial-dato__valor credencial-dato__valor--destacado">
+                      #{{ miPerfil().nImpre }}
+                    </strong>
+                  </div>
+
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label"
+                      >Centro (nombre_centro / codigo_centro)</span
+                    >
+                    <strong class="credencial-dato__valor">
+                      {{ nombreCentro() }} ({{ miPerfil().codigoCentro }})
+                    </strong>
+                  </div>
+
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label">Teléfono (telefono)</span>
+                    <strong class="credencial-dato__valor">{{ miPerfil().telefono }}</strong>
+                  </div>
+
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label">Correo (correo / correo_usuario)</span>
+                    <strong class="credencial-dato__valor">{{ miPerfil().correo }}</strong>
+                  </div>
+
+                  <div class="credencial-dato">
+                    <span class="credencial-dato__label">Domicilio (domicilio)</span>
+                    <strong class="credencial-dato__valor">{{ miPerfil().domicilio }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pie de la credencial con Código QR y ubicación del centro -->
+            <footer class="credencial-pie">
+              <div class="credencial-qr-box">
+                <svg
+                  class="credencial-qr"
+                  viewBox="0 0 48 48"
+                  fill="currentColor"
+                  aria-label="Código QR de verificación"
+                >
+                  <path
+                    d="M4 4h16v16H4V4zm4 4v8h8V8H8zM4 28h16v16H4V28zm4 4v8h8v-8H8zM28 4h16v16H28V4zm4 4v8h8V8h-8zM28 28h4v4h-4v-4zm8 0h4v4h-4v-4zm4 4h4v4h-4v-4zm-8 4h4v4h-4v-4zm8 0h4v4h-4v-4zm-4 4h4v4h-4v-4zm-8-8h4v4h-4v-4zm-4 4h4v4h-4v-4zM10 10h4v4h-4v-4zm0 24h4v4h-4v-4zm24-24h4v4h-4v-4z"
+                  />
+                </svg>
+                <div class="credencial-qr-texto">
+                  <strong>UBICACIÓN CENTRO ({{ miPerfil().codigoCentro }})</strong>
+                  <span>{{ miPerfil().ubicacionCentro }}</span>
+                </div>
+              </div>
+
+              <div class="credencial-vigencia">
+                <span
+                  >id_centro: <strong>#{{ centroInfo.idCentro }}</strong></span
+                >
+                <span
+                  >usuario_id: <strong>#{{ miPerfil().usuarioId }}</strong></span
+                >
+              </div>
+            </footer>
+          </article>
+
+          <!-- ============================================== -->
+          <!-- CARA 2: REVERSO (RESPALDO LEGAL Y FIRMAS)     -->
+          <!-- ============================================== -->
+          <article class="credencial-cara credencial-cara--reverso">
+            <!-- Franja tricolor de reverso -->
+            <div class="credencial-cinta-tricolor" aria-hidden="true">
+              <span class="cinta-amarilla"></span>
+              <span class="cinta-azul"></span>
+              <span class="cinta-roja"></span>
+            </div>
+
+            <div class="credencial-reverso-cabecera">
+              <h4>DISPOSICIONES OFICIALES DE CUSTODIA Y ACREDITACIÓN</h4>
+              <p>Dirección General de Epidemiología · Viceministerio de Redes de Salud Colectiva</p>
+            </div>
+
+            <div class="credencial-reverso-cuerpo">
+              <p class="credencial-legal-texto">
+                El titular de este documento oficial está debidamente acreditado en la tabla
+                <code>autoridades</code> como Jefe del Centro de Salud
+                (<code>centro_salud.id_jefe_centro</code>), facultado para el registro de ciudadanos
+                en <code>ciudadano_mayor_edad</code> y <code>ciudadano_menor_edad</code>, aplicación
+                de dosis en <code>inmunizacion</code> y notificación en <code>reportes</code>.
+              </p>
+
+              <!-- Bloque de Firmas Oficiales -->
+              <div class="credencial-firmas-grid">
+                <div class="credencial-firma">
+                  <div class="firma-linea">
+                    <span class="firma-garabato">MPPS Epidemiología</span>
+                  </div>
+                  <strong>Dirección de Epidemiología</strong>
+                  <span>Ministerio del Poder Popular para la Salud</span>
+                </div>
+
+                <div class="credencial-firma">
+                  <div class="firma-linea">
+                    <span class="firma-garabato firma-garabato--enfermero">{{
+                      miPerfil().nombre
+                    }}</span>
+                  </div>
+                  <strong>{{ miPerfil().nombre }}</strong>
+                  <span>Jefe de Centro · n_impre #{{ miPerfil().nImpre }}</span>
+                </div>
+              </div>
+            </div>
+
+            <footer class="credencial-reverso-pie">
+              <div class="credencial-barcode" aria-hidden="true">
+                <div class="barcode-lineas"></div>
+                <span>*MPPS-SPNS-INPRE-{{ miPerfil().nImpre }}-VE*</span>
+              </div>
+              <div class="credencial-reverso-contacto">
+                <span
+                  >Teléfono titular: <strong>{{ miPerfil().telefono }}</strong></span
+                >
+              </div>
+            </footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN SECUNDARIA: MÉTRICAS Y ACTIVIDAD HISTÓRICA DEL JEFE DE CENTRO -->
+    <section class="ps-metricas" aria-label="Métricas propias de desempeño">
+      <article class="panel metrica metrica--verde">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
+            <span class="ui-icon" data-icon="check"></span>
+          </span>
+          <span class="metrica__etiqueta">Vacunas Hoy</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--verde">{{
+              misMetricas().misVacunasHoy
+            }}</strong>
+            <span class="metrica__sufijo">aplicadas</span>
+          </div>
+          <small class="metrica__subtexto">En la jornada de atención de hoy</small>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--azul">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+            <span class="ui-icon" data-icon="clipboard"></span>
+          </span>
+          <span class="metrica__etiqueta">Pacientes Atendidos</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--azul">{{
+              misMetricas().misPacientesHoy
+            }}</strong>
+            <span class="metrica__sufijo">inmunizados</span>
+          </div>
+          <small class="metrica__subtexto">Mayores y menores atendidos hoy</small>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--morado">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+            <span class="ui-icon" data-icon="calendar"></span>
+          </span>
+          <span class="metrica__etiqueta">Total Histórico</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--morado">{{
+              miPerfil().vacunasAplicadasTotal | number
+            }}</strong>
+            <span class="metrica__sufijo">dosis</span>
+          </div>
+          <small class="metrica__subtexto">En {{ nombreCentro() }}</small>
+        </div>
+      </article>
+
+      <article class="panel metrica metrica--rojo">
+        <div class="metrica__cabecera">
+          <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+            <span class="ui-icon" data-icon="warning"></span>
+          </span>
+          <span class="metrica__etiqueta">Reportes (reportes)</span>
+        </div>
+        <div class="metrica__cuerpo">
+          <div class="metrica__valor-fila">
+            <strong class="metrica__valor metrica__valor--rojo">{{
+              misMetricas().misReportesTotal
+            }}</strong>
+            <span class="metrica__sufijo">emitidos</span>
+          </div>
+          <small class="metrica__subtexto">Eventos adversos documentados</small>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECCIÓN: Historial Resumido de Vacunación del Centro (Tabla inmunizacion) -->
+    <section class="panel ps-bloque-tabla" aria-label="Historial de vacunas aplicadas en el centro">
+      <header class="ps-bloque-cabecera">
+        <div>
+          <span class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Tabla inmunizacion
+          </span>
+          <h3>Bitácora de Inmunizaciones Asentadas</h3>
+          <p>
+            Registros de <code>inmunizacion</code> asentados en {{ nombreCentro() }} ({{
+              miPerfil().codigoCentro
+            }}).
+          </p>
+        </div>
+        <a class="btn btn-sm btn-ghost" routerLink="/PS/historial">Ver Todo el Centro →</a>
+      </header>
+
+      <div class="tabla-contenedor">
+        <table class="ui-table">
+          <thead>
+            <tr>
+              <th scope="col">id_inmunizacion / fecha_aplicacion</th>
+              <th scope="col">Ciudadano</th>
+              <th scope="col">Vacuna / numero_dosis</th>
+              <th scope="col">numero_lote</th>
+              <th scope="col">observaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of misAplicacionesTotales(); track app.id) {
+              <tr>
+                <td>
+                  <div class="fecha-celda">
+                    <strong>#{{ app.idInmunizacion }}</strong>
+                    <small>{{ app.fechaAplicacion }}</small>
+                  </div>
+                </td>
+                <td>
+                  <div class="celda-paciente">
+                    <strong>{{ app.pacienteNombre }}</strong>
+                    <div class="celda-paciente__sub">
+                      <span>{{
+                        app.esMenor ? app.pacienteCedula : 'C.I. ' + app.pacienteCedula
+                      }}</span>
+                      @if (app.esMenor) {
+                        <span class="badge-menor">Menor</span>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="celda-vacuna-info">
+                    <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
+                    <small class="badge-dosis">Dosis #{{ app.dosis }}</small>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-lote">{{ app.lote }}</span>
+                </td>
+                <td>
+                  <span class="observaciones-texto">{{
+                    app.observaciones || 'Sin observaciones'
+                  }}</span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="tabla-vacia">
+                  No hay aplicaciones registradas en este centro aún.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

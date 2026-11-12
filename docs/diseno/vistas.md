@@ -65,10 +65,31 @@ flowchart TD
 ```
 
 - `index` es la **landing page** y convive con dos accesos: login (roles 1–3) y consulta pública (rol 0).
+<<<<<<< Updated upstream
 - El ciudadano **no pasa por `/login`**: entra por cédula y código de verificación al correo.
 - Los roles 2 y 3 pasan por **dos niveles de credenciales**: primero la cuenta de la entidad (centro o subregión) y
   después el perfil de trabajo (jefe o trabajador). El master entra directo con su cuenta.
 - Los tres roles internos aterrizan en un "centro de control" (dashboard). Es el mismo concepto con datos distintos.
+=======
+- El ciudadano **no pasa por `/login`**: entra por `/consulta`, busca su cédula y ve el resultado en la misma
+  página. En esta etapa **no se pide código de verificación**; el envío del certificado es simulado. El paso por
+  `/consulta/verificacion` queda como fase futura.
+- **Un único usuario por entidad (sin sub-usuarios)**: ni Subregión de Salud (`SRS`, rol 3) ni Centro de Salud (`PS`, rol 2) tienen sub-usuarios asignados (`trabajadores`, `enfermeros`, `analistas`). Cada centro o subregión cuenta únicamente con el usuario de su **Jefe / Encargado** (`centros_salud.encargado_id`), quien inicia sesión directamente en el paso 2 de `/login` con su correo y contraseña registrados en `personal`. El master entra directo con su cuenta en `master`. Ver
+  [`modelo-datos.md`](./modelo-datos.md) §5.1.
+- Los tres roles internos aterrizan en un "centro de control" (dashboard) con una estética y disposición unificada **Spartan / shadcn / Vercel (Obsidian Dark Mode)** basada en la **separación estricta de propósitos entre barras para eliminar redundancias**:
+  - **Barra Superior (Navegación Estructural y Contexto de Sesión)**:
+    - _Fila 1_: Identidad institucional y breadcrumbs (`V / Rol / Contexto`), indicador de telemetría en vivo (`● Red en línea`), disparador de búsqueda rápida (`Ctrl+K`), conmutador de tema visual `<app-boton-tema />` (**Modo Claro / Modo Oscuro** persistido en `localStorage` bajo `vih_tema_visual`, presente también en `/`, `/login` y `/consulta`), pastilla de usuario y botón único de salida (`Salir`). **Sin botones de acción duplicados** que compitan con las pestañas.
+    - _Fila 2_: Pestañas horizontales de navegación por módulos con indicador activo inferior. Es el **único lugar** donde el usuario conmuta de vista dentro del rol.
+  - **Barra Lateral (Consola Operativa y Telemetría en Vivo)**:
+    - No repite los enlaces de las pestañas ni el botón de logout.
+    - Funciona como un dock operativo de supervisión en tiempo real con 4 herramientas:
+      1. 📡 **Telemetría**: Nodos activos, cobertura, cadena de frío y sincronización en tiempo real.
+      2. 🔔 **Alertas e Incidencias**: Lotes observados, casos ESAVI y certificados pendientes con acceso directo.
+      3. ⚡ **Acciones Rápidas**: Descarga de auditoría/censo en JSON y sincronización local.
+      4. ⌨️ **Atajos de Teclado**: Guía interactiva (`Ctrl+K`, `Esc`, `Tab`).
+    - Colapsable a un dock minimalista de `3.5rem` y expandible a `18.5rem` con fijación (`pin`).
+  - Tarjetas oscuras `#09090b` sobre lienzo negro `#000000`, bordes de `1px solid #27272a`, tiras de métricas bento unidas por divisores de `1px`, botones primarios blancos (`#fafafa` con texto `#09090b`) y números tabulares.
+>>>>>>> Stashed changes
 
 ### 3.1 Navegación interna del master
 
@@ -161,9 +182,30 @@ Origen: `estructura-inicial.png` y `diagrama-usuarios.png`.
 
 **Paso 1 — `/consulta`**
 
+<<<<<<< Updated upstream
 - Caja de búsqueda con un único campo: **cédula**.
 - Acción: "buscar". Si la cédula no existe o el correo no está registrado, no se revela cuál de las dos cosas falló.
 - El ciudadano no se autentica: la verificación es el paso 2.
+=======
+- Caja de búsqueda con un único campo: **cédula**. En el esquema de trabajo es `usuarios.cedula` (`BIGINT`,
+  `UNIQUE`); la entrada se normaliza a dígitos.
+- Si la cédula no existe, se muestra un mensaje genérico. No se revela si el problema es la cédula o el correo.
+- El resultado muestra:
+  - identidad: nombre, cédula, edad, sexo y ubicación;
+  - datos personales: nacimiento, etnia, correo, teléfono, residencia y fecha de alta;
+  - estado del certificado: `solicitado`, `autorizado`, `descartado` o `emitido`;
+  - resumen clínico: cantidad de vacunas, cantidad de exámenes y requisitos cumplidos. **No** muestra lote, centro
+    de vacunación ni el detalle de exámenes sensibles (VIH/VDRL, decisión 11).
+- Si el certificado está `autorizado` o `emitido`, aparecen los botones **Enviar certificado a mi correo** e **Imprimir certificado** (con vista previa imprimible adaptada a `@media print`). La acción de correo registra un envío **simulado** en `DatosSubregionSaludService`; no hay correo real ni código de verificación.
+- Si el certificado está `solicitado` o `descartado`, el botón no aparece. La vista explica el estado y, en el caso
+  descartado, muestra el motivo registrado.
+- En el esquema de trabajo, la ficha corresponde a `usuarios`, `tipoSangre`, `etnias`, `profesiones`,
+  `usuario_telefonos`, `usuario_residencias` + geografía, `usuario_vacunas` + `vacunas`, `usuario_examenes` +
+  `examenes` y `certificados_salud` + `certificado_envios`. La app todavía usa mocks para esas relaciones.
+- **Vigencia**: la regla sigue siendo provisional (`VIGENCIA_EXAMENES_MESES` y los campos nuevos de los catálogos).
+  La vista advierte que no reemplaza una valoración médica.
+- La auditoría de la consulta en `consultas_publicas` está propuesta, pero todavía no se escribe.
+>>>>>>> Stashed changes
 
 **Paso 2 — `/consulta/verificacion`**
 
@@ -325,8 +367,64 @@ administración de personal, con otro layout, todavía sin boceto.
 - **Centro de control de la subregión**: stock entregado, centros del estado, certificados emitidos. Sin dibujo.
 - **Formularios de alta**: subregión, centro, empleado, usuario. Solo se dibuja el botón "Agregar…".
 - **Detalle de subregión, de centro y de empleado**: se dibuja la transición, no el contenido.
+<<<<<<< Updated upstream
 - **Vista del certificado de salud**: se menciona en tres diagramas, no se dibuja.
 - **Autorización de certificados** (rol 3): bandeja de solicitudes para autorizar o descartar la emisión. Sin boceto.
+=======
+- **Vista del certificado de salud**: implementada como vista previa simulada; no genera PDF firmado. El envío al
+  correo se solicita desde la consulta pública y también es simulado.
+- **Autorización de certificados** (rol 3): implementada con mock (bandeja, autorización, descarte y emisión).
+
+Las pantallas de **movimientos, búsquedas e incidencias** dependen de tablas que todavía no están en el esquema de
+trabajo. Los certificados, las notificaciones y los envíos ya tienen tablas propuestas. No conviene cerrar columnas de
+lo que falta hasta recibirlo; el detalle está en [`modelo-datos.md`](./modelo-datos.md) §7.
+
+### 6.10 Subregión de salud `/SRS`
+
+Implementación mock posterior a los bocetos, con el mismo lenguaje visual y flujo del master y `/PS`. Todo el rol está
+acotado al estado **Guárico** (`srs-guarico`), es operado por su **Jefe de Subregión** y consume `DatosSubregionSaludService`.
+
+- **Shell** (`shell/`): sidebar colapsable y móvil, badges de certificados pendientes y notificaciones sin leer,
+  cabecera de sesión del Jefe de Subregión y cierre de sesión.
+- **`/SRS`**: panel con métricas del estado, solicitudes por atender, notificaciones recientes, centros y flujo del
+  certificado.
+- **`/SRS/centros`**: catálogo filtrable de los centros de salud (`tipo = 2`) adscritos al estado, con modal de alta
+  para registrar un nuevo centro junto con su jefe encargado único (sincronizado con `DatosMasterService` y `SesionService`).
+- **`/SRS/trabajadores`** y **`/SRS/trabajadores/:id`**: listado y asignación de los **Jefes de Centro** (`tipo_cuenta = 2`) de los establecimientos del estado, con búsqueda, filtro por centro, modal de asignación de nuevo jefe encargado y ficha individual de adscripción. Al asignar un jefe a un centro, se actualiza `centros_salud.encargado_id`, se persiste en `localStorage` y se habilita su cuenta directa en `/login`.
+- **`/SRS/ciudadanos`** y **`/SRS/ciudadanos/:id`**: búsqueda de fichas del estado; la ficha muestra todas las vacunas
+  y exámenes (vigentes y vencidos), los requisitos del certificado, una línea de tiempo de hasta ocho hitos y el
+  historial de solicitudes.
+- **`/SRS/certificados`** y **`/SRS/certificados/:id`**: bandeja filtrable por estado; el detalle evalúa requisitos y
+  permite **autorizar**, **descartar** (con motivo obligatorio), **emitir** e **imprimir** (`window.print()`) un certificado autorizado o emitido. El envío al
+  correo se solicita desde la consulta pública; en el detalle solo se muestra como referencia.
+- **`/SRS/notificaciones`**: bandeja filtrable **solo por lectura**, con marcado individual o masivo y enlaces al
+  certificado relacionado. No hay filtros por tipo porque el único tipo es `solicitud_certificado`.
+
+La subregión puede registrar una solicitud desde la ficha ciudadana; la consulta pública no modifica datos clínicos y
+solo simula el envío. Los estados del certificado son `solicitado` → `autorizado` / `descartado`, y `autorizado` →
+`emitido`. La evaluación de
+requisitos combina las vacunas obligatorias del catálogo con la vigencia provisional de VIH/VDRL
+(`VIGENCIA_EXAMENES_MESES`); es una regla de prototipo hasta recibir las tablas y reglas reales.
+
+La bandeja de notificaciones **solo** recibe una solicitud cuando el expediente reúne todos los requisitos. Los
+vencimientos de vacunas o exámenes no generan avisos. Autorizar, descartar o emitir tampoco crea notificaciones
+nuevas.
+
+### 6.11 Personal de salud `/PS`
+
+Implementación operativa para el Centro de Salud (rol 2), operada exclusivamente por su **Jefe de Centro** (sin sub-usuarios de enfermería), consumiendo `DatosPersonalSaludService` y `SesionService`, y adecuada a las tablas y campos de `docs/referencias/example.sql`:
+
+- **Shell** (`shell/`): barra lateral colapsable de estilo **Spartan / shadcn / Vercel (Zinc)** con cálculo de iniciales sin prefijos profesionales (`Dra.`, `Dr.`, `Lic.`, `Enf.`), identificación del Jefe de Centro y menú móvil.
+- **`/PS` (`inicio`)**: centro de control para el Jefe de Centro con buscador rápido por cédula (`c_i`), ID de menor (`id_menor`) o nombre, métricas del día (`tabular-nums`), pacientes registrados, tabla en vivo de inmunizaciones (`inmunizacion`: `vacuna_id`, `fecha_aplicacion`, `numero_dosis`, `numero_lote`) y alertas ESAVI.
+- **`/PS/pacientes`** y **`/PS/pacientes/nuevo`**:
+  - Registro y ficha diferenciados según las tablas de `example.sql`:
+    - `ciudadano_mayor_edad`: `id_ciudadano`, `primer_nombre`, `segundo_nombre`, `primer_apellido`, `segundo_apellido`, `c_i`, `fecha_nacimiento`, `sexo` (`masculino` | `femenino`), `tipo_sangre` (`O+`, `O-`, `A+`, `A-`, `B+`, `B-`, `AB+`, `AB-`), `estatura`, `correo_electronico`, `telefono_celular`, `telefono_domicilio`, `domicilio`, `profesion_id`, `estado_id`, `municipio_id`, `parroquia_id` y `etnia_id`.
+    - `ciudadano_menor_edad`: `id_menor`, `primer_nombre`, `segundo_nombre`, `primer_apellido`, `segundo_apellido`, `fecha_nacimiento`, `sexo` (`masculino` | `femenino`), `tipo_sangre`, `estatura`, `domicilio`, `estado_id`, `municipio_id`, `parroquia_id` y `etnia_id` (sin `c_i`, correos, teléfonos ni campos de representante).
+  - Visualización del historial de `inmunizacion` (`id_inmunizacion`, `vacuna_id`, `numero_dosis` acotado por `vacunas.cantidad_dosis`, `numero_lote VARCHAR(10)`, `fecha_aplicacion`, `centro_salud_aplicacion`, `observaciones`) en formato de **librito sanitario abierto a doble página**, **certificado oficial de inmunización imprimible** (`window.print()` con hoja formateada en `@media print`) o tabla de auditoría.
+- **`/PS/reportes`**: registro y consulta de eventos adversos adecuando los campos a `reportes` (`id_reportes`, `inmunizacion_id`, `ciudadano_mayor_id` / `ciudadano_menor_id`, `nivel_gravedad` `ENUM('LEVE','MODERADO','SEVERO')`, `recomendaciones VARCHAR(255)`) y `sintomas_comunes` (`id_sintoma`, `descripcion_sintoma`).
+- **`/PS/historial`**: bitácora filtrable unificando los registros de `inmunizacion` y `reportes`.
+- **`/PS/personal`**: credencial digital institucional oficial (MPPS) del Jefe de Centro adecuada a `autoridades` (`id_autoridades`, 4 nombres, `c_i`, `n_impre`, `correo`, `domicilio`, `telefono`, `usuario_id`, `profesion_id`), `usuarios` (`tipo_usuario = 'centro_salud_jefe'`) y `centro_salud` (`id_centro`, `nombre_centro`, `ubicacion_centro`, `codigo_centro`, `id_jefe_centro`).
+>>>>>>> Stashed changes
 
 ## 7. Patrones de UI recurrentes
 

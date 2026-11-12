@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="btn btn-ghost btn-sm boton-tema"
+  (click)="temaSvc.alternarTema()"
+  [attr.aria-label]="temaSvc.esOscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+  [attr.title]="temaSvc.esOscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+>
+  <span
+    class="ui-icon"
+    [attr.data-icon]="temaSvc.esOscuro() ? 'theme-sun' : 'theme-moon'"
+    aria-hidden="true"
+  ></span>
+  <span class="boton-tema__texto">{{ temaSvc.esOscuro() ? 'Claro' : 'Oscuro' }}</span>
+</button>

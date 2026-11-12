@@ -1,0 +1,399 @@
+<div class="srs-shell">
+  <button
+    type="button"
+    class="velo"
+    [class.is-visible]="menuMovil()"
+    (click)="cerrarTodo()"
+    aria-label="Cerrar consola regional"
+  ></button>
+
+  <!-- Consola Operativa Regional (Herramientas, Telemetría y Alertas Estatales) -->
+  <aside
+    id="barra-srs"
+    class="barra"
+    [class.is-expandida]="expandido()"
+    (mouseenter)="abrirHover()"
+    (mouseleave)="cerrarHover()"
+    (focusin)="abrirHover()"
+    (focusout)="cerrarEnfoque($event)"
+    aria-label="Consola operativa de la subregión"
+  >
+    <div class="barra__cabecera">
+      <div class="marca">
+        <span class="marca__logo" aria-hidden="true">SR</span>
+        <div class="barra__marca-texto">
+          <strong>Consola Regional</strong>
+          <small>{{ estadoNombre }} · Rol 3</small>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="barra__pin"
+        (click)="alternarFijado()"
+        [attr.aria-pressed]="fijado()"
+        [attr.aria-label]="fijado() ? 'Desfijar consola' : 'Fijar consola'"
+        [attr.title]="fijado() ? 'Desfijar consola' : 'Fijar consola'"
+      >
+        <span
+          class="ui-icon"
+          [attr.data-icon]="fijado() ? 'arrow-left' : 'arrow-right'"
+          aria-hidden="true"
+        ></span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__cerrar"
+        (click)="cerrarMenu()"
+        aria-label="Cerrar consola"
+      >
+        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <!-- Barra de Herramientas Regionales -->
+    <div class="barra__herramientas" role="tablist" aria-label="Herramientas operativas regionales">
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'telemetria'"
+        (click)="seleccionarHerramienta('telemetria')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'telemetria'"
+        title="Telemetría Regional"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="activity"></span>
+        </span>
+        <span class="barra__etiqueta">Telemetría Estatal</span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'urgencias'"
+        (click)="seleccionarHerramienta('urgencias')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'urgencias'"
+        title="Certificados y Avisos Pendientes"
+      >
+        <span class="barra__icono barra__icono--badge" aria-hidden="true">
+          <span class="ui-icon" data-icon="warning"></span>
+          @if (totalAlertas() > 0) {
+            <span class="barra__badge-punto">{{ totalAlertas() }}</span>
+          }
+        </span>
+        <span class="barra__etiqueta">
+          Urgencias Regionales
+          @if (totalAlertas() > 0) {
+            <span class="barra__conteo-badge">{{ totalAlertas() }}</span>
+          }
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'acciones'"
+        (click)="seleccionarHerramienta('acciones')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'acciones'"
+        title="Acciones Rápidas Regionales"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="zap"></span>
+        </span>
+        <span class="barra__etiqueta">Acciones Rápidas</span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'atajos'"
+        (click)="seleccionarHerramienta('atajos')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'atajos'"
+        title="Atajos y Ayuda"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="help"></span>
+        </span>
+        <span class="barra__etiqueta">Atajos y Ayuda</span>
+      </button>
+    </div>
+
+    <!-- Cuerpo Operativo Expansible -->
+    <div class="barra__panel-operativo" [class.is-visible]="expandido()">
+      @switch (herramientaActiva()) {
+        @case ('telemetria') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Estado regional</span>
+              <h3 class="panel-operativo__titulo">Telemetría de {{ estadoNombre }}</h3>
+            </div>
+
+            <div class="panel-operativo__bento">
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Centros de Salud</span>
+                <strong class="telemetria-stat__valor">{{ totalCentros() }}</strong>
+                <span class="telemetria-stat__pie text-ok">Operativos</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Jefes de Centro</span>
+                <strong class="telemetria-stat__valor">{{ totalTrabajadores() }}</strong>
+                <span class="telemetria-stat__pie">Asignados</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Pendientes Firma</span>
+                <strong class="telemetria-stat__valor">{{ pendientes() }}</strong>
+                <span class="telemetria-stat__pie text-warn">Por autorizar</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Notificaciones</span>
+                <strong class="telemetria-stat__valor">{{ noLeidas() }}</strong>
+                <span class="telemetria-stat__pie">Sin leer</span>
+              </div>
+            </div>
+
+            <div class="panel-operativo__nota">
+              <span class="punto-verde" aria-hidden="true"></span>
+              <span>Sede regional conectada al nodo central de vigilancia.</span>
+            </div>
+          </div>
+        }
+
+        @case ('urgencias') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Atención prioritaria</span>
+              <h3 class="panel-operativo__titulo">Pendientes ({{ totalAlertas() }})</h3>
+            </div>
+
+            <div class="panel-operativo__alertas-lista">
+              @if (pendientes() > 0) {
+                <article class="alerta-card">
+                  <div class="alerta-card__top">
+                    <span class="alerta-card__codigo">Certificados de Salud</span>
+                    <span class="badge-alerta">{{ pendientes() }} pendientes</span>
+                  </div>
+                  <p class="alerta-card__desc">
+                    Exámenes y vacunas completadas listos para revisión y firma médica.
+                  </p>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm alerta-card__accion"
+                    (click)="irACertificados()"
+                  >
+                    Revisar bandeja
+                  </button>
+                </article>
+              }
+
+              @if (noLeidas() > 0) {
+                <article class="alerta-card">
+                  <div class="alerta-card__top">
+                    <span class="alerta-card__codigo">Avisos del Sistema</span>
+                    <span class="badge-alerta">{{ noLeidas() }} avisos</span>
+                  </div>
+                  <p class="alerta-card__desc">
+                    Notificaciones epidemiológicas recibidas de los centros de salud.
+                  </p>
+                  <a
+                    class="btn btn-secondary btn-sm alerta-card__accion"
+                    routerLink="/SRS/notificaciones"
+                  >
+                    Ver avisos
+                  </a>
+                </article>
+              }
+
+              @if (totalAlertas() === 0) {
+                <div class="panel-operativo__vacio">
+                  <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                  <p>Al día. No hay certificados pendientes ni notificaciones urgentes.</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @case ('acciones') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Gestión regional</span>
+              <h3 class="panel-operativo__titulo">Acciones Rápidas</h3>
+            </div>
+
+            <div class="panel-operativo__acciones">
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm panel-operativo__btn"
+                (click)="exportarSnapshot()"
+              >
+                <span class="ui-icon" data-icon="download" aria-hidden="true"></span>
+                <span>Exportar censo estatal (JSON)</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm panel-operativo__btn"
+                [disabled]="sincronizando()"
+                (click)="sincronizarMock()"
+              >
+                <span
+                  class="ui-icon"
+                  data-icon="reload"
+                  [class.girando]="sincronizando()"
+                  aria-hidden="true"
+                ></span>
+                <span>{{
+                  sincronizando() ? 'Sincronizando...' : 'Sincronizar base regional'
+                }}</span>
+              </button>
+
+              @if (sincroExito()) {
+                <div class="panel-operativo__exito">
+                  <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                  <span>Datos de la subregión actualizados con éxito.</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @case ('atajos') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Atajos rápidos</span>
+              <h3 class="panel-operativo__titulo">Teclado y Ayuda</h3>
+            </div>
+
+            <dl class="panel-operativo__atajos">
+              <div class="atajo-fila">
+                <dt><kbd>Ctrl</kbd> + <kbd>K</kbd></dt>
+                <dd>Buscar ciudadano</dd>
+              </div>
+              <div class="atajo-fila">
+                <dt><kbd>Esc</kbd></dt>
+                <dd>Contraer consola</dd>
+              </div>
+            </dl>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Pie: Latencia y Estado (Sin logout duplicado) -->
+    <div class="barra__pie">
+      <div class="barra__telemetria-pie">
+        <span class="punto-verde" aria-hidden="true"></span>
+        <div class="barra__pie-texto">
+          <strong>Sede {{ estadoNombre }}</strong>
+          <small>En línea con Caracas</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenedor Principal -->
+  <div class="srs-shell__cuerpo">
+    <header class="barra-superior" aria-label="Cabecera de la subregión">
+      <!-- Nivel 1: Contexto, Telemetría, Búsqueda, Identidad y Salir (Sin botones redundantes) -->
+      <div class="barra-superior__top">
+        <div class="barra-superior__izq">
+          <button
+            type="button"
+            class="barra-superior__hamburguesa"
+            (click)="abrirMenu()"
+            aria-label="Abrir consola regional"
+            aria-controls="barra-srs"
+            [attr.aria-expanded]="menuMovil()"
+          >
+            <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
+          </button>
+
+          <span class="barra-superior__titulo">
+            <span class="barra-superior__logo-mini" aria-hidden="true">SR</span>
+            <span class="barra-superior__slash" aria-hidden="true">/</span>
+            <strong>
+              <span class="barra-superior__nombre-completo">{{ nombreSubregion }}</span>
+              <span class="barra-superior__nombre-corto">{{ estadoNombre }}</span>
+            </strong>
+            <span class="barra-superior__badge barra-superior__badge--jefe">
+              Jefe de subregión
+            </span>
+          </span>
+        </div>
+
+        <div class="barra-superior__acciones">
+          <!-- Indicador de estado en línea -->
+          <div class="estado-en-linea" title="Conexión activa con el sistema central">
+            <span class="punto-verde" aria-hidden="true"></span>
+            <span class="estado-en-linea__texto">Sede Regional en línea</span>
+          </div>
+
+          <!-- Disparador de búsqueda global rápida -->
+          <button
+            type="button"
+            class="barra-superior__buscador"
+            (click)="irABusqueda()"
+            title="Buscar ciudadano (Ctrl+K)"
+          >
+            <span class="ui-icon" data-icon="search" aria-hidden="true"></span>
+            <span class="barra-superior__buscador-texto">Buscar ciudadano...</span>
+            <kbd class="barra-superior__kbd">Ctrl K</kbd>
+          </button>
+
+          <app-boton-tema />
+
+          <!-- Perfil de usuario -->
+          <div class="srs-cuenta-top">
+            <span class="usuario-pill__avatar" aria-hidden="true">{{ iniciales() }}</span>
+            <span class="srs-cuenta-top__texto">
+              <strong>{{ nombreUsuario() }}</strong>
+              <small>{{ estadoNombre }}</small>
+            </span>
+          </div>
+
+          <!-- Botón único de salida -->
+          <button
+            type="button"
+            class="btn btn-sm btn-ghost"
+            (click)="cerrarSesion()"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
+            <span>Salir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nivel 2: Navegación horizontal de módulos (Único lugar para cambiar de página) -->
+      <nav class="barra-superior__tabs" aria-label="Navegación rápida de la subregión">
+        @for (item of navegacion(); track item.ruta) {
+          <a
+            class="barra-superior__tab"
+            [routerLink]="item.ruta"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
+          >
+            <span [attr.data-icon]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></span>
+            <span>{{ item.etiqueta }}</span>
+            @if (item.badge) {
+              <span class="barra-superior__tab-badge">{{ item.badge }}</span>
+            }
+          </a>
+        }
+      </nav>
+    </header>
+
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>

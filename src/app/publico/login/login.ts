@@ -9,8 +9,14 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+<<<<<<< Updated upstream
 import type { CuentaAcceso, PerfilAcceso, RolInterno } from '../../nucleo/modelos/cuenta-acceso';
 import type { RolUsuario, TipoEmpleado } from '../../nucleo/modelos/enumeraciones';
+=======
+import { BotonTema } from '../../compartido/ui/boton-tema/boton-tema';
+import type { CuentaAcceso, RolInterno } from '../../nucleo/modelos/cuenta-acceso';
+import type { RolUsuario } from '../../nucleo/modelos/enumeraciones';
+>>>>>>> Stashed changes
 import { CatalogosService } from '../../nucleo/servicios/catalogos.service';
 import { SesionService } from '../../nucleo/servicios/sesion.service';
 
@@ -18,7 +24,7 @@ type PasoLogin = 1 | 2 | 3;
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink],
+  imports: [RouterLink, BotonTema],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.html',

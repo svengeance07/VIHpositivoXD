@@ -1,0 +1,554 @@
+<div class="ps-pagina">
+  <!-- Cabecera de la sección -->
+  <app-ps-encabezado
+    [eyebrow]="'Vigilancia Farmacológica · ' + nombreCentro()"
+    titulo="Reportes de Reacciones e Incidencias (Tabla reportes)"
+  >
+    <button type="button" class="btn btn-primary" (click)="abrirModalCrear()">
+      <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
+      <span>Notificar Nueva Incidencia</span>
+    </button>
+  </app-ps-encabezado>
+
+  <!-- Mensaje de confirmación temporal -->
+  @if (mensajeExito()) {
+    <aside class="panel alerta-exito" role="status">
+      <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+      <div class="alerta-exito__texto">
+        <strong>¡Notificación Procesada!</strong>
+        <p>{{ mensajeExito() }}</p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        (click)="mensajeExito.set('')"
+        aria-label="Cerrar aviso"
+      >
+        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+      </button>
+    </aside>
+  }
+
+  <!-- SECCIÓN 1: Tarjetas de Métricas de Vigilancia Epidemiológica -->
+  <section class="ps-metricas" aria-label="Métricas de vigilancia clínica">
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+          <span class="ui-icon" data-icon="warning"></span>
+        </span>
+        <span class="metrica__etiqueta">Total reportes</span>
+      </div>
+      <strong>{{ metricasReportes().total }}</strong>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+          <span class="ui-icon" data-icon="filter"></span>
+        </span>
+        <span class="metrica__etiqueta">Distribución por nivel_gravedad</span>
+      </div>
+      <div class="gravedad-resumen">
+        <span class="gravedad-tag gravedad-tag--leve">{{ metricasReportes().leves }} LEVE</span>
+        <span class="gravedad-tag gravedad-tag--moderado"
+          >{{ metricasReportes().moderados }} MODERADO</span
+        >
+        <span class="gravedad-tag gravedad-tag--severo"
+          >{{ metricasReportes().severos }} SEVERO</span
+        >
+      </div>
+      <small>Clasificación clínica ENUM('LEVE','MODERADO','SEVERO')</small>
+    </article>
+  </section>
+
+  <!-- SECCIÓN 2: Filtros y Búsqueda de Reportes -->
+  <section class="panel ps-filtros" aria-label="Filtros de reportes">
+    <div class="ps-filtros__busqueda">
+      <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+      <input
+        type="search"
+        class="ui-input"
+        placeholder="Buscar por paciente, cédula (c_i), id_menor, vacuna o lote..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        aria-label="Buscar reportes"
+      />
+    </div>
+
+    <div class="ps-filtros__selectores">
+      <label class="filtro-campo">
+        <span class="filtro-campo__label">Gravedad:</span>
+        <select
+          class="ui-select"
+          [ngModel]="filtroGravedad()"
+          (ngModelChange)="filtroGravedad.set($event)"
+          aria-label="Filtrar por nivel de gravedad"
+        >
+          <option value="todas">Todas las gravedades</option>
+          <option value="leve">LEVE</option>
+          <option value="moderado">MODERADO</option>
+          <option value="severo">SEVERO</option>
+        </select>
+      </label>
+
+      <label class="filtro-campo">
+        <span class="filtro-campo__label">Subregión:</span>
+        <select
+          class="ui-select"
+          [ngModel]="filtroEstado()"
+          (ngModelChange)="filtroEstado.set($event)"
+          aria-label="Filtrar por estado en subregión"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="enviado">Enviado</option>
+          <option value="en_revision">En Revisión</option>
+          <option value="atendido">Atendido</option>
+        </select>
+      </label>
+
+      @if (busqueda() || filtroGravedad() !== 'todas' || filtroEstado() !== 'todos') {
+        <button type="button" class="btn btn-ghost btn-sm" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: Grilla de Reportes Clínicos Registrados -->
+  <section class="ps-reportes-seccion" aria-label="Listado de reportes clínicos">
+    <div class="ps-reportes-cabecera">
+      <h3>Historial de Reportes Notificados ({{ reportesFiltrados().length }})</h3>
+      <p>
+        Registros de las tablas <code>reportes</code> y <code>sintomas_comunes</code> vinculados a
+        <code>inmunizacion</code>.
+      </p>
+    </div>
+
+    <div class="reportes-grid">
+      @for (rep of reportesFiltrados(); track rep.id) {
+        <article
+          class="panel reporte-card"
+          [class.reporte-card--moderado]="rep.gravedad === 'moderado'"
+          [class.reporte-card--severo]="rep.gravedad === 'severo'"
+        >
+          <header class="reporte-card__cabecera">
+            <div>
+              <span class="reporte-card__fecha">
+                id_reportes #{{ rep.idReporte }} · {{ rep.fechaReporte }}
+              </span>
+              <h4>{{ rep.pacienteNombre }}</h4>
+              <span class="reporte-card__cedula">
+                @if (rep.ciudadanoMayorId) {
+                  ciudadano_mayor_id #{{ rep.ciudadanoMayorId }} · C.I. {{ rep.pacienteCedula }}
+                } @else {
+                  ciudadano_menor_id #{{ rep.ciudadanoMenorId }} (Menor de edad)
+                }
+              </span>
+            </div>
+            <span
+              class="badge"
+              [class.badge-alerta]="rep.gravedad === 'moderado' || rep.gravedad === 'severo'"
+            >
+              {{ rep.gravedad | uppercase }}
+            </span>
+          </header>
+
+          <div class="reporte-card__vacuna-bloque">
+            <span class="label-muted">Inmunización Vinculada ({{ rep.inmunizacionId }}):</span>
+            <strong>{{ rep.vacunaNombre }}</strong>
+            <div class="lote-fecha-sub">
+              <span class="badge-lote">numero_lote: {{ rep.lote }}</span>
+              <small>fecha_aplicacion: {{ rep.fechaAplicacion }}</small>
+            </div>
+          </div>
+
+          <!-- Síntomas clínicos presentados (sintomas_comunes) -->
+          <div class="reporte-card__sintomas">
+            <span class="label-muted">Síntomas Comunes (sintomas_comunes):</span>
+            <div class="sintomas-chips">
+              @for (sintoma of rep.sintomas; track sintoma) {
+                <span class="sintoma-chip">{{ sintoma }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Recomendaciones clínicas (reportes.recomendaciones) -->
+          <div class="reporte-card__indicaciones">
+            <span class="label-muted">Recomendaciones (reportes.recomendaciones):</span>
+            <p>{{ rep.recomendaciones }}</p>
+          </div>
+
+          <footer class="reporte-card__pie">
+            <div class="reporte-card__meta">
+              <small
+                >Jefe Centro: <strong>{{ rep.enfermeroNombre }}</strong></small
+              >
+              <div class="estado-subregion-badge">
+                <span class="ui-icon" data-icon="send" aria-hidden="true"></span>
+                <span
+                  >Subregión: <strong>{{ rep.estadoSubregion | titlecase }}</strong></span
+                >
+              </div>
+            </div>
+          </footer>
+        </article>
+      } @empty {
+        <div class="panel estado-vacio">
+          <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+          <h4>No hay reportes que coincidan con la búsqueda</h4>
+          <p>No se encontraron eventos adversos con los filtros seleccionados.</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- MODAL: REGISTRAR EN TABLA reportes + sintomas_comunes             -->
+  <!-- ================================================================= -->
+  @if (modalCrearAbierto()) {
+    <div class="ui-modal-backdrop" (click)="cerrarModalCrear()">
+      <div class="ui-modal-container" (click)="$event.stopPropagation()">
+        <section class="ps-modal ps-modal--amplio" role="dialog" aria-modal="true" tabindex="-1">
+          <header class="ps-modal__cabecera">
+            <div class="modal-cabecera-info">
+              <span class="modal-eyebrow">
+                <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
+                <span>Tabla reportes · {{ nombreCentro() }}</span>
+              </span>
+              <h2>Registrar Reporte de Reacción Adversa (ESAVI)</h2>
+              <p>
+                Asienta el evento en <code>reportes</code> vinculando al ciudadano (<code
+                  >ciudadano_mayor_id</code
+                >
+                / <code>ciudadano_menor_id</code>), la dosis (<code>inmunizacion_id</code>), los
+                síntomas (<code>sintomas_comunes</code>), el nivel de gravedad
+                (<code>nivel_gravedad</code>) y las recomendaciones (<code
+                  >recomendaciones VARCHAR(255)</code
+                >).
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm ui-modal-close"
+              (click)="cerrarModalCrear()"
+              aria-label="Cerrar formulario"
+            >
+              <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+            </button>
+          </header>
+
+          @if (errorFormulario()) {
+            <aside class="alerta-error" role="alert">
+              <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
+              <span>{{ errorFormulario() }}</span>
+            </aside>
+          }
+
+          <form class="ps-modal__cuerpo" (submit)="guardarReporte($event)">
+            <!-- Paso 1: Ciudadano Afectado (ciudadano_mayor_id / ciudadano_menor_id) -->
+            <div class="ps-paso-bloque">
+              <h3>
+                <span class="paso-numero-badge">1</span>
+                <span>Ciudadano Afectado (ciudadano_mayor_id / ciudadano_menor_id)</span>
+              </h3>
+              <p class="paso-desc">Selecciona el ciudadano que presentó la reacción adversa:</p>
+              <label class="field">
+                <span class="field-label">Selecciona el Paciente *</span>
+                <select
+                  class="ui-select"
+                  [ngModel]="form().pacienteId"
+                  (ngModelChange)="onCambioPaciente($event)"
+                  name="paciente"
+                  required
+                >
+                  <option value="" disabled>-- Selecciona un paciente registrado --</option>
+                  @for (p of datosPS.pacientes(); track p.id) {
+                    <option [value]="p.id">
+                      {{ p.nombre }}
+                      {{
+                        !p.esMenor && p.cedula
+                          ? '(C.I. ' + p.cedula + ' · id_ciudadano #' + p.idRegistro + ')'
+                          : '(id_menor #' + p.idRegistro + ')'
+                      }}
+                    </option>
+                  }
+                </select>
+              </label>
+
+              @if (pacienteElegido(); as pac) {
+                <div class="paciente-elegido-preview">
+                  <div class="paciente-elegido-avatar" aria-hidden="true">
+                    {{ pac.esMenor ? '👶' : '👤' }}
+                  </div>
+                  <div class="paciente-elegido-info">
+                    <strong>{{ pac.nombre }}</strong>
+                    <small>
+                      {{
+                        pac.esMenor
+                          ? 'ciudadano_menor_edad (id_menor #' + pac.idRegistro + ')'
+                          : 'ciudadano_mayor_edad (id_ciudadano #' +
+                            pac.idRegistro +
+                            ' · C.I. ' +
+                            pac.cedula +
+                            ')'
+                      }}
+                      · Sangre: {{ pac.tipoSangre }} · Estatura: {{ pac.estatura }} cm
+                    </small>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Paso 2: Inmunización Causal (inmunizacion_id) -->
+            <div class="ps-paso-bloque">
+              <h3>
+                <span class="paso-numero-badge">2</span>
+                <span>Inmunización Sospechosa Causal (inmunizacion_id)</span>
+              </h3>
+              <p class="paso-desc">
+                Selecciona el registro de la tabla <code>inmunizacion</code> asociado al evento:
+              </p>
+
+              @if (vacunasDelPacienteElegido().length > 0) {
+                <div class="vacunas-previas-grid">
+                  @for (vac of vacunasDelPacienteElegido(); track vac.id) {
+                    <div
+                      class="vacuna-opcion-card"
+                      [class.is-seleccionada]="form().inmunizacionId === vac.id"
+                      (click)="
+                        seleccionarVacunaCausal(
+                          vac.id,
+                          vac.vacunaId,
+                          vac.vacunaNombre,
+                          vac.lote,
+                          vac.fechaAplicacion
+                        )
+                      "
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div class="vacuna-opcion-titulos">
+                        <strong>{{ vac.vacunaNombre }}</strong>
+                        @if (form().inmunizacionId === vac.id) {
+                          <span
+                            data-icon="check"
+                            class="ui-icon vacuna-opcion-check"
+                            aria-hidden="true"
+                          ></span>
+                        }
+                      </div>
+                      <div class="vacuna-opcion-meta">
+                        <span class="badge-dosis">Dosis #{{ vac.dosis }}</span>
+                        <span class="badge-lote">Lote: {{ vac.lote }}</span>
+                        <small
+                          >id_inmunizacion #{{ vac.idInmunizacion }} ·
+                          {{ vac.fechaAplicacion }}</small
+                        >
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="campos-grid">
+                  <label class="field">
+                    <span class="field-label">Nombre de la Vacuna *</span>
+                    <input
+                      type="text"
+                      class="ui-input"
+                      placeholder="Ej: Pentavalente (DTP-HB-Hib)"
+                      [ngModel]="form().vacunaNombre"
+                      (ngModelChange)="actualizarCampo('vacunaNombre', $event)"
+                      name="vacunaNombre"
+                      required
+                    />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Número de Lote (numero_lote · máx. 10 car.) *</span>
+                    <input
+                      type="text"
+                      class="ui-input"
+                      maxlength="10"
+                      placeholder="Ej: PENTA-2608"
+                      [ngModel]="form().lote"
+                      (ngModelChange)="actualizarCampo('lote', $event)"
+                      name="lote"
+                      required
+                    />
+                  </label>
+                </div>
+              }
+            </div>
+
+            <!-- Paso 3: Síntomas Comunes (sintomas_comunes) -->
+            <div class="ps-paso-bloque">
+              <h3>
+                <span class="paso-numero-badge">3</span>
+                <span>Síntomas Comunes (Tabla <code>sintomas_comunes</code>) *</span>
+              </h3>
+              <p class="paso-desc">
+                Selecciona las descripciones de síntomas (<code>descripcion_sintoma</code>)
+                presentadas tras la inmunización:
+              </p>
+
+              <div class="sintomas-selector-grid">
+                @for (sintoma of sintomasComunes(); track sintoma.idSintoma) {
+                  <button
+                    type="button"
+                    class="sintoma-toggle-btn"
+                    [class.is-activo]="
+                      form().sintomasSeleccionados.includes(sintoma.descripcionSintoma)
+                    "
+                    (click)="alternarSintoma(sintoma.descripcionSintoma)"
+                  >
+                    <span
+                      class="ui-icon"
+                      [attr.data-icon]="
+                        form().sintomasSeleccionados.includes(sintoma.descripcionSintoma)
+                          ? 'check'
+                          : 'plus'
+                      "
+                      aria-hidden="true"
+                    ></span>
+                    <span>#{{ sintoma.idSintoma }} · {{ sintoma.descripcionSintoma }}</span>
+                  </button>
+                }
+              </div>
+
+              <label class="field campo-adicional-sintoma">
+                <span class="field-label"
+                  >Otro Síntoma (descripcion_sintoma VARCHAR(255) · Opcional):</span
+                >
+                <input
+                  type="text"
+                  class="ui-input"
+                  maxlength="255"
+                  placeholder="Ej: Llanto persistente por más de 3 horas, somnolencia..."
+                  [ngModel]="form().otroSintoma"
+                  (ngModelChange)="actualizarCampo('otroSintoma', $event)"
+                  name="otroSintoma"
+                />
+              </label>
+            </div>
+
+            <!-- Paso 4: Nivel de Gravedad (nivel_gravedad ENUM('LEVE','MODERADO','SEVERO')) -->
+            <div class="ps-paso-bloque">
+              <h3>
+                <span class="paso-numero-badge">4</span>
+                <span>Nivel de Gravedad (nivel_gravedad) *</span>
+              </h3>
+              <p class="paso-desc">
+                Clasificación oficial según <code>ENUM('LEVE','MODERADO','SEVERO')</code>:
+              </p>
+              <div class="gravedad-radio-grid">
+                <label
+                  class="gravedad-radio-card gravedad-radio-card--leve"
+                  [class.is-activo]="form().gravedad === 'leve'"
+                >
+                  <input
+                    type="radio"
+                    name="gravedad"
+                    value="leve"
+                    [ngModel]="form().gravedad"
+                    (ngModelChange)="actualizarCampo('gravedad', $event)"
+                  />
+                  <div class="gravedad-radio-info">
+                    <strong>🟢 LEVE</strong>
+                    <small
+                      >Dolor local, febrícula o edema autolimitado sin compromiso general.</small
+                    >
+                  </div>
+                </label>
+
+                <label
+                  class="gravedad-radio-card gravedad-radio-card--moderado"
+                  [class.is-activo]="form().gravedad === 'moderado'"
+                >
+                  <input
+                    type="radio"
+                    name="gravedad"
+                    value="moderado"
+                    [ngModel]="form().gravedad"
+                    (ngModelChange)="actualizarCampo('gravedad', $event)"
+                  />
+                  <div class="gravedad-radio-info">
+                    <strong>🟡 MODERADO</strong>
+                    <small
+                      >Fiebre &gt; 38.5°C, mialgias, exantema o afectación que requiere
+                      fármacos.</small
+                    >
+                  </div>
+                </label>
+
+                <label
+                  class="gravedad-radio-card gravedad-radio-card--severo"
+                  [class.is-activo]="form().gravedad === 'severo'"
+                >
+                  <input
+                    type="radio"
+                    name="gravedad"
+                    value="severo"
+                    [ngModel]="form().gravedad"
+                    (ngModelChange)="actualizarCampo('gravedad', $event)"
+                  />
+                  <div class="gravedad-radio-info">
+                    <strong>🔴 SEVERO</strong>
+                    <small
+                      >Reacción anafiláctica, convulsión febril u hospitalización requerida.</small
+                    >
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Paso 5: Recomendaciones (reportes.recomendaciones VARCHAR(255) NOT NULL) -->
+            <div class="ps-paso-bloque">
+              <h3>
+                <span class="paso-numero-badge">5</span>
+                <span>Recomendaciones (recomendaciones VARCHAR(255)) *</span>
+              </h3>
+              <p class="paso-desc">
+                Deja sentadas las recomendaciones terapéuticas y pautas de alarma (máximo 255
+                caracteres):
+              </p>
+
+              <label class="field">
+                <textarea
+                  class="ui-textarea"
+                  rows="3"
+                  maxlength="255"
+                  placeholder="Ej: Indicar Paracetamol oral según peso cada 6 horas por 48h. Compresas frías en el sitio de inyección sin fricción."
+                  required
+                  [ngModel]="form().recomendaciones"
+                  (ngModelChange)="actualizarCampo('recomendaciones', $event)"
+                  name="recomendaciones"
+                ></textarea>
+              </label>
+            </div>
+
+            <div class="aviso-envio-subregion">
+              <span class="ui-icon" data-icon="send" aria-hidden="true"></span>
+              <div>
+                <strong>Transmisión Epidemiológica Oficial:</strong>
+                <p>
+                  Este registro en <code>reportes</code> será notificado a la
+                  <strong>Subregión de Salud de su estado</strong> y vinculado al ciudadano y a la
+                  inmunización correspondiente.
+                </p>
+              </div>
+            </div>
+
+            <footer class="ps-modal__pie">
+              <button type="button" class="btn btn-ghost" (click)="cerrarModalCrear()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                <span>Notificar a Subregión y Guardar Reporte</span>
+              </button>
+            </footer>
+          </form>
+        </section>
+      </div>
+    </div>
+  }
+</div>

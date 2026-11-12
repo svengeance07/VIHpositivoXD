@@ -5,6 +5,7 @@
       <span class="marca__texto">Sistema V</span>
     </a>
 
+<<<<<<< Updated upstream
     <div class="acceso__copy">
       <p class="ca-section-eyebrow">
         <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
@@ -15,6 +16,43 @@
         Entra con tu cuenta institucional. Si perteneces a un centro de salud o a una subregión,
         después elegirás tu perfil de trabajo.
       </p>
+=======
+      <div class="acceso__topbar-acciones">
+        <app-boton-tema />
+        <a class="btn btn-ghost btn-sm" routerLink="/consulta">
+          <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+          <span>Consulta ciudadana</span>
+        </a>
+        <a class="btn btn-secondary btn-sm volver-inicio" routerLink="/">
+          <span class="ui-icon" data-icon="arrow-left" aria-hidden="true"></span>
+          <span>Volver al inicio</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="acceso__contenedor">
+    <div class="acceso__encabezado">
+      <ol class="pasos" aria-label="Pasos de acceso">
+        <li [class.is-active]="paso() >= 1" [attr.aria-current]="paso() === 1 ? 'step' : null">
+          <span aria-hidden="true">01</span>
+          <strong>Nivel de gestión</strong>
+        </li>
+        <li class="pasos__divisor" aria-hidden="true"></li>
+        <li [class.is-active]="paso() >= 2" [attr.aria-current]="paso() === 2 ? 'step' : null">
+          <span aria-hidden="true">02</span>
+          <strong>Credenciales de acceso</strong>
+        </li>
+      </ol>
+
+      <div class="acceso__copy">
+        <h1>Gestión de salud, <span class="acento">sin fricción.</span></h1>
+        <p class="lead">
+          Selecciona tu nivel de gestión e ingresa directamente con las credenciales de tu cuenta
+          institucional o jefatura asignada.
+        </p>
+      </div>
+>>>>>>> Stashed changes
     </div>
 
     <ol class="pasos" aria-label="Pasos de acceso">

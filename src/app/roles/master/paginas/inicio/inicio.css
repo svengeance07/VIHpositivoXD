@@ -1,0 +1,317 @@
+:host {
+  display: block;
+}
+
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1px;
+  background-color: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.metrica {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  min-height: 8.5rem;
+}
+
+.metrica__icono {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
+  margin-bottom: 0.15rem;
+}
+
+.metrica__etiqueta {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.metrica strong {
+  font-size: clamp(1.6rem, 2.8vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.metrica small {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.metrica--alerta .metrica__icono {
+  background: var(--warn-bg);
+  border-color: var(--warn-border);
+  color: var(--warn);
+}
+
+.bloque__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 0.95rem;
+}
+
+.bloque__cabecera h2 {
+  margin: 0.12rem 0 0;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  letter-spacing: -0.02em;
+}
+
+.bloque__cabecera p {
+  margin: 0.25rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.lote-card {
+  overflow: visible;
+}
+
+.lote-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.375rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+.lote-card__toggle:hover,
+.lote-card__toggle.is-activo {
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  background: var(--secondary);
+}
+
+.lotes-preview {
+  display: grid;
+  gap: 0.1rem;
+  border-top: 1px solid var(--border);
+}
+
+.lote-linea {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(9rem, 1.2fr) minmax(10rem, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+
+.lote-linea:last-child {
+  border-bottom: 0;
+}
+
+.lote-linea__codigo {
+  font-weight: 600;
+}
+
+.lote-linea__vacuna {
+  color: var(--muted-foreground);
+}
+
+.lote-linea__destino {
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lotes-detalle {
+  margin-top: 0.8rem;
+}
+
+.ranking {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ranking__fila {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(7rem, 9.5rem) minmax(4rem, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 1.75rem;
+  font-size: 0.82rem;
+}
+
+.ranking__puesto {
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.ranking__nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking__barra {
+  height: 0.42rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--secondary);
+}
+
+.ranking__barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 300ms ease;
+}
+
+.ranking__fila strong {
+  min-width: 3.2rem;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+}
+
+.mapa__lienzo {
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background-subtle);
+  isolation: isolate;
+}
+
+.mapa__mancha {
+  position: absolute;
+  border-radius: 60% 40% 55% 45%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mapa__mancha--1 {
+  inset: 18% 18% 38% 22%;
+  transform: rotate(-14deg);
+}
+
+.mapa__mancha--2 {
+  inset: 38% 25% 17% 37%;
+  transform: rotate(24deg);
+}
+
+.mapa__mancha--3 {
+  inset: 28% 48% 42% 48%;
+  transform: rotate(-8deg);
+}
+
+.mapa__punto {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 0.25rem rgba(250, 250, 250, 0.16);
+}
+
+.mapa__punto--1 {
+  top: 28%;
+  left: 38%;
+}
+
+.mapa__punto--2 {
+  top: 46%;
+  left: 58%;
+}
+
+.mapa__punto--3 {
+  top: 62%;
+  left: 44%;
+}
+
+.mapa__punto--4 {
+  top: 35%;
+  left: 68%;
+}
+
+.mapa__centro {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mapa__niveles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.7rem;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+.mapa__nota {
+  margin: 0.4rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .lote-linea {
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 0.7rem;
+  }
+
+  .lote-linea__vacuna,
+  .lote-linea__destino {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.78rem;
+  }
+
+  .lote-linea__destino {
+    display: none;
+  }
+
+  .lote-linea .master-badge {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .ranking__fila {
+    grid-template-columns: 1.2rem minmax(5.5rem, 8rem) minmax(3rem, 1fr) auto;
+    gap: 0.4rem;
+  }
+}

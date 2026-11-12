@@ -1,0 +1,209 @@
+<div class="ps-pagina">
+  <!-- Cabecera de Jefatura del Centro de Salud -->
+  <app-ps-encabezado
+    [eyebrow]="'Jefatura de Centro · ' + nombreCentro()"
+    [titulo]="'Bienvenido/a, ' + saludoUsuario()"
+    descripcion="Supervisión general de cobertura de inmunizaciones, atención de pacientes y vigilancia epidemiológica del centro."
+  >
+    <div class="cabecera-acciones">
+      <a class="btn btn-primary" routerLink="/PS/pacientes">
+        <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
+        <span>Nueva Inmunización</span>
+      </a>
+    </div>
+  </app-ps-encabezado>
+
+  <!-- SECCIÓN 1: Tarjetas de Métricas Globales del Centro de Salud -->
+  <section class="ps-metricas" aria-label="Indicadores macro de la jornada del centro">
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
+          <span class="ui-icon" data-icon="check"></span>
+        </span>
+        <span class="metrica__etiqueta">Vacunas aplicadas hoy</span>
+      </div>
+      <strong>{{ metricasCentro().vacunasHoy }}</strong>
+      <small
+        >{{ metricasCentro().dosisMenoresHoy }} menores ·
+        {{ metricasCentro().dosisAdultosHoy }} adultos</small
+      >
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
+          <span class="ui-icon" data-icon="clipboard"></span>
+        </span>
+        <span class="metrica__etiqueta">Pacientes atendidos hoy</span>
+      </div>
+      <strong>{{ metricasCentro().pacientesAtendidosHoy }}</strong>
+      <small>{{ metricasCentro().vacunasSemana }} vacunas esta semana</small>
+    </article>
+
+    <article class="panel metrica">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
+          <span class="ui-icon" data-icon="feedback"></span>
+        </span>
+        <span class="metrica__etiqueta">Pacientes registrados</span>
+      </div>
+      <strong>{{ datosPS.pacientes().length }}</strong>
+      <small>Expedientes activos en el centro</small>
+    </article>
+
+    <article class="panel metrica metrica--alerta">
+      <div class="metrica__cabecera">
+        <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
+          <span class="ui-icon" data-icon="warning"></span>
+        </span>
+        <span class="metrica__etiqueta">Reportes e incidencias</span>
+      </div>
+      <strong>{{ metricasCentro().reportesActivos }}</strong>
+      <small>Notificados a Subregión de Salud</small>
+    </article>
+  </section>
+
+  <!-- SECCIÓN 2: Barra de Búsqueda Rápida de Paciente por Cédula -->
+  <section class="panel ps-busqueda-rapida" aria-label="Búsqueda rápida de paciente">
+    <div class="ps-busqueda-rapida__info">
+      <h3>
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+        <span>Acceso Inmediato a Paciente</span>
+      </h3>
+      <p>
+        Ingresa el número de cédula (<code>c_i</code> en <code>ciudadano_mayor_edad</code>), el ID
+        de menor (<code>id_menor</code> en <code>ciudadano_menor_edad</code>) o el nombre del
+        ciudadano.
+      </p>
+    </div>
+
+    <form class="ps-busqueda-rapida__form" (submit)="buscarPacienteRapido($event)">
+      <div class="input-grupo">
+        <input
+          type="search"
+          name="cedula"
+          class="ui-input"
+          placeholder="Ej: 14.567.890, 201 o nombre del ciudadano..."
+          [ngModel]="cedulaRapida()"
+          (ngModelChange)="cedulaRapida.set($event)"
+          aria-label="Cédula de identidad o nombre del paciente"
+        />
+        <button type="submit" class="btn btn-primary" (click)="buscarPacienteRapido($event)">
+          <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+          <span>Consultar Ficha</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- SECCIÓN 3: Hub de Acciones Rápidas del Centro de Salud -->
+  <section class="ps-acciones-grid" aria-label="Módulos y funciones directivas">
+    <a class="panel accion-card" routerLink="/PS/pacientes">
+      <div class="accion-card__icono accion-card__icono--azul">
+        <span class="ui-icon" data-icon="filter" aria-hidden="true"></span>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Consultar y Vacunar</h4>
+        <p>Verifica estatus de vacunas de adultos y niños, y aplica nuevas dosis al historial.</p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card" routerLink="/PS/pacientes/nuevo">
+      <div class="accion-card__icono accion-card__icono--verde">
+        <span class="ui-icon" data-icon="plus" aria-hidden="true"></span>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Registrar Paciente</h4>
+        <p>
+          Alta de nuevos ciudadanos con datos filiatorios y vinculación de representantes para
+          menores.
+        </p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card" routerLink="/PS/reportes">
+      <div class="accion-card__icono accion-card__icono--rojo">
+        <span class="ui-icon" data-icon="warning" aria-hidden="true"></span>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Reportar Incidencia</h4>
+        <p>
+          Registra reacciones adversas, síntomas e indicaciones médicas, notificando a la Subregión.
+        </p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a class="panel accion-card accion-card--destacado" routerLink="/PS/personal">
+      <div class="accion-card__icono accion-card__icono--morado">
+        <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+      </div>
+      <div class="accion-card__contenido">
+        <h4>Mi Credencial y Rendimiento</h4>
+        <p>Consulta tu credencial digital oficial del MPPS y la bitácora de dosis aplicadas.</p>
+      </div>
+      <span class="accion-card__flecha" aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <!-- SECCIÓN 4: Inmunizaciones Recientes en el Centro de Salud -->
+  <div class="ps-dos-columnas">
+    <section class="panel ps-bloque-tabla" aria-label="Últimas vacunas aplicadas en el centro">
+      <header class="ps-bloque-cabecera">
+        <div>
+          <span class="ca-section-eyebrow">
+            <span class="ca-section-eyebrow-line" aria-hidden="true"></span>
+            Tiempo Real
+          </span>
+          <h3>Inmunizaciones Recientes en el Centro</h3>
+          <p>Registro cronológico de pacientes vacunados en esta jornada.</p>
+        </div>
+        <a class="btn btn-sm btn-ghost" routerLink="/PS/historial">Ver todas →</a>
+      </header>
+
+      <div class="tabla-contenedor">
+        <table class="ui-table">
+          <thead>
+            <tr>
+              <th scope="col">Ciudadano</th>
+              <th scope="col">Vacuna (vacuna_id)</th>
+              <th scope="col">fecha_aplicacion</th>
+              <th scope="col">numero_dosis / numero_lote</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of ultimasAplicaciones(); track app.id) {
+              <tr>
+                <td>
+                  <div class="celda-paciente">
+                    <strong>{{ app.pacienteNombre }}</strong>
+                  </div>
+                </td>
+                <td>
+                  <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
+                </td>
+                <td>
+                  <span>{{ app.fechaAplicacion }}</span>
+                </td>
+                <td>
+                  <div class="celda-dosis">
+                    <span>Dosis #{{ app.dosis }}</span>
+                    <small class="badge-lote">{{ app.lote }}</small>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="tabla-vacia">
+                  No hay aplicaciones registradas en este momento.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

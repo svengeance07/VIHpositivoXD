@@ -1,6 +1,13 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Temporary / external branches
+main/
+
 /dist
 /tmp
 /out-tsc

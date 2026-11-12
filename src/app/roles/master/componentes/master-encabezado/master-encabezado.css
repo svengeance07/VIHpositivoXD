@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.master-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.master-cabecera__texto {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 48rem;
+}
+
+.master-cabecera h1 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+}
+
+.master-cabecera__lead {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.master-cabecera__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--background-subtle);
+  border: 1px solid var(--border);
+}
+
+.master-cabecera__acciones:empty {
+  display: none;
+}

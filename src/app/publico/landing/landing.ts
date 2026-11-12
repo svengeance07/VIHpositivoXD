@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { BotonTema } from '../../compartido/ui/boton-tema/boton-tema';
+
 interface RasgoLanding {
   readonly icono: string;
   readonly titulo: string;
@@ -10,7 +12,7 @@ interface RasgoLanding {
 
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink],
+  imports: [RouterLink, BotonTema],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing.html',

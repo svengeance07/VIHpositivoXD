@@ -1,0 +1,789 @@
+/* ------------------------------------------------------------------ */
+/* Contenedor principal de Personal de Salud                          */
+/* ------------------------------------------------------------------ */
+
+.ps-pagina {
+  display: grid;
+  gap: clamp(1.2rem, 2vw, 1.75rem);
+  min-width: 0;
+}
+
+/* Badge de perfil activo en la cabecera */
+.badge-perfil-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--ok);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-perfil-activo__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+/* Alerta de éxito al registrar enfermero */
+.alerta-exito {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: var(--ok);
+}
+
+.alerta-exito .ui-icon {
+  font-size: 1.25rem;
+  color: var(--ok);
+  flex-shrink: 0;
+}
+
+.alerta-exito__texto {
+  flex: 1;
+}
+
+.alerta-exito__texto strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.alerta-exito__texto p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------------ */
+/* SECCIÓN A: Métricas Globales del Personal (KPIs en Grilla)         */
+/* ------------------------------------------------------------------ */
+
+.ps-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+  gap: 1rem;
+}
+
+.metrica {
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 1.35rem;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms ease;
+}
+
+.metrica:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* Variantes de acento de métricas */
+.metrica--azul {
+  background: var(--card);
+  border-color: var(--secondary);
+}
+
+.metrica--verde {
+  background: var(--card);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+.metrica--morado {
+  background: var(--card);
+  border-color: var(--secondary);
+}
+
+.metrica--rojo {
+  background: var(--card);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.metrica__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.metrica__icono {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 0.65rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.metrica__icono--azul {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.metrica__icono--verde {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--ok);
+}
+
+.metrica__icono--morado {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.metrica__icono--rojo {
+  background: rgba(239, 68, 68, 0.14);
+  color: var(--danger);
+}
+
+.metrica__etiqueta {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.metrica__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.metrica__valor-fila {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.metrica__valor {
+  font-size: 2.15rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+.metrica__valor--verde {
+  color: var(--ok);
+}
+
+.metrica__valor--azul {
+  color: var(--foreground);
+}
+
+.metrica__valor--morado {
+  color: var(--foreground);
+}
+
+.metrica__valor--rojo {
+  color: var(--danger);
+}
+
+.metrica__sufijo {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.metrica__etiquetas-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+}
+
+.metrica__subtexto {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* SECCIÓN C: Tabla de Bitácora del Centro                            */
+/* ------------------------------------------------------------------ */
+
+.ps-bloque-tabla {
+  padding: 1.45rem 1.6rem;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.ps-bloque-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ps-bloque-cabecera h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.ps-bloque-cabecera p {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+}
+
+.tabla-vacia {
+  text-align: center;
+  padding: 3rem 1rem !important;
+}
+
+/* ================================================================== */
+/* CREDENCIAL DIGITAL INSTITUCIONAL (MPPS VENEZUELA)                  */
+/* ================================================================== */
+
+.ps-perfil-enfermero {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.ps-credencial-contenedor {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--border-subtle);
+}
+
+.ps-credencial-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.ps-credencial-toolbar__info h3 {
+  margin: 0.25rem 0 0.15rem 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.ps-credencial-toolbar__info p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.ps-credencial-toolbar__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Escena 3D y Contenedor de Flip                                     */
+/* ------------------------------------------------------------------ */
+
+.credencial-escena {
+  perspective: 1200px;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 1rem;
+}
+
+.credencial-tarjeta {
+  width: 100%;
+  max-width: 44rem;
+  min-height: 25.5rem;
+  position: relative;
+  transition: transform 650ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.credencial-tarjeta.is-reverso {
+  transform: rotateY(180deg);
+}
+
+/* Caras de la credencial (Anverso y Reverso) */
+.credencial-cara {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.08),
+    0 2px 8px var(--secondary),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.credencial-cara--reverso {
+  transform: rotateY(180deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--card);
+}
+
+/* Cinta tricolor venezolana */
+.credencial-cinta-tricolor {
+  display: flex;
+  height: 0.45rem;
+  width: 100%;
+}
+
+.cinta-amarilla {
+  flex: 1;
+  background: #facc15;
+}
+
+.cinta-azul {
+  flex: 1;
+  background: var(--foreground);
+}
+
+.cinta-roja {
+  flex: 1;
+  background: #ef4444;
+}
+
+/* Cabecera de la credencial */
+.credencial-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.6rem 0.85rem;
+  border-bottom: 1px solid var(--secondary);
+  background: var(--secondary);
+}
+
+.credencial-escudo {
+  font-size: 1.85rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  flex-shrink: 0;
+}
+
+.credencial-entidad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  text-align: center;
+  flex: 1;
+}
+
+.credencial-republica {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--foreground);
+}
+
+.credencial-ministerio {
+  font-size: 0.78rem;
+  font-weight: 850;
+  color: var(--foreground);
+  letter-spacing: 0.02em;
+}
+
+.credencial-sistema {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+}
+
+/* Chip de seguridad */
+.credencial-chip {
+  width: 2.2rem;
+  height: 1.7rem;
+  border-radius: 0.35rem;
+  background: var(--warn);
+  border: 1px solid #b45309;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chip-lineas {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.chip-lineas::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -0.6rem;
+  bottom: -0.6rem;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Cuerpo de la credencial */
+.credencial-cuerpo {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1.4rem;
+  padding: 1.25rem 1.6rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .credencial-cuerpo {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.credencial-foto-columna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.credencial-foto-marco {
+  position: relative;
+  width: 7.2rem;
+  height: 8.5rem;
+  border-radius: var(--radius-md);
+  background: var(--secondary);
+  border: 1px solid var(--border-strong);
+  padding: 3px;
+  box-shadow: 0 6px 18px var(--secondary);
+}
+
+.credencial-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  background: var(--background-subtle);
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--border);
+}
+
+.credencial-sello-verificado {
+  position: absolute;
+  bottom: -0.45rem;
+  right: -0.45rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+}
+
+.credencial-codigo-seguridad {
+  font-family: monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+}
+
+.credencial-nombre-bloque {
+  margin-bottom: 0.85rem;
+}
+
+.credencial-etiqueta-cargo {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--foreground);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.15rem;
+}
+
+.credencial-nombre {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+}
+
+.credencial-grilla-datos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .credencial-grilla-datos {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+}
+
+.credencial-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.credencial-dato__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.credencial-dato__valor {
+  font-size: 0.86rem;
+  color: var(--foreground);
+  font-weight: 650;
+}
+
+.credencial-dato__valor--destacado {
+  color: var(--foreground);
+  font-weight: 800;
+  font-family: monospace;
+}
+
+/* Pie del Anverso */
+.credencial-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.6rem;
+  background: var(--background-subtle);
+  border-top: 1px solid var(--border);
+}
+
+.credencial-qr-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.credencial-qr {
+  width: 2.35rem;
+  height: 2.35rem;
+  color: var(--foreground);
+  flex-shrink: 0;
+}
+
+.credencial-qr-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.credencial-qr-texto strong {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--foreground);
+  letter-spacing: 0.02em;
+}
+
+.credencial-qr-texto span {
+  font-size: 0.62rem;
+  color: var(--muted-foreground);
+}
+
+.credencial-vigencia {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  text-align: right;
+}
+
+.credencial-vigencia strong {
+  color: var(--foreground);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reverso de la Credencial                                           */
+/* ------------------------------------------------------------------ */
+
+.credencial-reverso-cabecera {
+  padding: 1.15rem 1.6rem 0.6rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.credencial-reverso-cabecera h4 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--foreground);
+  letter-spacing: 0.04em;
+}
+
+.credencial-reverso-cabecera p {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.68rem;
+  color: var(--muted-foreground);
+}
+
+.credencial-reverso-cuerpo {
+  padding: 1.25rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.credencial-legal-texto {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+  text-align: justify;
+}
+
+.credencial-legal-texto strong {
+  color: var(--foreground);
+}
+
+/* Firmas en el reverso */
+.credencial-firmas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.credencial-firma {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.firma-linea {
+  width: 100%;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #94a3b8;
+  margin-bottom: 0.35rem;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.firma-garabato {
+  font-family: 'Brush Script MT', 'Segoe Script', cursive;
+  font-size: 1.25rem;
+  color: var(--foreground);
+  transform: rotate(-3deg);
+}
+
+.firma-garabato--enfermero {
+  color: var(--ok);
+}
+
+.credencial-firma strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.credencial-firma span {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+/* Pie del reverso */
+.credencial-reverso-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.6rem;
+  background: var(--background-subtle);
+  border-top: 1px solid var(--border);
+}
+
+.credencial-barcode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.barcode-lineas {
+  width: 9rem;
+  height: 1.25rem;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--foreground) 0px,
+    var(--foreground) 2px,
+    transparent 2px,
+    transparent 4px,
+    var(--foreground) 4px,
+    var(--foreground) 7px,
+    transparent 7px,
+    transparent 9px
+  );
+  opacity: 0.85;
+}
+
+.credencial-barcode span {
+  font-family: monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+
+.credencial-reverso-contacto {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  text-align: right;
+}
+
+.credencial-reverso-contacto strong {
+  color: var(--foreground);
+}

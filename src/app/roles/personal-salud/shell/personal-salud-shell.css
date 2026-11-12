@@ -1,0 +1,771 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.ps-shell {
+  --sidebar-colapsada: 3.5rem;
+  --sidebar-expandida: 18.5rem;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--sidebar-colapsada) minmax(0, 1fr);
+  background-color: var(--background);
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  border: 0;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.velo.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Dark Obsidian Operational Dock / Tools Sidebar */
+.barra {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  width: var(--sidebar-colapsada);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.65rem;
+  padding: 0.75rem 0.45rem;
+  background-color: var(--background-subtle);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  transition: width 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.barra.is-expandida {
+  width: var(--sidebar-expandida);
+  padding-inline: 0.75rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.barra__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.35rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  color: var(--foreground);
+}
+
+.marca__logo {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.76rem;
+}
+
+.barra__marca-texto,
+.barra__etiqueta,
+.barra__pie-texto {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 120ms ease;
+}
+
+.barra.is-expandida .barra__marca-texto,
+.barra.is-expandida .barra__etiqueta,
+.barra.is-expandida .barra__pie-texto {
+  opacity: 1;
+  width: auto;
+}
+
+.barra__marca-texto {
+  display: grid;
+  line-height: 1.2;
+}
+
+.barra__marca-texto strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.barra__marca-texto small {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.barra__pin,
+.barra__cerrar {
+  display: none;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background-color: var(--secondary);
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.barra.is-expandida .barra__pin {
+  display: inline-grid;
+}
+
+.barra__pin:hover,
+.barra__cerrar:hover {
+  color: var(--foreground);
+  border-color: var(--border-strong);
+}
+
+/* Herramientas Selector Strip */
+.barra__herramientas {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.barra__herramienta-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 2.35rem;
+  padding: 0.45rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  min-width: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+.barra.is-expandida .barra__herramienta-btn {
+  justify-content: flex-start;
+  gap: 0.65rem;
+  padding-inline: 0.65rem;
+}
+
+.barra__herramienta-btn:hover {
+  background-color: var(--secondary);
+  color: var(--foreground);
+}
+
+.barra__herramienta-btn.is-active {
+  background-color: var(--secondary);
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  font-weight: 600;
+}
+
+.barra__icono {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: grid;
+  place-items: center;
+}
+
+.barra__badge-punto {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 0.85rem;
+  height: 0.85rem;
+  padding-inline: 0.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  background-color: var(--warn);
+  color: var(--background);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  border: 1px solid var(--background);
+}
+
+.barra__conteo-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  background-color: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* Panel Operativo */
+.barra__panel-operativo {
+  display: none;
+  overflow-y: auto;
+  padding-top: 0.35rem;
+}
+
+.barra__panel-operativo.is-visible {
+  display: block;
+}
+
+.panel-operativo {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.panel-operativo__encabezado {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.panel-operativo__eyebrow {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.panel-operativo__titulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.panel-operativo__bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.telemetria-stat {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+}
+
+.telemetria-stat__label {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+.telemetria-stat__valor {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.telemetria-stat__pie {
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  color: var(--muted-foreground);
+}
+
+.text-ok {
+  color: var(--ok) !important;
+}
+
+.text-warn {
+  color: var(--warn) !important;
+}
+
+.panel-operativo__nota {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.panel-operativo__vacio {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  padding: 1.5rem 0.5rem;
+  color: var(--muted-foreground);
+  font-size: 0.76rem;
+}
+
+.panel-operativo__alertas-lista {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.alerta-card {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--card);
+  border: 1px solid var(--warn-border);
+}
+
+.alerta-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.alerta-card__codigo {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--foreground);
+}
+
+.badge-alerta {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.2rem;
+  background-color: var(--warn-bg);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+.alerta-card__desc {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.alerta-card__accion {
+  justify-self: start;
+  margin-top: 0.2rem;
+  font-size: 0.7rem !important;
+  padding: 0.2rem 0.5rem !important;
+}
+
+.panel-operativo__acciones {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.panel-operativo__btn {
+  justify-content: flex-start !important;
+  width: 100%;
+}
+
+.panel-operativo__exito {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--ok-bg);
+  border: 1px solid var(--ok-border);
+  color: var(--ok);
+  font-size: 0.7rem;
+}
+
+.panel-operativo__atajos {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.atajo-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+
+.atajo-fila dt {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.atajo-fila dd {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+  background-color: var(--secondary);
+  border: 1px solid var(--border-strong);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pie de Barra Lateral */
+.barra__pie {
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+
+.barra__telemetria-pie {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-inline: 0.25rem;
+}
+
+.barra__pie-texto {
+  display: grid;
+  line-height: 1.15;
+}
+
+.barra__pie-texto strong {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.barra__pie-texto small {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+}
+
+/* Main Content & Two-Tier Vercel Command Header */
+.ps-shell__cuerpo {
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.barra-superior {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.barra-superior__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.65rem clamp(1rem, 2.5vw, 2rem);
+  border-bottom: 1px solid var(--border);
+}
+
+.barra-superior__izq {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.barra-superior__hamburguesa {
+  display: none;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background-color: var(--secondary);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.barra-superior__titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.84rem;
+}
+
+.barra-superior__logo-mini {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 0.2rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.barra-superior__slash {
+  color: var(--border-strong);
+  font-family: var(--font-mono);
+}
+
+.barra-superior__badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.barra-superior__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Estado de telemetría clínica en línea */
+.estado-en-linea {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  font-size: 0.74rem;
+  color: var(--muted-foreground);
+}
+
+.punto-verde {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background-color: var(--ok);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+}
+
+/* Disparador de búsqueda tipo Vercel / Linear (Ctrl+K) */
+.barra-superior__buscador {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2rem;
+  padding: 0 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.barra-superior__buscador:hover {
+  border-color: var(--border-strong);
+  color: var(--foreground);
+}
+
+.barra-superior__kbd {
+  margin-left: 0.25rem;
+}
+
+.ps-cuenta-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+.usuario-pill__avatar {
+  flex: 0 0 auto;
+  width: 1.65rem;
+  height: 1.65rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ps-cuenta-top__texto {
+  display: grid;
+  line-height: 1.15;
+}
+
+.ps-cuenta-top__texto strong {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.ps-cuenta-top__texto small {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+/* Horizontal Vercel Navigation Bar (The ONLY place for routes) */
+.barra-superior__tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 clamp(1rem, 2.5vw, 2rem);
+  overflow-x: auto;
+  background-color: var(--background-subtle);
+}
+
+.barra-superior__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+.barra-superior__tab:hover {
+  color: var(--foreground);
+}
+
+.barra-superior__tab.is-active {
+  color: var(--foreground);
+  font-weight: 600;
+  border-bottom-color: var(--foreground);
+}
+
+.barra-superior__tab-badge {
+  padding: 0.05rem 0.38rem;
+  border-radius: 9999px;
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.contenido {
+  width: min(100%, 84rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  flex: 1;
+}
+
+@media (max-width: 860px) {
+  .ps-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .ps-shell__cuerpo {
+    grid-column: 1;
+  }
+
+  .barra {
+    width: var(--sidebar-expandida);
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+  }
+
+  .barra.is-expandida {
+    transform: translateX(0);
+  }
+
+  .barra__marca-texto,
+  .barra__etiqueta,
+  .barra__pie-texto {
+    opacity: 1;
+    width: auto;
+  }
+
+  .barra__herramienta-btn,
+  .barra__telemetria-pie {
+    justify-content: flex-start;
+    gap: 0.65rem;
+    padding-inline: 0.65rem;
+  }
+
+  .barra__pin {
+    display: none !important;
+  }
+
+  .barra__cerrar,
+  .barra-superior__hamburguesa {
+    display: inline-grid;
+  }
+
+  .ps-cuenta-top,
+  .estado-en-linea {
+    display: none;
+  }
+}

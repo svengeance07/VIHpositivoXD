@@ -1,10 +1,17 @@
 :host {
   display: block;
+<<<<<<< Updated upstream
+=======
+  min-height: 100dvh;
+  background-color: var(--background);
+  color: var(--foreground);
+>>>>>>> Stashed changes
 }
 
 .acceso {
   width: min(100%, 1180px);
   min-height: 100dvh;
+<<<<<<< Updated upstream
   margin-inline: auto;
   padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 3rem);
   display: grid;
@@ -27,6 +34,155 @@ h1 {
   letter-spacing: -0.035em;
   color: var(--text);
   text-wrap: balance;
+=======
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+}
+
+/* Sticky Top Command Bar */
+.acceso__topbar {
+  border-bottom: 1px solid var(--border);
+  background-color: var(--topbar-bg);
+}
+
+.acceso__topbar-inner {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: 0.75rem clamp(1.25rem, 3vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.acceso__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.acceso__slash {
+  color: var(--border-strong);
+  font-family: var(--font-mono);
+}
+
+.acceso__contexto {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.acceso__topbar-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--foreground);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: -0.02em;
+}
+
+.marca__logo {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+/* Centered Spartan / shadcn Authentication Stage */
+.acceso__contenedor {
+  width: min(100%, 36rem);
+  margin: auto;
+  padding: clamp(2rem, 4vw, 3.25rem) 1.25rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.acceso__encabezado {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 1.15rem;
+}
+
+/* Horizontal Stepper Bar */
+.pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+.pasos li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--faint);
+  font-size: 0.78rem;
+}
+
+.pasos li span {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.1rem 0.38rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.pasos li strong {
+  font-weight: 500;
+}
+
+.pasos li.is-active {
+  color: var(--foreground);
+}
+
+.pasos li.is-active span {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.pasos__divisor {
+  width: 1.5rem;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.acceso__copy h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--foreground);
+}
+
+.acento {
+  color: var(--muted-foreground);
+>>>>>>> Stashed changes
 }
 
 .lead {
@@ -76,6 +232,7 @@ h1 {
 
 .acceso__panel {
   display: grid;
+<<<<<<< Updated upstream
   align-content: start;
   gap: 0.75rem;
   padding: clamp(1.25rem, 3vw, 2rem);
@@ -107,6 +264,13 @@ h1 {
 .perfil:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+=======
+  gap: 1.25rem;
+  padding: clamp(1.35rem, 3vw, 1.85rem);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+>>>>>>> Stashed changes
 }
 
 .paso {
@@ -115,6 +279,7 @@ h1 {
   gap: 0.15rem;
 }
 
+<<<<<<< Updated upstream
 .paso > .badge {
   justify-self: start;
   margin-top: 0.35rem;
@@ -125,6 +290,30 @@ h1 {
   font-size: clamp(1.45rem, 2.4vw, 1.8rem);
   letter-spacing: -0.02em;
   color: var(--text);
+=======
+.paso__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.paso__hint {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.paso h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+>>>>>>> Stashed changes
 }
 
 .sub {
@@ -146,11 +335,18 @@ h1 {
   align-items: center;
   gap: 0.85rem;
   width: 100%;
+<<<<<<< Updated upstream
   padding: 0.85rem 0.95rem;
   border: 1px solid var(--glass-border);
   border-radius: var(--ca-radius-md);
   background: color-mix(in oklab, var(--glass-surface) 60%, transparent);
   color: var(--text);
+=======
+  padding: 1rem 1.1rem;
+  border: none;
+  background-color: var(--background-subtle);
+  color: var(--foreground);
+>>>>>>> Stashed changes
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -160,8 +356,12 @@ h1 {
 }
 
 .rol:hover {
+<<<<<<< Updated upstream
   border-color: color-mix(in oklab, var(--color-accent) 42%, var(--glass-border));
   transform: translateY(-1px);
+=======
+  background-color: var(--card-elevated);
+>>>>>>> Stashed changes
 }
 
 .rol__num {
@@ -170,11 +370,21 @@ h1 {
   height: 1.8rem;
   display: grid;
   place-items: center;
+<<<<<<< Updated upstream
   border-radius: 0.55rem;
   background: color-mix(in oklab, var(--color-accent) 14%, transparent);
   color: var(--color-accent);
   font-size: 0.8rem;
   font-weight: 700;
+=======
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background-color: var(--secondary);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+>>>>>>> Stashed changes
 }
 
 .rol__texto {
@@ -185,7 +395,13 @@ h1 {
 }
 
 .rol__texto strong {
+<<<<<<< Updated upstream
   font-size: 0.95rem;
+=======
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--foreground);
+>>>>>>> Stashed changes
 }
 
 .rol__texto span {
@@ -194,11 +410,42 @@ h1 {
   line-height: 1.4;
 }
 
+<<<<<<< Updated upstream
 .rol ca-icon {
   color: var(--faint);
 }
 
 .perfil {
+=======
+.rol__accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--faint);
+}
+
+.rol__kbd {
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--secondary);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.rol:hover .rol__accion {
+  color: var(--foreground);
+}
+
+/* Step 2 Form & Button Bar */
+.form {
+  margin-top: 0.6rem;
+}
+
+.form__acciones {
+>>>>>>> Stashed changes
   display: grid;
   gap: 0.15rem;
   width: 100%;
@@ -258,10 +505,37 @@ h1 {
 }
 
 .demo summary {
+<<<<<<< Updated upstream
   color: var(--faint);
   cursor: pointer;
 }
 
+=======
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.demo summary::-webkit-details-marker {
+  display: none;
+}
+
+.demo summary:hover {
+  color: var(--foreground);
+}
+
+.demo__summary-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+>>>>>>> Stashed changes
 .demo__lista {
   display: grid;
   gap: 0.6rem;
@@ -271,14 +545,27 @@ h1 {
 }
 
 .demo__cuenta {
+<<<<<<< Updated upstream
   padding-left: 0.55rem;
   border-left: 2px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+=======
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--background-subtle);
+>>>>>>> Stashed changes
 }
 
 .demo__titulo {
   margin: 0;
+<<<<<<< Updated upstream
   color: var(--text);
   font-size: 0.8rem;
+=======
+  color: var(--foreground);
+  font-size: 0.78rem;
+  font-weight: 500;
+>>>>>>> Stashed changes
 }
 
 .demo__titulo span {
@@ -290,6 +577,10 @@ h1 {
   margin: 0.1rem 0 0;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.72rem;
+<<<<<<< Updated upstream
+=======
+  color: var(--muted-foreground);
+>>>>>>> Stashed changes
   word-break: break-word;
 }
 

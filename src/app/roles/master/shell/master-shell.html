@@ -1,0 +1,375 @@
+<div class="master-shell">
+  <button
+    type="button"
+    class="velo"
+    [class.is-visible]="menuMovil()"
+    (click)="cerrarTodo()"
+    aria-label="Cerrar consola operativa"
+  ></button>
+
+  <!-- Consola Operativa Lateral (Herramientas, Telemetría y Alertas) -->
+  <aside
+    id="barra-master"
+    class="barra"
+    [class.is-expandida]="expandido()"
+    (mouseenter)="abrirHover()"
+    (mouseleave)="cerrarHover()"
+    (focusin)="abrirHover()"
+    (focusout)="cerrarEnfoque($event)"
+    aria-label="Consola operativa y herramientas del master"
+  >
+    <div class="barra__cabecera">
+      <div class="marca">
+        <span class="marca__logo" aria-hidden="true">V</span>
+        <div class="barra__marca-texto">
+          <strong>Consola Operativa</strong>
+          <small>Vigilancia Nacional</small>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="barra__pin"
+        (click)="alternarFijado()"
+        [attr.aria-pressed]="fijado()"
+        [attr.aria-label]="fijado() ? 'Desfijar consola' : 'Fijar consola'"
+        [attr.title]="fijado() ? 'Desfijar consola' : 'Fijar consola'"
+      >
+        <span
+          class="ui-icon"
+          [attr.data-icon]="fijado() ? 'arrow-left' : 'arrow-right'"
+          aria-hidden="true"
+        ></span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__cerrar"
+        (click)="cerrarMenu()"
+        aria-label="Cerrar consola"
+      >
+        <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <!-- Barra de Herramientas Operativas (Iconos en estado colapsado) -->
+    <div class="barra__herramientas" role="tablist" aria-label="Herramientas operativas">
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'telemetria'"
+        (click)="seleccionarHerramienta('telemetria')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'telemetria'"
+        title="Telemetría y Estado de Red"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="activity"></span>
+        </span>
+        <span class="barra__etiqueta">Telemetría de Red</span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'alertas'"
+        (click)="seleccionarHerramienta('alertas')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'alertas'"
+        title="Alertas e Incidencias en Vivo"
+      >
+        <span class="barra__icono barra__icono--badge" aria-hidden="true">
+          <span class="ui-icon" data-icon="warning"></span>
+          @if (totalAlertas() > 0) {
+            <span class="barra__badge-punto">{{ totalAlertas() }}</span>
+          }
+        </span>
+        <span class="barra__etiqueta">
+          Alertas Activas
+          @if (totalAlertas() > 0) {
+            <span class="barra__conteo-badge">{{ totalAlertas() }}</span>
+          }
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'acciones'"
+        (click)="seleccionarHerramienta('acciones')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'acciones'"
+        title="Herramientas y Exportación"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="zap"></span>
+        </span>
+        <span class="barra__etiqueta">Acciones Rápidas</span>
+      </button>
+
+      <button
+        type="button"
+        class="barra__herramienta-btn"
+        [class.is-active]="herramientaActiva() === 'atajos'"
+        (click)="seleccionarHerramienta('atajos')"
+        role="tab"
+        [attr.aria-selected]="herramientaActiva() === 'atajos'"
+        title="Atajos de Teclado y Ayuda"
+      >
+        <span class="barra__icono" aria-hidden="true">
+          <span class="ui-icon" data-icon="help"></span>
+        </span>
+        <span class="barra__etiqueta">Atajos y Ayuda</span>
+      </button>
+    </div>
+
+    <!-- Cuerpo Operativo Expansible -->
+    <div class="barra__panel-operativo" [class.is-visible]="expandido()">
+      @switch (herramientaActiva()) {
+        @case ('telemetria') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Monitoreo en vivo</span>
+              <h3 class="panel-operativo__titulo">Telemetría de Red</h3>
+            </div>
+
+            <div class="panel-operativo__bento">
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Subregiones</span>
+                <strong class="telemetria-stat__valor">24 / 24</strong>
+                <span class="telemetria-stat__pie text-ok">100% en línea</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Centros Activos</span>
+                <strong class="telemetria-stat__valor">{{ totalCentros() }}</strong>
+                <span class="telemetria-stat__pie">Reportando dosis</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Lotes en Tránsito</span>
+                <strong class="telemetria-stat__valor">{{ lotesEnCamino().length }}</strong>
+                <span class="telemetria-stat__pie text-warn">En distribución</span>
+              </div>
+
+              <div class="telemetria-stat">
+                <span class="telemetria-stat__label">Cadena de Frío</span>
+                <strong class="telemetria-stat__valor">99.4%</strong>
+                <span class="telemetria-stat__pie text-ok">Rango 2°C - 8°C</span>
+              </div>
+            </div>
+
+            <div class="panel-operativo__nota">
+              <span class="punto-verde" aria-hidden="true"></span>
+              <span>Todos los servidores nodales sincronizados sin retraso.</span>
+            </div>
+          </div>
+        }
+
+        @case ('alertas') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Prioridad nacional</span>
+              <h3 class="panel-operativo__titulo">Alertas Activas ({{ totalAlertas() }})</h3>
+            </div>
+
+            @if (totalAlertas() === 0) {
+              <div class="panel-operativo__vacio">
+                <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                <p>No hay alertas críticas ni lotes reportados en este momento.</p>
+              </div>
+            } @else {
+              <div class="panel-operativo__alertas-lista">
+                @for (lote of lotesReportados(); track lote.id) {
+                  <article class="alerta-card">
+                    <div class="alerta-card__top">
+                      <span class="alerta-card__codigo">{{ lote.codigo }}</span>
+                      <span class="badge-alerta">Observación</span>
+                    </div>
+                    <p class="alerta-card__desc">
+                      {{ datos.nombreVacuna(lote.vacunaId) }} · {{ lote.dosis }} dosis
+                    </p>
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm alerta-card__accion"
+                      (click)="irAVacunasReportadas()"
+                    >
+                      Inspeccionar lote
+                    </button>
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @case ('acciones') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Utilidades del sistema</span>
+              <h3 class="panel-operativo__titulo">Acciones Rápidas</h3>
+            </div>
+
+            <div class="panel-operativo__acciones">
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm panel-operativo__btn"
+                (click)="exportarSnapshot()"
+              >
+                <span class="ui-icon" data-icon="download" aria-hidden="true"></span>
+                <span>Exportar auditoría (JSON)</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm panel-operativo__btn"
+                [disabled]="sincronizando()"
+                (click)="sincronizarMock()"
+              >
+                <span
+                  class="ui-icon"
+                  data-icon="reload"
+                  [class.girando]="sincronizando()"
+                  aria-hidden="true"
+                ></span>
+                <span>{{ sincronizando() ? 'Sincronizando...' : 'Sincronizar base mock' }}</span>
+              </button>
+
+              @if (sincroExito()) {
+                <div class="panel-operativo__exito">
+                  <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                  <span>Datos locales sincronizados correctamente.</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @case ('atajos') {
+          <div class="panel-operativo">
+            <div class="panel-operativo__encabezado">
+              <span class="panel-operativo__eyebrow">Navegación ágil</span>
+              <h3 class="panel-operativo__titulo">Atajos de Teclado</h3>
+            </div>
+
+            <dl class="panel-operativo__atajos">
+              <div class="atajo-fila">
+                <dt><kbd>Ctrl</kbd> + <kbd>K</kbd></dt>
+                <dd>Búsqueda global</dd>
+              </div>
+              <div class="atajo-fila">
+                <dt><kbd>Esc</kbd></dt>
+                <dd>Contraer consola</dd>
+              </div>
+              <div class="atajo-fila">
+                <dt><kbd>Tab</kbd></dt>
+                <dd>Mover foco entre pestañas</dd>
+              </div>
+            </dl>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Pie: Latencia y Versión (Sin botón de logout redundante) -->
+    <div class="barra__pie">
+      <div class="barra__telemetria-pie">
+        <span class="punto-verde" aria-hidden="true"></span>
+        <div class="barra__pie-texto">
+          <strong>Sistema V Operativo</strong>
+          <small>Latencia: 14ms · v2.4.0</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal: Barra Superior de Navegación y Vistas -->
+  <div class="master-contenido">
+    <header class="barra-superior">
+      <!-- Nivel 1: Contexto, Telemetría, Búsqueda, Identidad y Salir (Sin botones de acción redundantes) -->
+      <div class="barra-superior__top">
+        <div class="barra-superior__izq">
+          <button
+            type="button"
+            class="barra-superior__menu"
+            (click)="abrirMenu()"
+            [attr.aria-expanded]="menuMovil()"
+            aria-controls="barra-master"
+            aria-label="Abrir consola operativa"
+          >
+            <span data-icon="layouts" class="ui-icon ui-icon--layouts" aria-hidden="true"></span>
+          </button>
+
+          <div class="barra-superior__ruta">
+            <span class="barra-superior__logo-mini" aria-hidden="true">V</span>
+            <span class="barra-superior__slash" aria-hidden="true">/</span>
+            <span class="barra-superior__rol">Master</span>
+            <span class="barra-superior__slash" aria-hidden="true">/</span>
+            <span class="barra-superior__sub">Consola Nacional de Vigilancia</span>
+          </div>
+        </div>
+
+        <div class="barra-superior__cuenta">
+          <!-- Indicador en vivo de telemetría nacional -->
+          <div class="estado-en-linea" title="Conexión en tiempo real con la red nacional">
+            <span class="punto-verde" aria-hidden="true"></span>
+            <span class="estado-en-linea__texto">Red Nacional en línea</span>
+          </div>
+
+          <!-- Disparador de búsqueda global rápida (Ctrl+K) -->
+          <button
+            type="button"
+            class="barra-superior__buscador"
+            (click)="irABusqueda()"
+            title="Buscar ciudadano o lote (Ctrl+K)"
+          >
+            <span class="ui-icon" data-icon="search" aria-hidden="true"></span>
+            <span class="barra-superior__buscador-texto">Buscar...</span>
+            <kbd class="barra-superior__kbd">Ctrl K</kbd>
+          </button>
+
+          <app-boton-tema />
+
+          <!-- Perfil de usuario autenticado -->
+          <div class="master-cuenta">
+            <span class="master-cuenta__avatar" aria-hidden="true">{{ iniciales() }}</span>
+            <span class="master-cuenta__texto">
+              <strong>{{ nombre() }}</strong>
+              <span>Rol 1 · Master</span>
+            </span>
+          </div>
+
+          <!-- Acción única para salir del sistema -->
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            (click)="cerrarSesion()"
+            title="Cerrar sesión"
+          >
+            <span class="ui-icon" data-icon="log-out" aria-hidden="true"></span>
+            <span>Salir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nivel 2: Navegación horizontal de módulos (Único lugar donde viven las rutas principales) -->
+      <nav class="barra-superior__tabs" aria-label="Navegación por módulos del master">
+        @for (item of navegacion; track item.ruta) {
+          <a
+            class="barra-superior__tab"
+            [routerLink]="item.ruta"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="item.exacto ? { exact: true } : { exact: false }"
+          >
+            <span [attr.data-icon]="item.icono" [class]="'ui-icon ui-icon--' + item.icono"></span>
+            <span>{{ item.etiqueta }}</span>
+          </a>
+        }
+      </nav>
+    </header>
+
+    <main class="master-area">
+      <router-outlet />
+    </main>
+  </div>
+</div>

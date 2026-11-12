@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import type { RolUsuario, TipoEmpleado } from './enumeraciones';
 
 /** Roles que inician sesión. El ciudadano (0) usa el flujo público. */
@@ -39,3 +40,6 @@ export interface SesionActiva {
   readonly entidad: string | null;
   readonly perfil: Pick<PerfilAcceso, 'id' | 'nombre' | 'tipo'> | null;
 }
+=======
+export * from './comunes/cuenta-acceso.model';
+>>>>>>> Stashed changes

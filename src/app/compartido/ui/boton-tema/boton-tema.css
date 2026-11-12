@@ -1,0 +1,13 @@
+:host {
+  display: inline-flex;
+}
+
+.boton-tema {
+  gap: 0.4rem;
+}
+
+@media (max-width: 640px) {
+  .boton-tema__texto {
+    display: none;
+  }
+}
