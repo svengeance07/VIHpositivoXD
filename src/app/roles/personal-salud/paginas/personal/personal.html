@@ -1,10 +1,8 @@
 <div class="ps-pagina">
   <!-- Cabecera de Credencial Digital del Jefe de Centro -->
-  <app-ps-encabezado
-    [eyebrow]="'Credencial Institucional · ' + nombreCentro()"
+  <app-ps-encabezado [eyebrow]="'Credencial Institucional · ' + nombreCentro()"
     titulo="Credencial Digital y Rendimiento del Jefe de Centro"
-    descripcion="Acreditación oficial ante el MPPS, métricas de inmunización y registro de actividad clínica del encargado titular del centro."
-  >
+    descripcion="Acreditación oficial ante el MPPS, métricas de inmunización y registro de actividad clínica del encargado titular del centro.">
     <div class="badge-perfil-activo">
       <span class="badge-perfil-activo__dot"></span>
       <span>Jefe de Centro Activo</span>
@@ -14,21 +12,16 @@
   <div class="ps-perfil-enfermero">
     <!-- Mensaje temporal de descarga o copia de validación -->
     @if (mensajeCredencial()) {
-      <aside class="panel alerta-exito" role="status">
-        <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
-        <div class="alerta-exito__texto">
-          <strong>Credencial Oficial</strong>
-          <p>{{ mensajeCredencial() }}</p>
-        </div>
-        <button
-          type="button"
-          class="btn btn-ghost btn-sm"
-          (click)="mensajeCredencial.set('')"
-          aria-label="Cerrar aviso"
-        >
-          <span class="ui-icon" data-icon="close" aria-hidden="true"></span>
-        </button>
-      </aside>
+    <aside class="panel alerta-exito" role="status">
+      <ca-icon name="check" aria-hidden="true"></ca-icon>
+      <div class="alerta-exito__texto">
+        <strong>Credencial Oficial</strong>
+        <p>{{ mensajeCredencial() }}</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="mensajeCredencial.set('')" aria-label="Cerrar aviso">
+        <ca-icon name="close" aria-hidden="true"></ca-icon>
+      </button>
+    </aside>
     }
 
     <!-- SECCIÓN PRINCIPAL: CREDENCIAL DIGITAL INSTITUCIONAL (MPPS) -->
@@ -48,22 +41,14 @@
         </div>
 
         <div class="ps-credencial-toolbar__acciones">
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm"
-            (click)="voltearCredencial()"
-            title="Alternar entre anverso y reverso"
-          >
-            <span class="ui-icon" data-icon="reload" aria-hidden="true"></span>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="voltearCredencial()"
+            title="Alternar entre anverso y reverso">
+            <ca-icon name="reload" aria-hidden="true"></ca-icon>
             <span>Ver {{ caraCredencial() === 'frente' ? 'Reverso' : 'Anverso' }}</span>
           </button>
-          <button
-            type="button"
-            class="btn btn-ghost btn-sm"
-            (click)="copiarEnlaceVerificacion()"
-            title="Copiar código de validación"
-          >
-            <span class="ui-icon" data-icon="clipboard" aria-hidden="true"></span>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="copiarEnlaceVerificacion()"
+            title="Copiar código de validación">
+            <ca-icon name="clipboard" aria-hidden="true"></ca-icon>
             <span>Copiar Validación</span>
           </button>
         </div>
@@ -90,18 +75,10 @@
               </div>
               <div class="credencial-entidad">
                 <span class="credencial-republica">REPÚBLICA BOLIVARIANA DE VENEZUELA</span>
-                <span class="credencial-ministerio"
-                  >MINISTERIO DEL PODER POPULAR PARA LA SALUD</span
-                >
-                <span class="credencial-sistema"
-                  >SISTEMA PÚBLICO NACIONAL DE SALUD · SISTEMA V</span
-                >
+                <span class="credencial-ministerio">MINISTERIO DEL PODER POPULAR PARA LA SALUD</span>
+                <span class="credencial-sistema">SISTEMA PÚBLICO NACIONAL DE SALUD · SISTEMA V</span>
               </div>
-              <div
-                class="credencial-chip"
-                aria-hidden="true"
-                title="Chip de Seguridad Criptográfica"
-              >
+              <div class="credencial-chip" aria-hidden="true" title="Chip de Seguridad Criptográfica">
                 <div class="chip-lineas"></div>
               </div>
             </div>
@@ -115,21 +92,18 @@
                     {{ inicialesPerfil() }}
                   </div>
                   <div class="credencial-sello-verificado" title="Validado en Sistema Nacional">
-                    <span class="ui-icon" data-icon="check" aria-hidden="true"></span>
+                    <ca-icon name="check" aria-hidden="true"></ca-icon>
                     <span>MPPS</span>
                   </div>
                 </div>
-                <span class="credencial-codigo-seguridad"
-                  >SEC-{{ miPerfil().cedula.replace('.', '').slice(0, 5) }}</span
-                >
+                <span class="credencial-codigo-seguridad">SEC-{{ miPerfil().cedula.replace('.', '').slice(0, 5)
+                  }}</span>
               </div>
 
               <!-- Datos de filiación y colegiatura -->
               <div class="credencial-datos-columna">
                 <div class="credencial-nombre-bloque">
-                  <span class="credencial-etiqueta-cargo"
-                    >DIRECTOR / JEFE DE CENTRO AUTORIZADO</span
-                  >
+                  <span class="credencial-etiqueta-cargo">DIRECTOR / JEFE DE CENTRO AUTORIZADO</span>
                   <h2 class="credencial-nombre">{{ miPerfil().nombre }}</h2>
                 </div>
 
@@ -143,7 +117,7 @@
                     <span class="credencial-dato__label">Matrícula / Colegiado</span>
                     <strong class="credencial-dato__valor credencial-dato__valor--destacado">{{
                       miPerfil().idProfesional
-                    }}</strong>
+                      }}</strong>
                   </div>
 
                   <div class="credencial-dato">
@@ -175,15 +149,10 @@
             <!-- Pie de la credencial con Código QR y validador -->
             <footer class="credencial-pie">
               <div class="credencial-qr-box">
-                <svg
-                  class="credencial-qr"
-                  viewBox="0 0 48 48"
-                  fill="currentColor"
-                  aria-label="Código QR de verificación"
-                >
+                <svg class="credencial-qr" viewBox="0 0 48 48" fill="currentColor"
+                  aria-label="Código QR de verificación">
                   <path
-                    d="M4 4h16v16H4V4zm4 4v8h8V8H8zM4 28h16v16H4V28zm4 4v8h8v-8H8zM28 4h16v16H28V4zm4 4v8h8V8h-8zM28 28h4v4h-4v-4zm8 0h4v4h-4v-4zm4 4h4v4h-4v-4zm-8 4h4v4h-4v-4zm8 0h4v4h-4v-4zm-4 4h4v4h-4v-4zm-8-8h4v4h-4v-4zm-4 4h4v4h-4v-4zM10 10h4v4h-4v-4zm0 24h4v4h-4v-4zm24-24h4v4h-4v-4z"
-                  />
+                    d="M4 4h16v16H4V4zm4 4v8h8V8H8zM4 28h16v16H4V28zm4 4v8h8v-8H8zM28 4h16v16H28V4zm4 4v8h8V8h-8zM28 28h4v4h-4v-4zm8 0h4v4h-4v-4zm4 4h4v4h-4v-4zm-8 4h4v4h-4v-4zm8 0h4v4h-4v-4zm-4 4h4v4h-4v-4zm-8-8h4v4h-4v-4zm-4 4h4v4h-4v-4zM10 10h4v4h-4v-4zm0 24h4v4h-4v-4zm24-24h4v4h-4v-4z" />
                 </svg>
                 <div class="credencial-qr-texto">
                   <strong>VALIDACIÓN BIOMÉTRICA DIGITAL</strong>
@@ -192,9 +161,7 @@
               </div>
 
               <div class="credencial-vigencia">
-                <span
-                  >Ingreso: <strong>{{ miPerfil().fechaIngreso }}</strong></span
-                >
+                <span>Ingreso: <strong>{{ miPerfil().fechaIngreso }}</strong></span>
                 <span>Vencimiento: <strong>15/03/2027</strong></span>
               </div>
             </footer>
@@ -243,7 +210,7 @@
                   <div class="firma-linea">
                     <span class="firma-garabato firma-garabato--enfermero">{{
                       miPerfil().nombre
-                    }}</span>
+                      }}</span>
                   </div>
                   <strong>{{ miPerfil().nombre }}</strong>
                   <span>Jefe de Centro · {{ miPerfil().idProfesional }}</span>
@@ -270,7 +237,7 @@
       <article class="panel metrica metrica--verde">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--verde" aria-hidden="true">
-            <span class="ui-icon" data-icon="check"></span>
+            <ca-icon name="check"></ca-icon>
           </span>
           <span class="metrica__etiqueta">Vacunas Hoy</span>
         </div>
@@ -278,7 +245,7 @@
           <div class="metrica__valor-fila">
             <strong class="metrica__valor metrica__valor--verde">{{
               misMetricas().misVacunasHoy
-            }}</strong>
+              }}</strong>
             <span class="metrica__sufijo">aplicadas</span>
           </div>
           <small class="metrica__subtexto">En la jornada de atención de hoy</small>
@@ -288,7 +255,7 @@
       <article class="panel metrica metrica--azul">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--azul" aria-hidden="true">
-            <span class="ui-icon" data-icon="clipboard"></span>
+            <ca-icon name="clipboard"></ca-icon>
           </span>
           <span class="metrica__etiqueta">Pacientes Atendidos</span>
         </div>
@@ -296,7 +263,7 @@
           <div class="metrica__valor-fila">
             <strong class="metrica__valor metrica__valor--azul">{{
               misMetricas().misPacientesHoy
-            }}</strong>
+              }}</strong>
             <span class="metrica__sufijo">inmunizados</span>
           </div>
           <small class="metrica__subtexto">Adultos y niños atendidos hoy</small>
@@ -306,7 +273,7 @@
       <article class="panel metrica metrica--morado">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--morado" aria-hidden="true">
-            <span class="ui-icon" data-icon="calendar"></span>
+            <ca-icon name="calendar"></ca-icon>
           </span>
           <span class="metrica__etiqueta">Total Histórico</span>
         </div>
@@ -314,7 +281,7 @@
           <div class="metrica__valor-fila">
             <strong class="metrica__valor metrica__valor--morado">{{
               miPerfil().vacunasAplicadasTotal | number
-            }}</strong>
+              }}</strong>
             <span class="metrica__sufijo">dosis</span>
           </div>
           <small class="metrica__subtexto">En este centro de salud</small>
@@ -324,7 +291,7 @@
       <article class="panel metrica metrica--rojo">
         <div class="metrica__cabecera">
           <span class="metrica__icono metrica__icono--rojo" aria-hidden="true">
-            <span class="ui-icon" data-icon="warning"></span>
+            <ca-icon name="warning"></ca-icon>
           </span>
           <span class="metrica__etiqueta">Reportes ESAVI</span>
         </div>
@@ -332,7 +299,7 @@
           <div class="metrica__valor-fila">
             <strong class="metrica__valor metrica__valor--rojo">{{
               misMetricas().misReportesTotal
-            }}</strong>
+              }}</strong>
             <span class="metrica__sufijo">emitidos</span>
           </div>
           <small class="metrica__subtexto">Eventos adversos documentados</small>
@@ -367,45 +334,45 @@
           </thead>
           <tbody>
             @for (app of misAplicacionesTotales(); track app.id) {
-              <tr>
-                <td>
-                  <div class="fecha-celda">
-                    <span>{{ app.fechaAplicacion }}</span>
-                    <small>{{ app.horaAplicacion }}</small>
+            <tr>
+              <td>
+                <div class="fecha-celda">
+                  <span>{{ app.fechaAplicacion }}</span>
+                  <small>{{ app.horaAplicacion }}</small>
+                </div>
+              </td>
+              <td>
+                <div class="celda-paciente">
+                  <strong>{{ app.pacienteNombre }}</strong>
+                  <div class="celda-paciente__sub">
+                    <span>C.I. {{ app.pacienteCedula }}</span>
+                    @if (app.esMenor) {
+                    <span class="badge-menor">Menor</span>
+                    }
                   </div>
-                </td>
-                <td>
-                  <div class="celda-paciente">
-                    <strong>{{ app.pacienteNombre }}</strong>
-                    <div class="celda-paciente__sub">
-                      <span>C.I. {{ app.pacienteCedula }}</span>
-                      @if (app.esMenor) {
-                        <span class="badge-menor">Menor</span>
-                      }
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="celda-vacuna-info">
-                    <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
-                    <small class="badge-dosis">Dosis #{{ app.dosis }}</small>
-                  </div>
-                </td>
-                <td>
-                  <span class="badge-lote">{{ app.lote }}</span>
-                </td>
-                <td>
-                  <span class="observaciones-texto">{{
-                    app.observaciones || 'Sin observaciones'
+                </div>
+              </td>
+              <td>
+                <div class="celda-vacuna-info">
+                  <span class="nombre-vacuna">{{ app.vacunaNombre }}</span>
+                  <small class="badge-dosis">Dosis #{{ app.dosis }}</small>
+                </div>
+              </td>
+              <td>
+                <span class="badge-lote">{{ app.lote }}</span>
+              </td>
+              <td>
+                <span class="observaciones-texto">{{
+                  app.observaciones || 'Sin observaciones'
                   }}</span>
-                </td>
-              </tr>
+              </td>
+            </tr>
             } @empty {
-              <tr>
-                <td colspan="5" class="tabla-vacia">
-                  No hay aplicaciones registradas en este centro aún.
-                </td>
-              </tr>
+            <tr>
+              <td colspan="5" class="tabla-vacia">
+                No hay aplicaciones registradas en este centro aún.
+              </td>
+            </tr>
             }
           </tbody>
         </table>

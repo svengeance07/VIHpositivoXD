@@ -311,10 +311,10 @@ export class DatosPersonalSaludService {
       const actualizados = lista.map((enf) =>
         enf.id === datos.enfermeroId
           ? {
-              ...enf,
-              vacunasAplicadasHoy: enf.vacunasAplicadasHoy + 1,
-              vacunasAplicadasTotal: enf.vacunasAplicadasTotal + 1,
-            }
+            ...enf,
+            vacunasAplicadasHoy: enf.vacunasAplicadasHoy + 1,
+            vacunasAplicadasTotal: enf.vacunasAplicadasTotal + 1,
+          }
           : enf,
       );
       guardarColeccion(CLAVE_STORAGE_ENFERMEROS, actualizados);
