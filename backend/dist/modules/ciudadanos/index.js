@@ -1,0 +1,4 @@
+export { ciudadanosRoutes } from './ciudadanos.routes.js';
+export { cedulaParamSchema, ciudadanoMayorConMenoresSchema, ciudadanoMayorDetalleSchema, ciudadanoMenorDetalleSchema, ciudadanosMayoresQuerySchema, ciudadanosMenoresQuerySchema, createCiudadanoMayorBodySchema, createCiudadanoMenorBodySchema, createMenorDeRepresentanteBodySchema, deleteCiudadanoResponseSchema, fechaNacimientoSchema, representanteResumenSchema, updateCiudadanoMayorBodySchema, updateCiudadanoMenorBodySchema, } from './ciudadanos.schemas.js';
+export { calculateAgeInYears, createCiudadanoMayor, createCiudadanoMenor, deleteCiudadanoMayor, deleteCiudadanoMenor, getCiudadanoMayorByCedula, getCiudadanoMayorById, getCiudadanoMenorById, listCiudadanosMayores, listCiudadanosMenores, listMenoresByPadreId, updateCiudadanoMayor, updateCiudadanoMenor, } from './ciudadanos.service.js';
+//# sourceMappingURL=index.js.map

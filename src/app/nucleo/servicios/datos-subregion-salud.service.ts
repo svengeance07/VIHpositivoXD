@@ -485,7 +485,7 @@ export class DatosSubregionSaludService {
     }
   }
 
-  private construirFicha(ciudadano: Ciudadano): FichaCiudadano {
+  construirFicha(ciudadano: Ciudadano): FichaCiudadano {
     const hoy = this.fechaHoy();
     const vacunas = this.construirVacunas(ciudadano, hoy);
     const examenes = this.construirExamenes(ciudadano, hoy);

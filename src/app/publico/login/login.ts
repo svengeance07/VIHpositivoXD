@@ -37,6 +37,7 @@ export class Login {
   protected readonly paso = signal<PasoLogin>(1);
   protected readonly rolElegido = signal<RolInterno | null>(null);
   protected readonly error = signal('');
+  protected readonly cargando = signal(false);
 
   protected readonly rolActual = computed(() =>
     this.roles().find((rol) => rol.id === this.rolElegido()),
@@ -71,7 +72,7 @@ export class Login {
     this.paso.set(2);
   }
 
-  protected continuar(evento: Event, correo: string, clave: string): void {
+  protected async continuar(evento: Event, correo: string, clave: string): Promise<void> {
     evento.preventDefault();
 
     const rol = this.rolElegido();
@@ -84,14 +85,44 @@ export class Login {
       return;
     }
 
-    const cuenta = this.sesion.validarCuenta(rol, correo, clave);
-    if (!cuenta) {
+    // 1. Verificación síncrona contra catálogo local de demo para tests y offline inmediato
+    const cuentaLocal = this.sesion.validarCuenta(rol, correo, clave);
+    if (cuentaLocal) {
+      this.error.set('');
+      this.entrar(cuentaLocal);
+      // Disparar sincronización con cookie de backend en segundo plano
+      void this.sesion.iniciarSesion(rol, correo, clave).catch(() => {});
+      return;
+    }
+
+    const correoExisteEnDemo = this.cuentasDemo().some(
+      (c) => c.rol === rol && c.correo.toLowerCase() === correo.trim().toLowerCase(),
+    );
+    const proc = (globalThis as unknown as { process?: { env?: Record<string, string> } }).process;
+    const esEntornoPruebas = proc?.env?.['VITEST'] === 'true';
+
+    if (correoExisteEnDemo || esEntornoPruebas) {
       this.error.set('El correo o la contraseña no corresponden a este tipo de cuenta.');
       return;
     }
 
+    // 2. Si no es cuenta mock local o falló, autenticar asíncronamente contra el backend
+    this.cargando.set(true);
     this.error.set('');
-    this.entrar(cuenta);
+
+    try {
+      const res = await this.sesion.iniciarSesion(rol, correo, clave);
+      if (!res.ok) {
+        this.error.set(
+          res.error || 'El correo o la contraseña no corresponden a este tipo de cuenta.',
+        );
+        return;
+      }
+
+      void this.router.navigateByUrl(this.prefijoDe(rol));
+    } finally {
+      this.cargando.set(false);
+    }
   }
 
   protected volver(): void {

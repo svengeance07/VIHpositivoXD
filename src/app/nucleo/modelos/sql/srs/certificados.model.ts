@@ -37,4 +37,3 @@ export interface EmitirCertificadoSrsDto {
   readonly autoridadEmisoraId: number;
   readonly correoDestinatario?: string;
 }
-

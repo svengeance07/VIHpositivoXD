@@ -53,9 +53,11 @@ server/
 ## 3. Catálogo de Endpoints de la API
 
 ### Diagnóstico
+
 - `GET /api/health`: Comprueba la conexión en vivo con MySQL y devuelve la lista de tablas activas.
 
 ### Rol Personal de Salud (`/PS`)
+
 - `GET /api/ps/centro?id=1`: Devuelve los datos del Centro de Salud y su Autoridad/Jefe titular.
 - `GET /api/ps/pacientes?centroId=1`: Lista todos los pacientes (adultos y menores) atendidos en el centro.
 - `POST /api/ps/pacientes`: Inserta un nuevo ciudadano en `ciudadano_mayor_edad` o `ciudadano_menor_edad`.
@@ -63,6 +65,7 @@ server/
 - `POST /api/ps/reportes`: Inserta un evento adverso en `reportes` (ESAVI).
 
 ### Rol Subregión de Salud (`/SRS`)
+
 - `GET /api/srs/sede?estadoId=1`: Consulta los datos de la sede estadal y su Jefe titular.
 - `GET /api/srs/centros?estadoId=1`: Lista los Centros de Salud adscritos con conteo de inmunizaciones.
 - `POST /api/srs/centros`: Da de alta un nuevo centro de salud en la jurisdicción estadal.
@@ -73,6 +76,7 @@ server/
 - `GET /api/srs/metricas?estadoId=1`: Devuelve las métricas agregadas y cobertura de requisitos del estado.
 
 ### Rol Master (`/master`)
+
 - `GET /api/master/subregiones`: Directorio nacional de subregiones estadales.
 - `POST /api/master/subregiones`: Configura o da de alta una sede de subregión.
 - `GET /api/master/centros?estadoId=...`: Catálogo de centros de salud con filtro opcional por estado.
@@ -89,12 +93,15 @@ server/
 Cuando el equipo decida activar la base de datos real:
 
 ### Paso 1: Crear la Base de Datos en MySQL
+
 1. Abrir MySQL Workbench, DBeaver o la consola de MySQL.
 2. Ejecutar el script: [`docs/referencias/example.sql`](../referencias/example.sql).
 3. Este script creará la base de datos `vacunas`, sus 17 tablas y las claves foráneas necesarias.
 
 ### Paso 2: Configurar Variables de Entorno (Opcional)
+
 Crear un archivo `.env` en la raíz del proyecto (o configurar variables de entorno):
+
 ```env
 DB_HOST=localhost
 DB_PORT=3306
@@ -105,11 +112,15 @@ API_PORT=3000
 ```
 
 ### Paso 3: Iniciar el Servidor API
+
 En una terminal secundaria:
+
 ```bash
 node server/index.mjs
 ```
+
 El servidor confirmará en consola:
+
 ```
 [API Sistema V] Servidor Express corriendo en http://localhost:3000
 [API Sistema V] Endpoint de salud: http://localhost:3000/api/health
@@ -120,6 +131,7 @@ El servidor confirmará en consola:
 ## 5. Cómo Conectar Angular a la API Cuando se Desee
 
 Actualmente, los servicios en `src/app/nucleo/servicios/`:
+
 - `DatosMasterService`
 - `DatosSubregionSaludService`
 - `DatosPersonalSaludService`
@@ -139,4 +151,3 @@ crearCentro(dto: CrearCentroSrsDto) {
 ```
 
 De esta manera, **ningún componente ni vista de Angular requerirá modificaciones**.
-

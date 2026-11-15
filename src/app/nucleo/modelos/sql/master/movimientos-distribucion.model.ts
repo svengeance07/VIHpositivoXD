@@ -32,4 +32,3 @@ export interface RegistrarMovimientoMasterDto {
   readonly responsableAutoridadId: number;
   readonly observaciones?: string;
 }
-

@@ -1,0 +1,14 @@
+import { type AuthUserContext } from '../auth/index.js';
+import type { AutoridadDetalle, AutoridadesQuery, CentroSaludDetalle, CentrosSaludQuery, CreateAutoridadBody, CreateCentroSaludBody, CreateSubregionBody, SubregionDetalle, SubregionesQuery, UpdateAutoridadBody, UpdateCentroSaludBody, UpdateSubregionBody } from './centros.schemas.js';
+export declare function listCentrosSalud(user: AuthUserContext, filters?: CentrosSaludQuery): Promise<CentroSaludDetalle[]>;
+export declare function getCentroSaludById(user: AuthUserContext, idCentro: number): Promise<CentroSaludDetalle>;
+export declare function createCentroSalud(user: AuthUserContext, input: CreateCentroSaludBody): Promise<CentroSaludDetalle>;
+export declare function updateCentroSalud(user: AuthUserContext, idCentro: number, input: UpdateCentroSaludBody): Promise<CentroSaludDetalle>;
+export declare function listSubregiones(user: AuthUserContext, filters?: SubregionesQuery): Promise<SubregionDetalle[]>;
+export declare function getSubregionById(user: AuthUserContext, idSubregion: number): Promise<SubregionDetalle>;
+export declare function createSubregion(input: CreateSubregionBody): Promise<SubregionDetalle>;
+export declare function updateSubregion(idSubregion: number, input: UpdateSubregionBody): Promise<SubregionDetalle>;
+export declare function listAutoridades(user: AuthUserContext, filters?: AutoridadesQuery): Promise<AutoridadDetalle[]>;
+export declare function getAutoridadById(user: AuthUserContext, idAutoridades: number): Promise<AutoridadDetalle>;
+export declare function createAutoridad(user: AuthUserContext, input: CreateAutoridadBody): Promise<AutoridadDetalle>;
+export declare function updateAutoridad(user: AuthUserContext, idAutoridades: number, input: UpdateAutoridadBody): Promise<AutoridadDetalle>;

@@ -26,4 +26,3 @@ export interface ActualizarNotificacionSrsDto {
   readonly idNotificacion: number;
   readonly leida: boolean;
 }
-

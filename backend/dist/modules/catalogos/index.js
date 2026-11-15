@@ -1,0 +1,4 @@
+export { catalogosRoutes } from './catalogos.routes.js';
+export { catalogosResumenSchema, createExamenBodySchema, createSintomaComunBodySchema, createVacunaBodySchema, estadoSchema, etniaSchema, examenSchema, idParamSchema, municipioSchema, municipiosQuerySchema, parroquiaSchema, parroquiasQuerySchema, profesionSchema, sintomaComunSchema, updateVacunaBodySchema, vacunaSchema, } from './catalogos.schemas.js';
+export { createExamen, createSintomaComun, createVacuna, getCatalogosResumen, getVacunaById, listEstados, listEtnias, listExamenes, listMunicipios, listParroquias, listProfesiones, listSintomasComunes, listVacunas, updateVacuna, validateUbicacionGeografica, } from './catalogos.service.js';
+//# sourceMappingURL=index.js.map

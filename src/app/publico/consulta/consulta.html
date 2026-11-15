@@ -47,9 +47,13 @@
             </span>
           </label>
 
-          <button type="submit" class="btn btn-primary consulta-buscador__boton">
+          <button
+            type="submit"
+            class="btn btn-primary consulta-buscador__boton"
+            [disabled]="cargando()"
+          >
             <ca-icon name="filter" aria-hidden="true"></ca-icon>
-            <span>Consultar</span>
+            <span>{{ cargando() ? 'Buscando...' : 'Consultar' }}</span>
           </button>
         </form>
 

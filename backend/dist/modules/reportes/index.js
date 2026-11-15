@@ -1,0 +1,4 @@
+export { certificadosRoutes, reportesRoutes } from './reportes.routes.js';
+export { certificadoCiudadanoSchema, certificadoDetalleSchema, certificadosQuerySchema, consultaCertificadosCedulaSchema, createCertificadoBodySchema, createReporteBodySchema, reporteDetalleSchema, reporteInmunizacionResumenSchema, reportesQuerySchema, updateCertificadoBodySchema, updateReporteBodySchema, validacionCertificadoSchema, } from './reportes.schemas.js';
+export { createCertificado, createReporte, getCertificadoById, getCertificadosByCedula, getReporteById, listCertificados, listReportes, updateCertificado, updateReporte, validateCertificadoById, } from './reportes.service.js';
+//# sourceMappingURL=index.js.map

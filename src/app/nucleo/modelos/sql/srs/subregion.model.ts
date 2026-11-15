@@ -40,4 +40,3 @@ export interface ActualizarSubregionDto {
   readonly idJefeSubregion?: number;
   readonly parroquiaId?: number;
 }
-

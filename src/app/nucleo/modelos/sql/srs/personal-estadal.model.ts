@@ -42,4 +42,3 @@ export interface CrearTrabajadorEstadalDto {
   readonly centroId: number;
   readonly esJefeCentro: boolean;
 }
-

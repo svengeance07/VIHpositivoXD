@@ -66,4 +66,3 @@ export interface CrearPacienteSqlDto {
   readonly profesionId?: number;
   readonly padreId?: number;
 }
-

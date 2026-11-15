@@ -16,4 +16,3 @@ export interface MetricasEstadalesSrsSql {
   readonly vacunasAplicadasMes: number;
   readonly promedioCoberturaRequisitos: number;
 }
-

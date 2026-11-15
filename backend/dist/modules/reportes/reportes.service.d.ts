@@ -1,0 +1,12 @@
+import { type AuthUserContext } from '../auth/index.js';
+import type { CertificadoDetalle, CertificadosQuery, ConsultaCertificadosCedula, CreateCertificadoBody, CreateReporteBody, ReporteDetalle, ReportesQuery, UpdateCertificadoBody, UpdateReporteBody, ValidacionCertificado } from './reportes.schemas.js';
+export declare function listReportes(user: AuthUserContext, filters: ReportesQuery): Promise<ReporteDetalle[]>;
+export declare function getReporteById(user: AuthUserContext, idReporte: number): Promise<ReporteDetalle>;
+export declare function createReporte(user: AuthUserContext, input: CreateReporteBody): Promise<ReporteDetalle>;
+export declare function updateReporte(user: AuthUserContext, idReporte: number, input: UpdateReporteBody): Promise<ReporteDetalle>;
+export declare function listCertificados(_user: AuthUserContext, filters: CertificadosQuery): Promise<CertificadoDetalle[]>;
+export declare function getCertificadoById(idCertificado: number): Promise<CertificadoDetalle>;
+export declare function createCertificado(user: AuthUserContext, input: CreateCertificadoBody): Promise<CertificadoDetalle>;
+export declare function updateCertificado(user: AuthUserContext, idCertificado: number, input: UpdateCertificadoBody): Promise<CertificadoDetalle>;
+export declare function validateCertificadoById(idCertificado: number): Promise<ValidacionCertificado>;
+export declare function getCertificadosByCedula(ci: number): Promise<ConsultaCertificadosCedula>;

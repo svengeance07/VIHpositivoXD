@@ -35,4 +35,3 @@ export interface RegistrarAuditoriaDto {
   readonly tipoFiltro: string;
   readonly resultadosObtenidos: number;
 }
-

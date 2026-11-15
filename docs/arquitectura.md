@@ -4,18 +4,11 @@
 
 ## Alcance actual
 
-- Etapa de solo vistas y navegación. Sin backend, sin autenticación real, sin guards ni permisos efectivos todavía.
-- El esquema de base de datos partió como **referencia parcial** (`docs/referencias/db_schema.sql`). Hoy es un
-  **esquema de trabajo** con extensiones propuestas para certificados, notificaciones y envíos; el archivo original se
-  conserva en `docs/referencias/db_schema_original_2026-10-25.sql`. No está implementado: no hay migraciones, ORM ni
-  conexión a base de datos. Su lectura está en `docs/diseno/modelo-datos.md`.
-- Los datos se simulan con mocks tipados expuestos por servicios con `signal`. La futura API reemplazará el origen
-  de esos servicios; las vistas que dependen de datos todavía ausentes (lotes, stock, movimientos e incidencias) se
-  ajustarán cuando llegue el esquema completo.
-- Ya están construidos la landing (`/`), el login en dos pasos (`/login`), la consulta pública (`/consulta`), las
-  vistas del master (`/master` y sus rutas hijas), las del personal de salud (`/PS` y sus rutas hijas) y las de la
-  subregión de salud (`/SRS` y sus rutas hijas) con datos mock. El certificado de la subregión se emite como vista
-  simulada y el envío desde la consulta pública también es simulado; no hay correo real.
+- Conexión activa entre Frontend (Angular 22 SPA) y Backend (Fastify + Drizzle ORM + MySQL 8 en contenedor Docker).
+- Autenticación real implementada mediante `ApiBackendService` y `SesionService`, validando credenciales contra la base de datos (Argon2id) y manteniendo sesiones seguras con cookies HttpOnly (`sv_access_token`) y restauración automática al recargar (`/api/auth/me`).
+- Consulta ciudadana pública (`/consulta`) conectada a `/api/certificados/publico/cedula/:ci` para mostrar el expediente e historial real de vacunas y certificados.
+- Catálogos en vivo (`CatalogosService` y `DatosMasterService`) conectados a la división político-territorial de Venezuela (25 estados, 335 municipios, 1.138 parroquias) y 91 profesiones oficiales (CIUO / INE).
+- Modo de desarrollo con proxy inverso transparente (`proxy.conf.json` en `pnpm start` → `http://localhost:3000`) y producción mediante contenedor Nginx (`http://localhost/` con proxy a `http://backend:3000`). Conserva fallback seguro a almacenamiento local para pruebas unitarias.
 
 ## Roles
 

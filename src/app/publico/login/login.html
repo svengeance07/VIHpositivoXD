@@ -112,9 +112,10 @@
           <ca-button
             variant="primary"
             icon="log-in"
+            [disabled]="cargando()"
             (click)="continuar($event, correo.value, clave.value)"
           >
-            Entrar al sistema
+            {{ cargando() ? 'Verificando...' : 'Entrar al sistema' }}
           </ca-button>
         </form>
       </section>

@@ -672,7 +672,13 @@ Siguen abiertas, por orden de impacto:
 7. **Correo real y verificación**: ¿qué proveedor y qué flujo de código se usarán?
 8. **Auditoría pública**: ¿se registra cada consulta por cédula? ¿Cuánto tiempo se conserva?
 9. **Tablas faltantes**: ¿cuándo llegan lotes, movimientos, búsquedas e incidencias?
-10. **Geografía**: ¿de qué fuente oficial se cargan estados, municipios y parroquias?
+10. **Geografía y Catálogos**: La división político-territorial se carga desde la nomenclatura oficial de Venezuela (INE / CNE), estructurada en:
+
+- **25 entidades federales** (`estados`): 23 estados, 1 Distrito Capital y Dependencias Federales.
+- **Municipios** (`municipios`): 335 municipios oficiales vinculados a cada estado (`estado_id`).
+- **1.138 parroquias** (`parroquias`): con su doble clave foránea (`municipio_id` y `estado_id`).
+- **Catálogo de profesiones** (`profesiones`): basado en la Clasificación Internacional Uniforme de Ocupaciones (CIUO / INE) adaptado al ámbito sanitario, con 91 registros que incluyen los base obligatorios (`Medicina`, `Enfermería`, `Desempleado`), especialidades médicas/sanitarias, educación, ingeniería, oficios y situaciones especiales (estudiante, jubilado, etc.). Script de carga disponible en `backend/scripts/seed-catalogo-completo.mjs`.
+
 11. **Personal y ciudadano**: ¿son entidades separadas aunque la misma persona aparezca en ambas?
 12. **Nombre de la tabla de entidad**: ¿`cuentas_entidad` es el nombre definitivo?
 

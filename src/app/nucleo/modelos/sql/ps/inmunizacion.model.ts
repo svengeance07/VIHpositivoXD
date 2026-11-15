@@ -35,4 +35,3 @@ export interface RegistrarInmunizacionSqlDto {
   readonly ciudadanoMenorId?: number;
   readonly autoridadAplicadoraId: number;
 }
-

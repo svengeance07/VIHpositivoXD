@@ -29,4 +29,3 @@ export interface CrearReporteEsaviSqlDto {
   readonly ciudadanoMenorId?: number;
   readonly sintomaId: number;
 }
-

@@ -26,4 +26,3 @@ export interface MetricasNacionalesMasterSql {
   readonly lotesPorVencer: number;
   readonly reportesEsaviNacionales: number;
 }
-

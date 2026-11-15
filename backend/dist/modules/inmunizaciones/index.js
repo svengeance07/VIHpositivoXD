@@ -1,0 +1,4 @@
+export { inmunizacionesRoutes } from './inmunizaciones.routes.js';
+export { cartillaFamiliarCedulaSchema, cartillaVacunacionCiudadanoSchema, cedulaParamSchema, centroAplicacionResumenSchema, createInmunizacionBodySchema, esquemaVacunaProgresoSchema, fechaIsoCalendarSchema, fechaIsoNotFutureSchema, getTodayIsoUtc, idParamSchema, inmunizacionDetalleSchema, inmunizacionesQuerySchema, okSchema, pacienteMayorResumenSchema, pacienteMenorResumenSchema, updateInmunizacionBodySchema, vacunaResumenSchema, } from './inmunizaciones.schemas.js';
+export { createInmunizacion, getCartillaByCiudadanoMayorId, getCartillaByCiudadanoMenorId, getCartillaFamiliarByCedula, getInmunizacionById, listInmunizaciones, queryInmunizaciones, updateInmunizacion, } from './inmunizaciones.service.js';
+//# sourceMappingURL=index.js.map

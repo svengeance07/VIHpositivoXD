@@ -13,4 +13,3 @@ export interface CrearVacunaSqlDto {
   readonly nombreVacuna: string;
   readonly cantidadDosis: number;
 }
-

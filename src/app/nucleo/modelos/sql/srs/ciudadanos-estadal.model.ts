@@ -56,4 +56,3 @@ export interface ExpedienteCiudadanoEstadalSql {
   readonly porcentajeRequisitos: number;
   readonly aptoParaCertificado: boolean;
 }
-

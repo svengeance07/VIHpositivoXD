@@ -51,4 +51,3 @@ export interface ReasignarAutoridadMasterDto {
   readonly nuevaSubregionId?: number;
   readonly nuevoTipoUsuario?: TipoUsuarioSql;
 }
-

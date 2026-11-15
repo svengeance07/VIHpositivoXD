@@ -223,4 +223,3 @@ export const PsModel = {
     return { idReporte: res.insertId, ...dto };
   },
 };
-

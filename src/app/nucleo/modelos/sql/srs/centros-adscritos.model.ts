@@ -48,4 +48,3 @@ export interface ActualizarCentroSrsDto {
   readonly idJefeCentro?: number;
   readonly activo?: boolean;
 }
-

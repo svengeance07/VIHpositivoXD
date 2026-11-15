@@ -1,0 +1,27 @@
+import 'dotenv/config';
+export declare const env: {
+    readonly isProduction: boolean;
+    readonly isDevelopment: boolean;
+    readonly isTest: boolean;
+    readonly NODE_ENV: "development" | "test" | "production";
+    readonly HOST: string;
+    readonly PORT: number;
+    readonly LOG_LEVEL: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
+    readonly DB_HOST: string;
+    readonly DB_PORT: number;
+    readonly DB_USER: string;
+    readonly DB_PASSWORD: string;
+    readonly DB_NAME: string;
+    readonly DB_CONNECTION_LIMIT: number;
+    readonly JWT_SECRET: string;
+    readonly JWT_EXPIRES_IN: string;
+    readonly COOKIE_SECRET: string;
+    readonly COOKIE_NAME: string;
+    readonly COOKIE_SECURE: boolean;
+    readonly CORS_ORIGIN: string[];
+    readonly RATE_LIMIT_MAX: number;
+    readonly RATE_LIMIT_WINDOW: string;
+    readonly AUTH_RATE_LIMIT_MAX: number;
+    readonly AUTH_RATE_LIMIT_WINDOW: string;
+};
+export type AppEnv = typeof env;

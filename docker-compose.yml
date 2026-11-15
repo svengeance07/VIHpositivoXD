@@ -1,0 +1,104 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: sistema-v-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_changeme_local}
+      MYSQL_DATABASE: ${DB_NAME:-vacunas}
+      MYSQL_USER: ${DB_USER:-vacunas_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-vacunas_app_changeme}
+    ports:
+      - '${DB_PORT_EXTERNAL:-3306}:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docs/referencias/example.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    networks:
+      - sistema_v_net
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root -p"$$MYSQL_ROOT_PASSWORD" --silent']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sistema-v-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-vacunas_app}
+      DB_PASSWORD: ${DB_PASSWORD:-vacunas_app_changeme}
+      DB_NAME: ${DB_NAME:-vacunas}
+      DB_CONNECTION_LIMIT: ${DB_CONNECTION_LIMIT:-10}
+      JWT_SECRET: ${JWT_SECRET:-prod_jwt_secret_replace_this_with_at_least_32_characters}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      COOKIE_SECRET: ${COOKIE_SECRET:-prod_cookie_secret_replace_this_with_at_least_32_characters}
+      COOKIE_NAME: ${COOKIE_NAME:-sv_access_token}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost,http://localhost:80,http://localhost:4200}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-100}
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-1 minute}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-5}
+      AUTH_RATE_LIMIT_WINDOW: ${AUTH_RATE_LIMIT_WINDOW:-1 minute}
+    ports:
+      - '${BACKEND_PORT:-3000}:3000'
+    networks:
+      - sistema_v_net
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health').then((r) => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1));",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: sistema-v-nginx
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - '${HTTP_PORT:-80}:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist/vih-positivo-xd/browser:/usr/share/nginx/html:ro
+    networks:
+      - sistema_v_net
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/nginx-health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  sistema_v_net:
+    driver: bridge

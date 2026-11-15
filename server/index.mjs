@@ -261,4 +261,3 @@ app.listen(PORT, () => {
   console.log(`[API Sistema V] Servidor Express corriendo en http://localhost:${PORT}`);
   console.log(`[API Sistema V] Endpoint de salud: http://localhost:${PORT}/api/health`);
 });
-

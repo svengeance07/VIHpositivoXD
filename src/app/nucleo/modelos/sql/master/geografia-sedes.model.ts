@@ -55,4 +55,3 @@ export interface CrearCentroNacionalMasterDto {
   readonly parroquiaId: number;
   readonly idJefeCentro?: number;
 }
-

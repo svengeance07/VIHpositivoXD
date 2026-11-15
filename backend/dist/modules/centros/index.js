@@ -1,0 +1,4 @@
+export { autoridadesRoutes, centrosRoutes, subregionesRoutes, } from './centros.routes.js';
+export { autoridadDetalleSchema, autoridadesQuerySchema, centroSaludDetalleSchema, centrosSaludQuerySchema, createAutoridadBodySchema, createCentroSaludBodySchema, createSubregionBodySchema, jefeResumenSchema, subregionDetalleSchema, subregionesQuerySchema, updateAutoridadBodySchema, updateCentroSaludBodySchema, updateSubregionBodySchema, } from './centros.schemas.js';
+export { createAutoridad, createCentroSalud, createSubregion, getAutoridadById, getCentroSaludById, getSubregionById, listAutoridades, listCentrosSalud, listSubregiones, updateAutoridad, updateCentroSalud, updateSubregion, } from './centros.service.js';
+//# sourceMappingURL=index.js.map

@@ -37,4 +37,3 @@ export interface JefeCentroSql {
   readonly codigoCentro: string;
   readonly activo: boolean;
 }
-

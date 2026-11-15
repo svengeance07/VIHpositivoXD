@@ -46,4 +46,3 @@ export interface ActualizarEstadoLoteDto {
   readonly estado: EstadoLoteSql;
   readonly observaciones?: string;
 }
-

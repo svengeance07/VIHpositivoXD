@@ -5,4 +5,3 @@ export * from './ciudadanos-estadal.model';
 export * from './certificados.model';
 export * from './notificaciones.model';
 export * from './resumen-estadal.model';
-

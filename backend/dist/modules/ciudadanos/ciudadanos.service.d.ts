@@ -1,0 +1,14 @@
+import type { CiudadanoMayorConMenores, CiudadanoMayorDetalle, CiudadanoMenorDetalle, CiudadanosMayoresQuery, CiudadanosMenoresQuery, CreateCiudadanoMayorBody, CreateCiudadanoMenorBody, UpdateCiudadanoMayorBody, UpdateCiudadanoMenorBody } from './ciudadanos.schemas.js';
+export declare function calculateAgeInYears(fechaIso: string): number;
+export declare function listCiudadanosMayores(filters: CiudadanosMayoresQuery): Promise<CiudadanoMayorDetalle[]>;
+export declare function getCiudadanoMayorById(idCiudadano: number): Promise<CiudadanoMayorConMenores>;
+export declare function getCiudadanoMayorByCedula(ci: number): Promise<CiudadanoMayorConMenores>;
+export declare function createCiudadanoMayor(input: CreateCiudadanoMayorBody): Promise<CiudadanoMayorConMenores>;
+export declare function updateCiudadanoMayor(idCiudadano: number, input: UpdateCiudadanoMayorBody): Promise<CiudadanoMayorConMenores>;
+export declare function deleteCiudadanoMayor(idCiudadano: number): Promise<void>;
+export declare function listCiudadanosMenores(filters: CiudadanosMenoresQuery): Promise<CiudadanoMenorDetalle[]>;
+export declare function listMenoresByPadreId(padreId: number): Promise<CiudadanoMenorDetalle[]>;
+export declare function getCiudadanoMenorById(idMenor: number): Promise<CiudadanoMenorDetalle>;
+export declare function createCiudadanoMenor(input: CreateCiudadanoMenorBody): Promise<CiudadanoMenorDetalle>;
+export declare function updateCiudadanoMenor(idMenor: number, input: UpdateCiudadanoMenorBody): Promise<CiudadanoMenorDetalle>;
+export declare function deleteCiudadanoMenor(idMenor: number): Promise<void>;

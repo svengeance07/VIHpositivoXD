@@ -10,4 +10,3 @@ export * from './tablas-sql.model';
 export * from './ps/index';
 export * from './srs/index';
 export * from './master/index';
-

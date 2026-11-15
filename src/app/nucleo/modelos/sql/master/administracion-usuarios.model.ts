@@ -22,4 +22,3 @@ export interface AuditoriaAccesoMasterSql {
   readonly ipOrigen: string;
   readonly exito: boolean;
 }
-
